@@ -1,10 +1,4 @@
-export async function compile_shader(
-  device: GPUDevice,
-  filename: string
-): Promise<GPUShaderModule> {
-  const response = await fetch(filename)
-  const code = await response.text()
-
+export async function compile_shader(device: GPUDevice, code: string): Promise<GPUShaderModule> {
   const shader_module = device.createShaderModule({ code })
   const compilation_info = await shader_module.getCompilationInfo()
   if (compilation_info.messages.length > 0) {
