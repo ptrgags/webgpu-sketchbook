@@ -1,3 +1,4 @@
+import type { RenderPipelineTemplate } from '@/webgpu/RenderPipeline'
 import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer'
 
 // This should go somewhere more common.
@@ -49,7 +50,7 @@ export interface QuadPipelineOptions {
   uvs: 'raw' | 'centered'
 }
 
-export class QuadPipeline {
+export class QuadPipeline implements RenderPipelineTemplate {
   options: QuadPipelineOptions
   vertex_buffer: VertexBuffer
 
@@ -60,10 +61,15 @@ export class QuadPipeline {
 
     const positions = new VertexAttribute(QUAD_VERTICES, 2, QUAD_POSITIONS)
     const uvs = new VertexAttribute(QUAD_VERTICES, 2, uv_values)
-    this.vertex_buffer = new VertexBuffer([positions, uvs])
+    this.vertex_buffer = new VertexBuffer('quad_vertices', [positions, uvs])
   }
 
   make_vertex_buffer(device: GPUDevice): GPUBuffer {
     return this.vertex_buffer.create(device)
+  }
+
+  render_pass(pass: GPURenderPassEncoder) {
+    //pass.setVertexBuffer(0, this.vertex_buffer)
+    pass.draw(QUAD_VERTICES)
   }
 }

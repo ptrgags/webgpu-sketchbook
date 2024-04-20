@@ -13,12 +13,15 @@ function round_up(alignment: number, value: number): number {
 }
 
 /**
- * Vertex format. For now, it only supports float-based attributes for now.
+ * A single array of vertex attribute values. Right now, this assumes:
+ * - The data is written once at buffer creation
+ * - The data is f32 or vecNf
  */
 export class VertexAttribute {
-  count: number
-  components: number
-  values: number[]
+  readonly count: number
+  readonly components: number
+  readonly values: number[]
+
   constructor(count: number, components: number, values: number[]) {
     if (count * components !== values.length) {
       throw new Error('incorrect number of values for vertex attribute')
@@ -48,6 +51,21 @@ export class VertexAttribute {
     return this.count * this.element_size
   }
 
+  get format(): GPUVertexFormat {
+    switch (this.components) {
+      case 1:
+        return 'float32'
+      case 2:
+        return 'float32x2'
+      case 3:
+        return 'float32x3'
+      case 4:
+        return 'float32x4'
+    }
+
+    throw new Error('unsupported number of components')
+  }
+
   fill_values(data_view: DataView, offset: number, stride: number) {
     const LITTLE_ENDIAN = true
     for (let i = 0; i < this.count; i++) {
@@ -64,13 +82,56 @@ export class VertexAttribute {
   }
 }
 
+function compute_member_offsets(attributes: readonly VertexAttribute[]): number[] {
+  const result = []
+
+  let offset = 0
+  let prev_size = 0
+  for (const attribute of attributes) {
+    result.push(offset)
+
+    // Pack in the element as tightly as possible while adhering
+    // to the member alignment
+    offset = round_up(attribute.align, offset + prev_size)
+    prev_size = attribute.element_size
+  }
+
+  return result
+}
+
+function compute_align(attributes: readonly VertexAttribute[]): number {
+  let align = 0
+  for (const attribute of attributes) {
+    align = Math.max(align, attribute.align)
+  }
+
+  return align
+}
+
+function compute_struct_size(
+  align: number,
+  member_offsets: readonly number[],
+  attributes: readonly VertexAttribute[]
+): number {
+  const offsets = member_offsets
+  const last_index = attributes.length - 1
+
+  return round_up(align, offsets[last_index] + attributes[last_index].element_size)
+}
+
 /**
- * Vertex buffer. For now, it only supports f32 and vec2f properties
+ * Vertex buffer that stores an array of structs, one per vertex. This assumes:
+ * - Each member is f32 or vecNf
+ * - The attributes have locations 0, 1, ..., N - 1 in the shader
  */
 export class VertexBuffer {
-  attributes: VertexAttribute[]
+  readonly label: string
+  readonly attributes: VertexAttribute[]
+  readonly member_offsets: number[]
+  readonly align: number
+  readonly struct_size: number
 
-  constructor(attributes: VertexAttribute[]) {
+  constructor(label: string, attributes: VertexAttribute[]) {
     if (attributes.length === 0) {
       throw new Error('Trying to create vertex buffer with no attributes')
     }
@@ -80,64 +141,53 @@ export class VertexBuffer {
       throw new Error('attributes in a VertexBuffer must have the same length')
     }
 
+    this.label = label
     this.attributes = attributes
+
+    this.member_offsets = compute_member_offsets(attributes)
+    this.align = compute_align(attributes)
+    this.struct_size = compute_struct_size(this.align, this.member_offsets, attributes)
   }
 
   get count(): number {
     return this.attributes[0].count
   }
 
-  get align(): number {
-    let align = 0
-    for (const attribute of this.attributes) {
-      align = Math.max(align, attribute.align)
-    }
-
-    return align
-  }
-
   /**
    * Get the offsets for each member of the VertexInput struct
    */
-  get member_offsets(): number[] {
-    const result = []
-
-    let offset = 0
-    let prev_size = 0
-    for (const attribute of this.attributes) {
-      result.push(offset)
-
-      // Pack in the element as tightly as possible while adhering
-      // to the member alignment
-      offset = round_up(attribute.align, offset + prev_size)
-      prev_size = attribute.element_size
-    }
-
-    return result
-  }
-
   create(device: GPUDevice): GPUBuffer {
-    const offsets = this.member_offsets
-    const last_index = this.attributes.length - 1
-
-    const struct_size = round_up(
-      this.align,
-      offsets[last_index] + this.attributes[last_index].element_size
-    )
-
     const vertex_buffer = device.createBuffer({
-      size: this.count * struct_size,
+      size: this.count * this.struct_size,
       usage: GPUBufferUsage.VERTEX,
       mappedAtCreation: true
     })
 
     const data_view = new DataView(vertex_buffer.getMappedRange())
     for (let i = 0; i < this.attributes.length; i++) {
-      const offset = offsets[i]
+      const offset = this.member_offsets[i]
       const attribute = this.attributes[i]
-      attribute.fill_values(data_view, offset, struct_size)
+      attribute.fill_values(data_view, offset, this.struct_size)
     }
 
     return vertex_buffer
+  }
+
+  get buffer_layout(): GPUVertexBufferLayout {
+    const attribute_layouts: GPUVertexAttribute[] = []
+    for (let i = 0; i < this.attributes.length; i++) {
+      const attribute = this.attributes[i]
+      attribute_layouts.push({
+        format: attribute.format,
+        offset: this.member_offsets[i],
+        shaderLocation: i
+      })
+    }
+
+    return {
+      arrayStride: this.count * this.struct_size,
+      stepMode: 'vertex',
+      attributes: attribute_layouts
+    }
   }
 }

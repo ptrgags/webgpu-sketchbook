@@ -27,3 +27,13 @@ export function get_context(canvas: HTMLCanvasElement): GPUCanvasContext {
 
   return context
 }
+
+export function configure_context(device: GPUDevice, context: GPUCanvasContext) {
+  context.configure({
+    device,
+    alphaMode: 'opaque',
+    // swap chain format
+    format: 'bgra8unorm',
+    usage: GPUTextureUsage.RENDER_ATTACHMENT
+  })
+}
