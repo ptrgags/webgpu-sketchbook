@@ -1,23 +1,14 @@
-export interface RenderPipelineTemplate {
-  render_pass(pass: GPURenderPassEncoder): void
-}
+export type RenderCallback = (pass: GPURenderPassEncoder) => void
 
 export class RenderPipeline {
-  private template: RenderPipelineTemplate
   render_pipeline?: GPURenderPipeline
 
-  constructor(template: RenderPipelineTemplate) {
-    this.template = template
-  }
-
-  async create(device: GPUDevice) {
+  async create(device: GPUDevice, vertex_state: GPUVertexState, fragment_state: GPUFragmentState) {
     // For now this is constant, but it depends on the bind groups needed
     // for the shader
     const pipeline_layout = device.createPipelineLayout({
       bindGroupLayouts: []
     })
-
-    const vertex_state: GPUVertexState = {}
 
     // Most of the time I render as triangles. This may change
     const primitive_triangles: GPUPrimitiveState = {
@@ -37,7 +28,7 @@ export class RenderPipeline {
     })
   }
 
-  render(encoder: GPUCommandEncoder, context: GPUCanvasContext) {
+  render(encoder: GPUCommandEncoder, context: GPUCanvasContext, callback: RenderCallback) {
     // Pipeline not ready yet
     if (!this.render_pipeline) {
       return
@@ -56,7 +47,7 @@ export class RenderPipeline {
 
     const render_pass = encoder.beginRenderPass(pass_description)
     render_pass.setPipeline(this.render_pipeline)
-    this.template.render_pass(render_pass)
+    callback(render_pass)
     render_pass.end()
   }
 }

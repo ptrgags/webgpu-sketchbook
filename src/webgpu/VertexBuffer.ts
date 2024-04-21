@@ -74,7 +74,7 @@ export class VertexAttribute {
       for (let j = 0; j < this.components; j++) {
         data_view.setFloat32(
           element_offset + j * SIZE_F32,
-          this.values[i * this.components],
+          this.values[i * this.components + j],
           LITTLE_ENDIAN
         )
       }
@@ -86,14 +86,10 @@ function compute_member_offsets(attributes: readonly VertexAttribute[]): number[
   const result = []
 
   let offset = 0
-  let prev_size = 0
   for (const attribute of attributes) {
+    offset = round_up(attribute.align, offset)
     result.push(offset)
-
-    // Pack in the element as tightly as possible while adhering
-    // to the member alignment
-    offset = round_up(attribute.align, offset + prev_size)
-    prev_size = attribute.element_size
+    offset += attribute.element_size
   }
 
   return result
@@ -130,6 +126,7 @@ export class VertexBuffer {
   readonly member_offsets: number[]
   readonly align: number
   readonly struct_size: number
+  private buffer?: GPUBuffer
 
   constructor(label: string, attributes: VertexAttribute[]) {
     if (attributes.length === 0) {
@@ -156,7 +153,11 @@ export class VertexBuffer {
   /**
    * Get the offsets for each member of the VertexInput struct
    */
-  create(device: GPUDevice): GPUBuffer {
+  create(device: GPUDevice) {
+    if (this.buffer) {
+      throw new Error('buffer already exists!')
+    }
+
     const vertex_buffer = device.createBuffer({
       size: this.count * this.struct_size,
       usage: GPUBufferUsage.VERTEX,
@@ -170,7 +171,9 @@ export class VertexBuffer {
       attribute.fill_values(data_view, offset, this.struct_size)
     }
 
-    return vertex_buffer
+    vertex_buffer.unmap()
+
+    this.buffer = vertex_buffer
   }
 
   get buffer_layout(): GPUVertexBufferLayout {
@@ -185,9 +188,17 @@ export class VertexBuffer {
     }
 
     return {
-      arrayStride: this.count * this.struct_size,
+      arrayStride: this.struct_size,
       stepMode: 'vertex',
       attributes: attribute_layouts
     }
+  }
+
+  attach(pass: GPURenderPassEncoder) {
+    if (!this.buffer) {
+      throw new Error('setting vertex buffer before creation!')
+    }
+
+    pass.setVertexBuffer(0, this.buffer)
   }
 }
