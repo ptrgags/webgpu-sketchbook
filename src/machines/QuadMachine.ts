@@ -45,7 +45,7 @@ const UVS_CENTERED = [
   // bottom right triangle
   [U_MAX, V_MAX],
   [-U_MAX, -V_MAX],
-  [-U_MAX, V_MAX]
+  [U_MAX, -V_MAX]
 ].flat()
 
 const NUM_VERTICES = 6
@@ -67,6 +67,8 @@ export enum QuadUVMode {
 
 export interface QuadMachineSketch {
   uv_mode: QuadUVMode
+  shader_url: string
+  fragment_entry?: string
 }
 
 export class QuadMachine implements Machine {
@@ -98,8 +100,8 @@ export class QuadMachine implements Machine {
     this.vertex_buffer.create(device)
 
     const base_shader_code = await fetch_text(QUAD_MACHINE_SHADER)
-    // TODO: Concatenate with sketch shader
-    const shader_module = await compile_shader(device, base_shader_code)
+    const sketch_code = await fetch_text(this.sketch.shader_url)
+    const shader_module = await compile_shader(device, base_shader_code + sketch_code)
 
     const vertex_state: GPUVertexState = {
       module: shader_module,
@@ -109,7 +111,7 @@ export class QuadMachine implements Machine {
 
     const fragment_state: GPUFragmentState = {
       module: shader_module,
-      entryPoint: 'fragment_default',
+      entryPoint: this.sketch.fragment_entry ?? 'fragment_default',
       targets: [
         {
           format: 'bgra8unorm'

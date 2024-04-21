@@ -1,8 +1,12 @@
 import { Vec2 } from '@/core/Vec2'
 import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import EYES_SHADER from '@/shaders/eyes.wgsl?url'
 
 export class EyesSketch implements QuadMachineSketch {
-  uv_mode: QuadUVMode = QuadUVMode.Basic
+  uv_mode: QuadUVMode = QuadUVMode.Centered
+  shader_url: string = EYES_SHADER
+  fragment_entry: string = 'eyes_main'
+
   position: Vec2
 
   constructor() {
