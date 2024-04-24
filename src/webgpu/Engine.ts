@@ -63,7 +63,7 @@ export class Engine {
       const elapsed_time = (performance.now() - start) / 1000.0
 
       // Update state that doesn't require GPU resources
-      this.update(elapsed_time)
+      this.update(device, elapsed_time)
 
       // Queue up compute and render passes
       const encoder = device.createCommandEncoder()
@@ -83,8 +83,11 @@ export class Engine {
     await this.machine.create_resources(device, canvas, context, this.bind_group)
   }
 
-  update(elapsed_time: number) {
-    //this.u_frame.get_uniform('time').value = [elapsed_time]
+  update(device: GPUDevice, elapsed_time: number) {
+    // Update the current time
+    this.u_frame.get_uniform('time').value = [elapsed_time]
+
+    this.u_frame.update(device)
   }
 
   configure_passes(encoder: GPUCommandEncoder, context: GPUCanvasContext) {

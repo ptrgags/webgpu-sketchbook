@@ -26,7 +26,7 @@ fn eyes_main(input: Interpolated) -> @location(0) vec4f {
     let sclera_mask = circle_mask(from_center, EYE_RADIUS, FEATHER_AMOUNT);
     
     let angle = radians(45.0);
-    let gaze = direction(angle);
+    let gaze = direction(angle + u_frame.time);
 
     const IRIS_RADIUS = 0.4;
     let iris_center = (EYE_RADIUS - IRIS_RADIUS) * gaze;
@@ -41,8 +41,6 @@ fn eyes_main(input: Interpolated) -> @location(0) vec4f {
     color = mix(color, vec3f(1.0), sclera_mask);
     color = mix(color, vec3f(0.2, 0.35, 0.2), iris_mask);
     color = mix(color, vec3f(0.0), pupil_mask);
-
-    color = mix(color, vec3f(1.0), fract(u_frame.time));
 
     return vec4f(color, 1.0);
 }

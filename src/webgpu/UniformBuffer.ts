@@ -40,12 +40,15 @@ function is_float(type: UniformType): boolean {
 
 interface UniformMember {
   size: number
+  value: number[]
+  is_dirty: boolean
   fill_values(data_view: DataView, offset: number): void
 }
 
 export class Uniform implements UniformMember {
   type: UniformType
-  value: number[]
+  #value: number[]
+  is_dirty: boolean
 
   constructor(type: UniformType, value: number[]) {
     const expected_components = component_count(type)
@@ -54,11 +57,21 @@ export class Uniform implements UniformMember {
     }
 
     this.type = type
-    this.value = value
+    this.#value = value
+    this.is_dirty = true
   }
 
   get size(): number {
     return element_size(this.type)
+  }
+
+  get value(): number[] {
+    return this.#value
+  }
+
+  set value(val: number[]) {
+    this.is_dirty = true
+    this.#value = val
   }
 
   fill_values(data_view: DataView, offset: number): void {
@@ -76,7 +89,8 @@ export class Uniform implements UniformMember {
 export class UniformArray implements UniformMember {
   type: UniformType
   length: number
-  values: number[]
+  #values: number[]
+  is_dirty: boolean
 
   constructor(type: UniformType, length: number, values: number[]) {
     if (element_size(type) % 16 !== 0) {
@@ -85,7 +99,17 @@ export class UniformArray implements UniformMember {
 
     this.type = type
     this.length = length
-    this.values = values
+    this.#values = values
+    this.is_dirty = true
+  }
+
+  get value(): number[] {
+    return this.#values
+  }
+
+  set value(val: number[]) {
+    this.is_dirty = true
+    this.#values = val
   }
 
   fill_values(data_view: DataView, offset: number): void {
@@ -95,7 +119,7 @@ export class UniformArray implements UniformMember {
     const setter = is_float(this.type) ? data_view.setFloat32 : data_view.setUint32
     const bound_setter = setter.bind(data_view)
     for (let i = 0; i < components; i++) {
-      bound_setter(offset + 4 * i, this.values[i], LITTLE_ENDIAN)
+      bound_setter(offset + 4 * i, this.#values[i], LITTLE_ENDIAN)
     }
   }
 
@@ -114,6 +138,8 @@ export class UniformStruct {
   private member_names: string[]
   private member_map: { [key: string]: UniformMember }
   private buffer?: GPUBuffer
+  size: number
+  values: ArrayBuffer
 
   constructor(binding: number, members: UniformMemberDescriptor[]) {
     this.binding = binding
@@ -122,15 +148,9 @@ export class UniformStruct {
     for (const member of members) {
       this.member_map[member.name] = member.value
     }
-  }
 
-  get size() {
-    let total = 0
-    for (const member of Object.values(this.member_map)) {
-      total += member.size
-    }
-
-    return total
+    this.size = members.map((x) => x.value.size).reduce((a, b) => a + b, 0)
+    this.values = new ArrayBuffer(this.size)
   }
 
   create(device: GPUDevice) {
@@ -138,23 +158,38 @@ export class UniformStruct {
       throw new Error('uniform buffer already exists!')
     }
 
-    const uniform_buffer = device.createBuffer({
+    this.buffer = device.createBuffer({
       size: this.size,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-      mappedAtCreation: true
+      mappedAtCreation: false
     })
 
-    const data_view = new DataView(uniform_buffer.getMappedRange())
+    this.update_buffer(device)
+  }
+
+  update_buffer(device: GPUDevice) {
+    if (!this.buffer) {
+      throw new Error("Buffer hasn't been created yet!")
+    }
+
+    let data_changed = false
+
+    const data_view = new DataView(this.values)
     let offset = 0
     for (let i = 0; i < this.member_names.length; i++) {
       const name = this.member_names[i]
       const member = this.member_map[name]
-      member.fill_values(data_view, offset)
+      if (member.is_dirty) {
+        member.fill_values(data_view, offset)
+        data_changed = true
+        member.is_dirty = false
+      }
       offset += member.size
     }
 
-    uniform_buffer.unmap()
-    this.buffer = uniform_buffer
+    if (data_changed) {
+      device.queue.writeBuffer(this.buffer, 0, this.values)
+    }
   }
 
   get layout_entry(): GPUBindGroupLayoutEntry {
@@ -182,5 +217,9 @@ export class UniformStruct {
 
   get_uniform(name: string): UniformMember {
     return this.member_map[name]
+  }
+
+  update(device: GPUDevice) {
+    this.update_buffer(device)
   }
 }
