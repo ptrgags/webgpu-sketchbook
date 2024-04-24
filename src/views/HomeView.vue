@@ -7,6 +7,7 @@ import { onMounted } from 'vue'
 const sketch = new EyesSketch()
 const machine = new QuadMachine(sketch)
 const renderer = new Engine(machine)
+
 onMounted(() => {
   renderer.main()
 })
