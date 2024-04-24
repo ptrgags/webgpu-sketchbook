@@ -8,7 +8,6 @@ export class EyesSketch implements QuadMachineSketch {
   fragment_entry: string = 'eyes_main'
 
   position: Vec2
-
   constructor() {
     this.position = new Vec2(0, 0)
   }

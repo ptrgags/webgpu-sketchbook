@@ -1,9 +1,10 @@
 import { fetch_text } from '@/core/fetch_text'
-import type { Machine } from '@/webgpu/Renderer'
+import type { Machine } from '@/webgpu/Engine'
 import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer'
 import QUAD_MACHINE_SHADER from '@/shaders/quad_machine.wgsl?url'
 import { compile_shader } from '@/webgpu/compile_shader'
 import { RenderPipeline } from '@/webgpu/RenderPipeline'
+import type { BindGroup } from '@/webgpu/BindGroup'
 
 // This should go somewhere more common.
 const WIDTH = 500
@@ -87,7 +88,12 @@ export class QuadMachine implements Machine {
     this.vertex_buffer = new VertexBuffer('quad_vertices', [positions, uvs])
   }
 
-  async create_resources(device: GPUDevice, canvas: HTMLCanvasElement, context: GPUCanvasContext) {
+  async create_resources(
+    device: GPUDevice,
+    canvas: HTMLCanvasElement,
+    context: GPUCanvasContext,
+    bind_group: BindGroup
+  ) {
     context.configure({
       device,
       // for compositing on the page
@@ -119,11 +125,11 @@ export class QuadMachine implements Machine {
       ]
     }
 
-    await this.render_pipeline.create(device, vertex_state, fragment_state)
+    await this.render_pipeline.create(device, vertex_state, fragment_state, bind_group)
   }
 
-  configure_passes(encoder: GPUCommandEncoder, context: GPUCanvasContext) {
-    this.render_pipeline.render(encoder, context, (pass) => {
+  configure_passes(encoder: GPUCommandEncoder, context: GPUCanvasContext, bind_group: BindGroup) {
+    this.render_pipeline.render(encoder, context, bind_group, (pass) => {
       this.vertex_buffer.attach(pass)
       pass.draw(NUM_VERTICES)
     })

@@ -42,5 +42,7 @@ fn eyes_main(input: Interpolated) -> @location(0) vec4f {
     color = mix(color, vec3f(0.2, 0.35, 0.2), iris_mask);
     color = mix(color, vec3f(0.0), pupil_mask);
 
+    color = mix(color, vec3f(1.0), fract(u_frame.time));
+
     return vec4f(color, 1.0);
 }

@@ -155,7 +155,7 @@ export class VertexBuffer {
    */
   create(device: GPUDevice) {
     if (this.buffer) {
-      throw new Error('buffer already exists!')
+      throw new Error('vertex buffer already exists!')
     }
 
     const vertex_buffer = device.createBuffer({

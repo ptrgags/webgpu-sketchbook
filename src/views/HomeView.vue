@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { QuadMachine } from '@/machines/QuadMachine'
 import { EyesSketch } from '@/sketches/EyesSketch'
-import { Renderer } from '@/webgpu/Renderer'
+import { Engine } from '@/webgpu/Engine'
 import { onMounted } from 'vue'
 
 const sketch = new EyesSketch()
 const machine = new QuadMachine(sketch)
-const renderer = new Renderer(machine)
+const renderer = new Engine(machine)
 onMounted(() => {
   renderer.main()
 })
