@@ -1,4 +1,4 @@
-import { GamepadInput } from '@/input/GamepadInput'
+import { InputSystem } from '@/input/InputSystem'
 import { BindGroup } from './BindGroup'
 import { Uniform, UniformArray, UniformStruct, UniformType } from './UniformBuffer'
 import { get_canvas, get_context, get_device } from './setup'
@@ -19,16 +19,14 @@ export interface Machine {
 }
 
 export class Engine {
+  input: InputSystem
   machine: Machine
   u_frame: UniformStruct
   u_input: UniformStruct
   bind_group: BindGroup
 
-  gamepad: GamepadInput
-
   constructor(machine: Machine) {
-    this.gamepad = new GamepadInput()
-
+    this.input = new InputSystem()
     this.machine = machine
 
     const time = new Uniform(UniformType.F32, [0.0])
@@ -56,7 +54,7 @@ export class Engine {
   }
 
   async main() {
-    this.gamepad.init()
+    this.input.init()
 
     const device = await get_device()
     const canvas = get_canvas('webgpu-canvas')
@@ -91,7 +89,7 @@ export class Engine {
   }
 
   update(device: GPUDevice, elapsed_time: number) {
-    this.gamepad.update()
+    this.input.update()
 
     // Update the current time
     this.u_frame.get_uniform('time').value = [elapsed_time]

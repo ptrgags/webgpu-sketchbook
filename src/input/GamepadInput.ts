@@ -1,3 +1,5 @@
+import { ObserverSignal, type AnalogSignal, type DigitalSignal } from './Signal'
+
 export class GamepadInput {
   gamepad?: Gamepad
 
@@ -28,27 +30,33 @@ export class GamepadInput {
     this.gamepad = undefined
   }
 
-  digital_button(button_index: number): boolean {
-    if (!this.gamepad) {
-      return false
-    }
+  digital_button(button_index: number): DigitalSignal {
+    return new ObserverSignal(() => {
+      if (!this.gamepad) {
+        return false
+      }
 
-    return this.gamepad.buttons[button_index].pressed ?? false
+      return this.gamepad.buttons[button_index].pressed ?? false
+    })
   }
 
-  analog_button(button_index: number): number {
-    if (!this.gamepad) {
-      return 0.0
-    }
+  analog_button(button_index: number): AnalogSignal {
+    return new ObserverSignal(() => {
+      if (!this.gamepad) {
+        return 0.0
+      }
 
-    return this.gamepad.buttons[button_index].value ?? 0.0
+      return this.gamepad.buttons[button_index].value ?? 0.0
+    })
   }
 
-  axis(axis_index: number): number {
-    if (!this.gamepad) {
-      return 0.0
-    }
+  axis(axis_index: number): AnalogSignal {
+    return new ObserverSignal(() => {
+      if (!this.gamepad) {
+        return 0.0
+      }
 
-    return this.gamepad.axes[axis_index] ?? 0.0
+      return this.gamepad.axes[axis_index] ?? 0.0
+    })
   }
 }
