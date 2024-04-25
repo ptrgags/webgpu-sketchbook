@@ -20,4 +20,9 @@ export class TwoButtonAxis implements AnalogSignal {
      */
     return Number(this.positive.value) - Number(this.negative.value)
   }
+
+  update() {
+    this.negative.update()
+    this.positive.update()
+  }
 }

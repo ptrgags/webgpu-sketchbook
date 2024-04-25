@@ -5,6 +5,7 @@ export type SignalType = boolean | number
  */
 export interface Signal<T extends SignalType> {
   get value(): T
+  update(time: number): void
 }
 
 export type DigitalSignal = Signal<boolean>
@@ -18,6 +19,8 @@ export class ObserverSignal<T extends SignalType> implements Signal<T> {
   constructor(callback: () => T) {
     this.observe = callback
   }
+
+  update() {}
 
   get value(): T {
     return this.observe()

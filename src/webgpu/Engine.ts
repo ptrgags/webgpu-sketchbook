@@ -11,6 +11,10 @@ export interface Machine {
     bind_group: BindGroup
   ): Promise<void>
 
+  configure_input(input: InputSystem): void
+
+  update(time: number): void
+
   configure_passes(
     encoder: GPUCommandEncoder,
     context: GPUCanvasContext,
@@ -62,6 +66,8 @@ export class Engine {
 
     await this.create_resources(device, canvas, context)
 
+    this.configure_input()
+
     // Configure the render loop
     const start = performance.now()
     const render = () => {
@@ -88,13 +94,19 @@ export class Engine {
     await this.machine.create_resources(device, canvas, context, this.bind_group)
   }
 
-  update(device: GPUDevice, elapsed_time: number) {
+  configure_input() {
+    this.machine.configure_input(this.input)
+  }
+
+  update(device: GPUDevice, time: number) {
     this.input.update()
 
     // Update the current time
-    this.u_frame.get_uniform('time').value = [elapsed_time]
+    this.u_frame.get_uniform('time').value = [time]
 
     this.u_frame.update(device)
+
+    this.machine.update(time)
   }
 
   configure_passes(encoder: GPUCommandEncoder, context: GPUCanvasContext) {

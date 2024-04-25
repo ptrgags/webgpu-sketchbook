@@ -5,6 +5,7 @@ import QUAD_MACHINE_SHADER from '@/shaders/quad_machine.wgsl?url'
 import { compile_shader } from '@/webgpu/compile_shader'
 import { RenderPipeline } from '@/webgpu/RenderPipeline'
 import type { BindGroup } from '@/webgpu/BindGroup'
+import type { InputSystem } from '@/input/InputSystem'
 
 // This should go somewhere more common.
 const WIDTH = 500
@@ -70,6 +71,9 @@ export interface QuadMachineSketch {
   uv_mode: QuadUVMode
   shader_url: string
   fragment_entry?: string
+
+  configure_input(input: InputSystem): void
+  update(time: number): void
 }
 
 export class QuadMachine implements Machine {
@@ -126,6 +130,14 @@ export class QuadMachine implements Machine {
     }
 
     await this.render_pipeline.create(device, vertex_state, fragment_state, bind_group)
+  }
+
+  configure_input(input: InputSystem) {
+    this.sketch.configure_input(input)
+  }
+
+  update(time: number) {
+    this.sketch.update(time)
   }
 
   configure_passes(encoder: GPUCommandEncoder, context: GPUCanvasContext, bind_group: BindGroup) {
