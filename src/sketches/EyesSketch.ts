@@ -4,9 +4,9 @@ import { AnalogCascade } from '@/input/CascadeSignal'
 import { GamepadButtons } from '@/input/GamepadInput'
 import type { InputSystem } from '@/input/InputSystem'
 import { ReleaseSignal } from '@/input/ReleaseSignal'
-import type { AnalogSignal, DigitalSignal } from '@/input/Signal'
+import type { AnalogSignal } from '@/input/Signal'
 import { TriggerSignal } from '@/input/TriggerSignal'
-import { AnalogConst, DigitalConst } from '@/input/const_signal'
+import { AnalogConst } from '@/input/const_signal'
 import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
 import EYES_SHADER from '@/shaders/eyes.wgsl?url'
 
@@ -35,29 +35,21 @@ export class EyesSketch implements QuadMachineSketch {
     const a_button = input.gamepad.digital_button(GamepadButtons.A)
     const a_trigger = new TriggerSignal(a_button)
     const a_release = new ReleaseSignal(a_button)
-    this.blink = new ADSR(a_trigger, a_release, {
-      attack: 0.5,
-      decay: 0.0,
-      sustain: 1.0,
-      release: 0.5
+    const blink = new ADSR(a_trigger, a_release, {
+      attack: 0.2,
+      decay: 0.4,
+      sustain: 0,
+      release: 0.0
     })
 
-    /*
     input.configure_uniforms({
-      digital: [blink],
-      analog: [x_axis, y_axis]
-    })*/
+      analog: [this.x_axis, this.y_axis, blink]
+    })
   }
 
-  update(time: number) {
-    this.x_axis.update(time)
-    this.y_axis.update(time)
-    this.blink.update(time)
-
-    const blink = this.blink.value
-    if (blink > 0.0) {
-      console.log('blink', blink)
-    }
+  update(/*time: number*/) {
+    //this.x_axis.update(time)
+    //this.y_axis.update(time)
   }
 
   // Input precedence:

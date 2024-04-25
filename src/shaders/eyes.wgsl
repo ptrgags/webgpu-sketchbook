@@ -25,8 +25,20 @@ fn eyes_main(input: Interpolated) -> @location(0) vec4f {
     const EYE_RADIUS: f32 = 0.5;
     let sclera_mask = circle_mask(from_center, EYE_RADIUS, FEATHER_AMOUNT);
     
-    let angle = radians(45.0);
-    let gaze = direction(angle + u_frame.time);
+    let dir = vec2f(get_analog(0), get_analog(1));
+
+    //let angle = radians(45.0);
+    //let gaze = direction(angle + u_frame.time);
+    var gaze = dir;
+    if (dot(dir, dir) > 1.0) {
+        gaze = normalize(gaze);
+    }
+
+    // Eyelid close position, a little below the center line
+    const LID_CLOSE: f32 = -0.1;
+    let from_close = abs(from_center.y - LID_CLOSE);
+    let blink = get_analog(2);
+    let eyelid_mask = step(1.0 - blink, from_close);
 
     const IRIS_RADIUS = 0.4;
     let iris_center = (EYE_RADIUS - IRIS_RADIUS) * gaze;
@@ -34,13 +46,14 @@ fn eyes_main(input: Interpolated) -> @location(0) vec4f {
 
     const PUPIL_RADIUS = 0.25;
     let pupil_center = (EYE_RADIUS - PUPIL_RADIUS) * gaze;
-    let pupil_mask = circle_mask(from_center - pupil_center, PUPIL_RADIUS, FEATHER_AMOUNT);
+    let pupil_mask = circle_mask(from_center - pupil_center, PUPIL_RADIUS, FEATHER_AMOUNT);    
 
     var color = vec3f(0.0);
     color = mix(color, vec3f(1.0, 0.0, 0.0), border_mask);
     color = mix(color, vec3f(1.0), sclera_mask);
     color = mix(color, vec3f(0.2, 0.35, 0.2), iris_mask);
     color = mix(color, vec3f(0.0), pupil_mask);
+    color = mix(color, vec3f(156.0, 120.0, 79.0) / 255.0, eyelid_mask * sclera_mask);
 
     return vec4f(color, 1.0);
 }

@@ -1,3 +1,4 @@
+// Only some types are supported for simplicity.
 export enum UniformType {
   F32 = 'f32',
   U32 = 'u32',
@@ -16,115 +17,108 @@ function component_count(type: UniformType): number {
   }
 }
 
-function element_size(type: UniformType): number {
-  switch (type) {
-    case UniformType.F32:
-    case UniformType.U32:
-      return 4
-    case UniformType.VEC4F:
-    case UniformType.VEC4U:
-      return 16
-  }
-}
-
-function is_float(type: UniformType): boolean {
-  switch (type) {
-    case UniformType.F32:
-    case UniformType.VEC4F:
-      return true
-    case UniformType.U32:
-    case UniformType.VEC4U:
-      return false
-  }
-}
-
 interface UniformMember {
-  size: number
-  value: number[]
+  get size_bytes(): number
+  get size_components(): number
+  set value(val: Uint32Array | Float32Array)
+  get value(): Uint32Array
   is_dirty: boolean
-  fill_values(data_view: DataView, offset: number): void
 }
 
 export class Uniform implements UniformMember {
-  type: UniformType
-  #value: number[]
+  readonly type: UniformType
+  #value: Uint32Array
   is_dirty: boolean
+  readonly size_components: number
+  readonly size_bytes: number
 
-  constructor(type: UniformType, value: number[]) {
-    const expected_components = component_count(type)
-    if (expected_components !== value.length) {
-      throw new Error(`Uniform: expected ${expected_components}, got ${value.length}`)
+  constructor(type: UniformType, value: Uint32Array | Float32Array) {
+    this.type = type
+    this.size_components = component_count(type)
+    this.size_bytes = this.size_components * 4
+
+    if (value.length !== this.size_components) {
+      throw new Error(`Uniform: expected ${this.size_components}, got ${value.length}`)
     }
 
-    this.type = type
-    this.#value = value
+    this.#value = new Uint32Array(value.buffer)
     this.is_dirty = true
   }
 
-  get size(): number {
-    return element_size(this.type)
-  }
-
-  get value(): number[] {
+  get value(): Uint32Array {
     return this.#value
   }
 
-  set value(val: number[]) {
-    this.is_dirty = true
-    this.#value = val
-  }
+  set value(val: Uint32Array | Float32Array) {
+    const array = new Uint32Array(val.buffer)
+    if (array.length !== this.size_components) {
+      throw new Error(`value must be an array of length ${this.size_components}`)
+    }
 
-  fill_values(data_view: DataView, offset: number): void {
-    const LITTLE_ENDIAN = true
-    const components = component_count(this.type)
+    // If the value is the same as the last update, skip the update.
+    let changed = false
+    for (let i = 0; i < array.length; i++) {
+      if (array[i] !== this.#value[i]) {
+        changed = true
+        break
+      }
+    }
 
-    const setter = is_float(this.type) ? data_view.setFloat32 : data_view.setUint32
-    const bound_setter = setter.bind(data_view)
-    for (let i = 0; i < components; i++) {
-      bound_setter(offset + 4 * i, this.value[i], LITTLE_ENDIAN)
+    if (changed) {
+      this.is_dirty = true
+      this.#value = array
     }
   }
 }
 
 export class UniformArray implements UniformMember {
-  type: UniformType
-  length: number
-  #values: number[]
+  readonly type: UniformType
+  readonly size_components: number
+  readonly size_bytes: number
+  #values: Uint32Array
   is_dirty: boolean
 
-  constructor(type: UniformType, length: number, values: number[]) {
-    if (element_size(type) % 16 !== 0) {
-      throw new Error('Array values must be aligned to a multiple of 16 bytes')
+  constructor(type: UniformType, length: number, values: Uint32Array | Float32Array) {
+    this.type = type
+    const components = component_count(type)
+    this.size_components = length * components
+    this.size_bytes = this.size_components * 4
+
+    if (components % 4 !== 0) {
+      throw new Error('Array values must be a multiple of 4 components')
     }
 
-    this.type = type
-    this.length = length
-    this.#values = values
+    if (values.length !== this.size_components) {
+      throw new Error(`Array must have length ${this.size_components} got ${values.length}`)
+    }
+
+    this.#values = new Uint32Array(values.buffer)
     this.is_dirty = true
   }
 
-  get value(): number[] {
+  get value(): Uint32Array {
     return this.#values
   }
 
-  set value(val: number[]) {
-    this.is_dirty = true
-    this.#values = val
-  }
-
-  fill_values(data_view: DataView, offset: number): void {
-    const LITTLE_ENDIAN = true
-    const components = this.length * component_count(this.type)
-
-    const setter = is_float(this.type) ? data_view.setFloat32 : data_view.setUint32
-    const bound_setter = setter.bind(data_view)
-    for (let i = 0; i < components; i++) {
-      bound_setter(offset + 4 * i, this.#values[i], LITTLE_ENDIAN)
+  set value(val: Uint32Array | Float32Array) {
+    const array = new Uint32Array(val.buffer)
+    if (array.length !== this.size_components) {
+      throw new Error(`value must be an array of length ${this.size_components}`)
     }
-  }
 
-  get size(): number {
-    return this.length * element_size(this.type)
+    // If the value is the same as the last update, skip the update.
+    let changed = false
+    for (let i = 0; i < array.length; i++) {
+      if (array[i] !== this.#values[i]) {
+        changed = true
+        break
+      }
+    }
+
+    if (changed) {
+      this.is_dirty = true
+      this.#values = array
+    }
   }
 }
 
@@ -138,8 +132,9 @@ export class UniformStruct {
   private member_names: string[]
   private member_map: { [key: string]: UniformMember }
   private buffer?: GPUBuffer
-  size: number
-  values: ArrayBuffer
+  readonly size_components: number
+  readonly size_bytes: number
+  values: Uint32Array
 
   constructor(binding: number, members: UniformMemberDescriptor[]) {
     this.binding = binding
@@ -149,8 +144,9 @@ export class UniformStruct {
       this.member_map[member.name] = member.value
     }
 
-    this.size = members.map((x) => x.value.size).reduce((a, b) => a + b, 0)
-    this.values = new ArrayBuffer(this.size)
+    this.size_components = members.map((x) => x.value.size_components).reduce((a, b) => a + b, 0)
+    this.size_bytes = this.size_components * 4
+    this.values = new Uint32Array(this.size_components)
   }
 
   create(device: GPUDevice) {
@@ -159,7 +155,7 @@ export class UniformStruct {
     }
 
     this.buffer = device.createBuffer({
-      size: this.size,
+      size: this.size_bytes,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
       mappedAtCreation: false
     })
@@ -172,24 +168,24 @@ export class UniformStruct {
       throw new Error("Buffer hasn't been created yet!")
     }
 
-    let data_changed = false
+    // Short circuit if nothing changed this frame
+    const is_dirty = Object.values(this.member_map).some((x) => x.is_dirty)
+    if (!is_dirty) {
+      return
+    }
 
-    const data_view = new DataView(this.values)
     let offset = 0
     for (let i = 0; i < this.member_names.length; i++) {
       const name = this.member_names[i]
       const member = this.member_map[name]
       if (member.is_dirty) {
-        member.fill_values(data_view, offset)
-        data_changed = true
+        this.values.set(member.value, offset)
         member.is_dirty = false
       }
-      offset += member.size
+      offset += member.size_components
     }
 
-    if (data_changed) {
-      device.queue.writeBuffer(this.buffer, 0, this.values)
-    }
+    device.queue.writeBuffer(this.buffer, 0, this.values)
   }
 
   get layout_entry(): GPUBindGroupLayoutEntry {

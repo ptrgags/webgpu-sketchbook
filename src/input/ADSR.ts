@@ -71,16 +71,22 @@ export class ADSR implements AnalogSignal {
   }
 
   update_releasing(time: number, triggered: boolean) {
+    const t_relative = time - this.time_released
+
     if (this.adsr.release === 0.0) {
       this.value = 0.0
     } else {
-      const t_value = (time - this.time_released) / this.adsr.release
+      const t_value = t_relative / this.adsr.release
       this.value = lerp(this.value_when_released, 0.0, t_value)
     }
 
     if (triggered) {
       this.state = ADSRState.Playing
       this.time_triggered = time
+      this.time_released = -1
+      this.value_when_released = 0.0
+    } else if (t_relative > this.adsr.release) {
+      this.state = ADSRState.Idle
       this.time_released = -1
       this.value_when_released = 0.0
     }
