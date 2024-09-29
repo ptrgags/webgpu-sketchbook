@@ -3,6 +3,7 @@ import { ADSR } from '@/input/ADSR'
 import { AnalogCascade, DigitalCascade } from '@/input/CascadeSignal'
 import { GamepadButtons } from '@/input/GamepadInput'
 import type { InputSystem } from '@/input/InputSystem'
+import { PitchClass } from '@/input/MidiInput'
 import { ReleaseSignal } from '@/input/ReleaseSignal'
 import type { AnalogSignal } from '@/input/Signal'
 import { TriggerSignal } from '@/input/TriggerSignal'
@@ -37,7 +38,8 @@ export class EyesSketch implements QuadMachineSketch {
     // TODO: also include keyboard Z using DigitalCascade
     const a_button = input.gamepad.digital_button(GamepadButtons.A)
     const z_key = input.keyboard.digital_key('KeyZ')
-    const blink_button = new DigitalCascade([a_button, z_key])
+    const c_pitch = input.midi.pitch_signal(PitchClass.C)
+    const blink_button = new DigitalCascade([a_button, z_key, c_pitch])
 
     const a_trigger = new TriggerSignal(blink_button)
     const a_release = new ReleaseSignal(blink_button)
