@@ -20,12 +20,36 @@ fn voronoi_main(input: Interpolated) -> @location(0) vec4f {
     let d = vec2f(0.3, 0.4);
     let dist2 = sdf_segment(input.uv, c, d);
 
-    let nearest = step(0, dist2 - dist1);
+    //let e = vec2f(0.4, 0.5);
+    //let f = vec2f(0.3, 0.6);
+    let e = vec2f(0.4, 0.6);
+    let f = vec2f(0.5, 0.65);
+    let dist3 = sdf_segment(input.uv, e, f);
 
-    let color = mix(vec3f(1.0, 0.0, 0.0), vec3f(1.0, 0.5, 0.0), nearest);
+    var min_dist = 10.0;
+    var index = 0;
+    if dist1 < min_dist {
+        min_dist = min(min_dist, dist1);
+        index = 0;
+    }
 
-    let combined = min(dist1, dist2);
-    let mask = step(0.01, combined);
+    if dist2 < min_dist {
+        min_dist = min(min_dist, dist2);
+        index = 1;
+    }
 
-    return vec4f(mask * color, 1.0);
+    if dist3 < min_dist {
+        min_dist = min(min_dist, dist3);
+        index = 2;
+    }
+
+    let combined = min(min(dist1, dist2), dist3);
+    let mask = 1.0 - smoothstep(0.01, 0.011, combined);
+
+    var color = vec3f(0.0);
+    color = mix(color, vec3f(1.0, 0.0, 0.0), f32(index == 0));
+    color = mix(color, vec3f(1.0, 0.5, 0.0), f32(index == 1));
+    color = mix(color, vec3f(0.0, 0.5, 1.0), f32(index == 2));
+    color = mix(color, vec3f(0.0), mask);
+    return vec4f(color, 1.0);
 }
