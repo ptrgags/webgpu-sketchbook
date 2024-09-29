@@ -1,6 +1,7 @@
 import { UniformArray, UniformStruct, UniformType } from '@/webgpu/UniformBuffer'
 import { GamepadInput } from './GamepadInput'
 import type { AnalogSignal, DigitalSignal } from './Signal'
+import { KeyboardInput } from './KeyboardInput'
 
 const DIGITAL_VECTORS = 2
 const DIGITAL_COMPONENTS = DIGITAL_VECTORS * 4
@@ -21,6 +22,7 @@ export class InputSystem {
   // midi
   gamepad: GamepadInput
   // keyboard
+  keyboard: KeyboardInput
   // mouse
 
   u_input: UniformStruct
@@ -29,6 +31,7 @@ export class InputSystem {
 
   constructor() {
     this.gamepad = new GamepadInput()
+    this.keyboard = new KeyboardInput()
 
     const digital = new UniformArray(
       UniformType.VEC4U,
@@ -54,6 +57,7 @@ export class InputSystem {
 
   init() {
     this.gamepad.init()
+    this.keyboard.init()
   }
 
   update_digital(time: number) {

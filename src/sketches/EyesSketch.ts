@@ -1,6 +1,6 @@
 import { Vec2 } from '@/core/Vec2'
 import { ADSR } from '@/input/ADSR'
-import { AnalogCascade } from '@/input/CascadeSignal'
+import { AnalogCascade, DigitalCascade } from '@/input/CascadeSignal'
 import { GamepadButtons } from '@/input/GamepadInput'
 import type { InputSystem } from '@/input/InputSystem'
 import { ReleaseSignal } from '@/input/ReleaseSignal'
@@ -27,14 +27,20 @@ export class EyesSketch implements QuadMachineSketch {
     const [dpad_x, dpad_y] = input.gamepad.dpad_axes
     const [ls_x, ls_y] = input.gamepad.left_stick
 
+    const [arrows_x, arrows_y] = input.keyboard.arrow_axes
+    const [wasd_x, wasd_y] = input.keyboard.wasd_axes
+
     // TODO: also include keyboard arrows and WASD
-    this.x_axis = new AnalogCascade([ls_x, dpad_x])
-    this.y_axis = new AnalogCascade([ls_y, dpad_y])
+    this.x_axis = new AnalogCascade([ls_x, dpad_x, arrows_x, wasd_x])
+    this.y_axis = new AnalogCascade([ls_y, dpad_y, arrows_y, wasd_y])
 
     // TODO: also include keyboard Z using DigitalCascade
     const a_button = input.gamepad.digital_button(GamepadButtons.A)
-    const a_trigger = new TriggerSignal(a_button)
-    const a_release = new ReleaseSignal(a_button)
+    const z_key = input.keyboard.digital_key('KeyZ')
+    const blink_button = new DigitalCascade([a_button, z_key])
+
+    const a_trigger = new TriggerSignal(blink_button)
+    const a_release = new ReleaseSignal(blink_button)
     const blink = new ADSR(a_trigger, a_release, {
       attack: 0.2,
       decay: 0.4,
@@ -47,9 +53,9 @@ export class EyesSketch implements QuadMachineSketch {
     })
   }
 
-  update(/*time: number*/) {
-    //this.x_axis.update(time)
-    //this.y_axis.update(time)
+  update(time: number) {
+    this.x_axis.update(time)
+    this.y_axis.update(time)
   }
 
   // Input precedence:
