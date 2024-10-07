@@ -72,8 +72,8 @@ export interface QuadMachineSketch {
   shader_url: string
   fragment_entry?: string
 
-  configure_input(input: InputSystem): void
-  update(time: number): void
+  configure_input?: (input: InputSystem) => void
+  update?: (time: number) => void
 }
 
 export class QuadMachine implements Machine {
@@ -133,10 +133,17 @@ export class QuadMachine implements Machine {
   }
 
   configure_input(input: InputSystem) {
+    if (!this.sketch.configure_input) {
+      return
+    }
     this.sketch.configure_input(input)
   }
 
   update(time: number) {
+    if (!this.sketch.update) {
+      return
+    }
+
     this.sketch.update(time)
   }
 

@@ -16,14 +16,14 @@ fn voronoi_main(input: Interpolated) -> @location(0) vec4f {
 
     let t = fract(0.1 * u_frame.time);
 
-    let c = vec2f(0.5, 0.5);
+    let c = vec2f(0.5 + 0.2 * sin(t), 0.5 + 0.2 * sin(4.0 * t));
     let d = vec2f(0.3, 0.4);
     let dist2 = sdf_segment(input.uv, c, d);
 
     //let e = vec2f(0.4, 0.5);
     //let f = vec2f(0.3, 0.6);
     let e = vec2f(0.4, 0.6);
-    let f = vec2f(0.5, 0.65);
+    let f = vec2f(0.5, 0.65 + 0.1 * sin(2.0 * t));
     let dist3 = sdf_segment(input.uv, e, f);
 
     var min_dist = 10.0;
