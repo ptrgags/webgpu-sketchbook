@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { QuadMachine } from '@/machines/QuadMachine'
-import { ComplexVoronoiSketch } from '@/sketches/ComplexVoronoiSketch'
+import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
+//import { ComplexVoronoiSketch } from '@/sketches/ComplexVoronoiSketch'
 //import { EyesSketch } from '@/sketches/EyesSketch'
 import { Engine } from '@/webgpu/Engine'
 import { download_screenshot } from '@/webgpu/screenshot'
 import { onMounted } from 'vue'
 
 //const sketch = new EyesSketch()
-const sketch = new ComplexVoronoiSketch()
+//const sketch = new ComplexVoronoiSketch()
+const sketch = new SunAndMoonSketch()
 const machine = new QuadMachine(sketch)
 const renderer = new Engine(machine)
 
