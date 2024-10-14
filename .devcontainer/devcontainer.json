@@ -6,7 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/typescript-node:1-22-bookworm",
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
+	//"features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [5173],
@@ -19,7 +19,8 @@
 		"vscode": {
 			"extensions": [
 				"esbenp.prettier-vscode",
-				"vue.volar"
+				"vue.volar",
+				"polymeilex.wgsl"
 			]
 		}
 	}
