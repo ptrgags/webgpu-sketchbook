@@ -62,7 +62,7 @@ fn sun_and_moon(input: Interpolated) -> @location(0) vec4f {
     const SUN_CENTER_RADIUS: f32 = 0.2;
     let sun_rotation = rotate(0.1 * u_frame.time);
     let sun_middle = sdf_circle(input.uv - SUN_CENTER, SUN_CENTER_RADIUS);
-    let sun_rays = sdf_rays(sun_rotation * (input.uv - SUN_CENTER), 6.0, 0.3, 0.31);
+    let sun_rays = sdf_rays(sun_rotation * (input.uv - SUN_CENTER), 7.0, 0.3, 0.31);
     let sun = sun_rays;
     let sun_mask = smoothstep(0.0, 0.01, sun_rays);
 
@@ -72,8 +72,6 @@ fn sun_and_moon(input: Interpolated) -> @location(0) vec4f {
     var color = mix(vec3f(0.5, 0.0, 1.0), vec3f(1.0, 0.5, 0.0), sun_is_closer);
     color = mix(color, vec3f(1.0, 1.0, 0.0), mask); 
 
-    
-
     // 2 * radius = diameter of moon
     // 2 * cutout radius = diameter
     // moon center - moon radius = left of moon
@@ -81,6 +79,9 @@ fn sun_and_moon(input: Interpolated) -> @location(0) vec4f {
 
     //let color = moon_mask * vec3f(0.5, 0.0, 1.0);
     //let color = sun_mask * vec3f(1.0, 0.5, 0.0);
+
+    let metaball = 1.0 / (sun * sun) + 1.0 / (moon * moon);
+    color = vec3f(step(1500.0 + 1000.0 * sin(u_frame.time), metaball));
 
     return vec4f(color, 1.0);
 }
