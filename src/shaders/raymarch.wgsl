@@ -1,4 +1,65 @@
+fn sdf_plane(p: vec3f, normal: vec3f) -> f32 {
+    return dot(p, normal);
+}
+
+fn sdf_sphere(p: vec3f, radius: f32) -> f32 {
+    return length(p) - radius;
+}
+
+fn sdf_union(a: f32, b: f32) -> f32 {
+    return min(a, b);
+}
+
+fn scene(p: vec3f) -> f32 {
+    //let ground_plane = sdf_plane(p, vec3f(0.0, 1.0, 0.0));
+    let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.5), 0.5);
+
+    return sphere;
+}
+
+struct Ray {
+    start: vec3f,
+    dir: vec3f,
+}
+
+struct RaymarchResult {
+    iteration_scale: f32,
+    hit_position: vec3f,
+}
+
+fn raymarch(ray: Ray) -> RaymarchResult {
+    const MAX_ITERATIONS: u32 = 10;
+    const MIN_DIST: f32 = 0.001;
+    const T_STEP: f32 = 0.001;
+    var t = 0.0;
+    var position = ray.start;
+
+    for (var i = 0u; i < MAX_ITERATIONS; i++) {
+        let dist = scene(position);
+
+        if (dist < MIN_DIST) {
+            return RaymarchResult(f32(i) / f32(MAX_ITERATIONS), position);
+        }
+
+        // We're clear to move the given distance to get closer to the surface
+        t += dist;
+        position = ray.start + t * ray.dir;
+    }
+
+    return RaymarchResult(1.0, position);
+}
+
 @fragment
 fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
-    return vec4f(1.0, 0.5, 0.0, 1.0);
+    const EYE: vec3f = vec3f(0.0, 0.0, 1.0);
+
+    let pixel = vec3f(input.uv, 0.0);
+    let dir = normalize(pixel - EYE);
+
+    let ray = Ray(EYE, dir);
+    let result = raymarch(ray);
+
+    const LIGHT: vec3f = normalize(vec3f(-1.0, 1.0, 1.0));
+
+    return vec4f(result.iteration_scale, 0.0, 0.0, 1.0);
 }
