@@ -11,7 +11,6 @@ fn sdf_union(a: f32, b: f32) -> f32 {
 }
 
 
-
 struct Ray {
     start: vec3f,
     dir: vec3f,
@@ -39,7 +38,6 @@ fn raymarch(ray: Ray) -> RaymarchResult {
     const MAX_ITERATIONS: u32 = 100;
     const MIN_DIST: f32 = 0.001;
     const MAX_DIST: f32 = 100.0;
-    const T_STEP: f32 = 0.001;
     var t = 0.0;
     var position = ray.start;
 
@@ -64,12 +62,53 @@ fn raymarch(ray: Ray) -> RaymarchResult {
     return RaymarchResult(1.0, position, vec3f(0.0, 0.0, -1.0));
 }
 
+fn raymarch_shadow(ray: Ray) -> f32 {
+    const MAX_ITERATIONS: u32 = 100;
+    const MIN_DIST: f32 = 0.001;
+    const MAX_DIST: f32 = 100.0;
+    var t = 0.0;
+    var position = ray.start;
+    for (var i = 0u; i < MAX_ITERATIONS; i++) {
+        if (t > MAX_DIST) {
+            return 1.0;
+        }
+
+        let dist = scene(position);
+        if (dist < MIN_DIST) {
+            return 0.0;
+        }
+
+        t += dist;
+        position = ray.start + t * ray.dir;
+    }
+
+    return 1.0;
+}
+
 fn scene(p: vec3f) -> f32 {
     let ground_plane = p.y + 0.5;
     //let ground_plane = sdf_plane(p, vec3f(0.0, 1.0, 0.0));
-    let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.5), 0.5);
+    let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
 
     return sdf_union(sphere, ground_plane);
+}
+
+fn toon_shading(light: vec3f, normal: vec3f) -> f32 {
+    
+    const DARK: f32 = 0.0;
+    const MID_DARK: f32 = 0.5;
+    const MID: f32 = 0.75;
+    const MID_LIGHT: f32 = 0.875;
+    const LIGHT: f32 = 1.0;
+
+    let t = dot(light, normal);
+    var result: f32 = DARK;
+    result = mix(result, MID_DARK, step(0.0,  t));
+    result = mix(result, MID, step(0.1736, t));
+    result = mix(result, MID_LIGHT, step(0.5,  t));
+    result = mix(result, LIGHT, step(0.7071067, t));
+
+    return result;
 }
 
 @fragment
@@ -83,7 +122,17 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
     let result = raymarch(ray);
 
     const LIGHT: vec3f = normalize(vec3f(-1.0, 1.0, 1.0));
+    let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
+    let diffuse_color = vec3f(1.0, 0.25, 0.3);
 
-    return vec4f(result.normal, 1.0);
+    let shadow_ray = Ray(result.hit_position + 0.01 * result.normal, LIGHT);
+    let shadow = raymarch_shadow(shadow_ray);
+
+    let toon = toon_shading(result.normal, LIGHT);
+
+    let t = fract(0.5 * u_frame.time);
+    let comparison = mix(toon, diffuse, t);
+
+    return vec4f(shadow * diffuse_color * comparison, 1.0);
 }
 
