@@ -126,7 +126,7 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
 
     const LIGHT: vec3f = normalize(vec3f(0.0, 1.0, 0.5));
     let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
-    let diffuse_color = vec3f(1.0, 0.25, 0.3);
+    let diffuse_color = srgb_to_linear(vec3f(1.0, 0.5, 0.0));
 
     let shadow_ray = Ray(result.hit_position + 0.01 * result.normal, LIGHT);
     let shadow = raymarch_shadow(shadow_ray);
@@ -141,6 +141,11 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
     let color = shadow * diffuse_color * toon;
 
     return vec4f(linear_to_srgb(color), 1.0);
+}
+
+fn srgb_to_linear(srgb: vec3f) -> vec3f {
+    const GAMMA: vec3f = vec3f(2.2);
+    return pow(srgb, GAMMA);
 }
 
 fn linear_to_srgb(linear: vec3f) -> vec3f {
