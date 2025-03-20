@@ -96,16 +96,19 @@ fn scene(p: vec3f) -> f32 {
 fn toon_shading(light: vec3f, normal: vec3f) -> f32 {
     
     const DARK: f32 = 0.0;
-    const MID_DARK: f32 = 0.5;
-    const MID: f32 = 0.75;
-    const MID_LIGHT: f32 = 0.875;
+    const MID_DARK: f32 = 0.25; //0.5;
+    const MID: f32 = 0.5; // 0.75;
+    const MID_LIGHT: f32 = 0.75; //0.875;
     const LIGHT: f32 = 1.0;
 
     let t = dot(light, normal);
     var result: f32 = DARK;
     result = mix(result, MID_DARK, step(0.0,  t));
+    // sin(10 degrees)
     result = mix(result, MID, step(0.1736, t));
+    // sin(30 degrees)
     result = mix(result, MID_LIGHT, step(0.5,  t));
+    // sin(45 degrees)
     result = mix(result, LIGHT, step(0.7071067, t));
 
     return result;
@@ -121,7 +124,7 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
     let ray = Ray(EYE, dir);
     let result = raymarch(ray);
 
-    const LIGHT: vec3f = normalize(vec3f(-1.0, 1.0, 1.0));
+    const LIGHT: vec3f = normalize(vec3f(0.0, 1.0, 0.5));
     let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
     let diffuse_color = vec3f(1.0, 0.25, 0.3);
 
@@ -133,6 +136,14 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
     let t = fract(0.5 * u_frame.time);
     let comparison = mix(toon, diffuse, t);
 
-    return vec4f(shadow * diffuse_color * comparison, 1.0);
+    let diff = abs(toon - diffuse);
+
+    let color = shadow * diffuse_color * toon;
+
+    return vec4f(linear_to_srgb(color), 1.0);
 }
 
+fn linear_to_srgb(linear: vec3f) -> vec3f {
+    const GAMMA: vec3f = vec3f(1.0 / 2.2);
+    return pow(linear, GAMMA);
+}
