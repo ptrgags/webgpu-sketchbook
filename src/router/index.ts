@@ -3,6 +3,7 @@ import IndexView from '@/views/IndexView.vue'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import { EyesSketch } from '@/sketches/EyesSketch'
 import { RaymarchSketch } from '@/sketches/RaymarchSketch'
+import { ColorSpacesSketch } from '@/sketches/ColorSpacesSketch'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -30,6 +31,13 @@ const router = createRouter({
       component: () => import('@/views/QuadMachineView.vue'),
       props: {
         sketch: RaymarchSketch
+      }
+    },
+    {
+      path: '/color-spaces',
+      component: () => import('@/views/QuadMachineView.vue'),
+      props: {
+        sketch: ColorSpacesSketch
       }
     }
   ]
