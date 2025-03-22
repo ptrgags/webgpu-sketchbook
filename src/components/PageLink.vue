@@ -1,10 +1,7 @@
 <template>
     <div class="link">
         <slot name="thumbnail"></slot>
-        <slot name="link"></slot> &mdash;
-        <div class="description">
-            <slot name="description"></slot>
-        </div>
+        <slot name="link"></slot>
     </div>
 </template>
 
