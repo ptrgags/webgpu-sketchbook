@@ -5,32 +5,31 @@ import PageLink from '@/components/PageLink.vue'
 <template>
     <div class="one-column vertical">
         <h1>WebGPU Sketchbook</h1>
-        <p>lorem ipsum whatever</p>
         <PageLink>
             <template #thumbnail>
-                <!--
                 <img
                     src="@/assets/thumbnails/sun-and-moon.png"
                     alt=""
-                />-->
+                    width="250"
+                    height="350"
+                />
             </template>
             <template #link>
-                <RouterLink to="/sun-and-moon">Sun And Moon</RouterLink>
+                <RouterLink to="/sun-and-moon">Sun And Moon</RouterLink> (2025)
             </template>
-            <template #description>Blah blah blah</template>
         </PageLink>
         <PageLink>
             <template #thumbnail>
-                <!--
                 <img
-                    src="@/assets/thumbnails/sun-and-moon.png"
+                    src="@/assets/thumbnails/eyes.png"
                     alt=""
-                />-->
+                    width="250"
+                    height="350"
+                />
             </template>
             <template #link>
-                <RouterLink to="/eyes">Eyes</RouterLink>
+                <RouterLink to="/eyes">Eyes</RouterLink> (2025)
             </template>
-            <template #description>Blah blah blah</template>
         </PageLink>
     </div>
 </template>
