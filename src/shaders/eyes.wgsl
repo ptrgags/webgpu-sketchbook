@@ -11,7 +11,7 @@ fn circle_mask(uv: vec2f, radius: f32, feather: f32) -> f32 {
 }
 
 @fragment
-fn eyes_main(input: Interpolated) -> @location(0) vec4f {
+fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     // Make the coordinates run from [-4, 4] horizontally
     let scaled = input.uv * 3.0;
     let cell_uv = fract(scaled);

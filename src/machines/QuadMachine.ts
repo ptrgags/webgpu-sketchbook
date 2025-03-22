@@ -70,10 +70,9 @@ export enum QuadUVMode {
 export interface QuadMachineSketch {
   uv_mode: QuadUVMode
   shader_url: string
-  fragment_entry?: string
 
-  configure_input(input: InputSystem): void
-  update(time: number): void
+  configure_input?: (input: InputSystem) => void
+  update?: (time: number) => void
 }
 
 export class QuadMachine implements Machine {
@@ -121,7 +120,7 @@ export class QuadMachine implements Machine {
 
     const fragment_state: GPUFragmentState = {
       module: shader_module,
-      entryPoint: this.sketch.fragment_entry ?? 'fragment_default',
+      entryPoint: 'fragment_main',
       targets: [
         {
           format: 'bgra8unorm'
@@ -133,10 +132,17 @@ export class QuadMachine implements Machine {
   }
 
   configure_input(input: InputSystem) {
+    if (!this.sketch.configure_input) {
+      return
+    }
     this.sketch.configure_input(input)
   }
 
   update(time: number) {
+    if (!this.sketch.update) {
+      return
+    }
+
     this.sketch.update(time)
   }
 
