@@ -14,7 +14,7 @@ fn sdf_line(p: vec2f, normal: vec2f, distance: f32) -> f32 {
     return dot(p, normal) - distance;
 }
 
-fn sdf_rays(p: vec2f, n: f32, min_radius: f32, max_radius: f32) -> f32 {
+fn sdf_rays(p: vec2f, n: f32) -> f32 {
     let r = length(p);
     let theta = atan2(p.y, p.x);
 
@@ -46,42 +46,48 @@ fn rotate(theta: f32) -> mat2x2f {
 
 @fragment
 fn sun_and_moon(input: Interpolated) -> @location(0) vec4f {
+    const SMOOTH_RADIUS = 0.01;
+
     const MOON_RADIUS: f32 = 0.3;
     const MOON_CENTER: vec2f = vec2f(0.0, -0.5);
     const MOON_CUTOUT_RADIUS: f32 = 0.2;
-    let moon_center = vec2f(0.0, 0.5 * sin(2.0 * u_frame.time) - 0.5);
+
+    // Slow down time a little bit
+    let t = 0.2 * u_frame.time;
+
+    // Make a crescent moon shape that bobs up and down.
+    let moon_center = vec2f(0.0, 0.45 * sin(2.0 * PI * t) - 0.5);
     let moon_cutout_center = moon_center + vec2f(0.0, 0.5 * MOON_RADIUS);
 
     let moon_outer = sdf_circle(input.uv - moon_center, MOON_RADIUS);
     let moon_cutout = sdf_circle(input.uv - moon_cutout_center, MOON_CUTOUT_RADIUS);
 
     let moon = sdf_subtract(moon_outer, moon_cutout);
-    let moon_mask = smoothstep(0.0, 0.01, moon);
+    let moon_mask = smoothstep(-0.5 * SMOOTH_RADIUS, 0.5 * SMOOTH_RADIUS, moon);
     
     const SUN_CENTER: vec2f = vec2f(0.0, 0.5);
-    const SUN_CENTER_RADIUS: f32 = 0.2;
-    let sun_rotation = rotate(0.1 * u_frame.time);
-    let sun_middle = sdf_circle(input.uv - SUN_CENTER, SUN_CENTER_RADIUS);
-    let sun_rays = sdf_rays(sun_rotation * (input.uv - SUN_CENTER), 7.0, 0.3, 0.31);
-    let sun = sun_rays;
-    let sun_mask = smoothstep(0.0, 0.01, sun_rays);
+    const SUN_CENTER_RADIUS: f32 = 0.1;
+    const SUN_POINTS: f32 = 7.0;
 
-    let sun_is_closer = f32(sun < moon);
+    // Rotate the sun in sync with the bobing moon, so the mouth of the crescent will
+    // surround the next point of the sun without 
+    let sun_rotation = rotate(2.0 * PI * t / SUN_POINTS);
+    let sun_middle = sdf_circle(input.uv - SUN_CENTER, SUN_CENTER_RADIUS);
+    let sun = sdf_rays(sun_rotation * (input.uv - SUN_CENTER), SUN_POINTS);
+    let sun_mask = smoothstep(-SMOOTH_RADIUS, SMOOTH_RADIUS, sun);
+
+    // For a full voronoi diagram, this would be finding the minimum distance,
+    // but in this case we only have the two distance values. Use smoothstep
+    let sun_is_closer = smoothstep(-SMOOTH_RADIUS, SMOOTH_RADIUS, sun - moon);
     let mask = 1.0 - moon_mask * sun_mask;
 
-    var color = mix(vec3f(0.5, 0.0, 1.0), vec3f(1.0, 0.5, 0.0), sun_is_closer);
-    color = mix(color, vec3f(1.0, 1.0, 0.0), mask); 
-
-    // 2 * radius = diameter of moon
-    // 2 * cutout radius = diameter
-    // moon center - moon radius = left of moon
-    // moon center - moon radius + cutout radius = center of cutout
-
-    //let color = moon_mask * vec3f(0.5, 0.0, 1.0);
-    //let color = sun_mask * vec3f(1.0, 0.5, 0.0);
-
-    let metaball = 1.0 / (sun * sun) + 1.0 / (moon * moon);
-    color = vec3f(step(1500.0 + 1000.0 * sin(u_frame.time), metaball));
+    // Both the sun and moon will be the same light yellow color. The moon is
+    // on a purple background, the sun on a blue background
+    const COLOR_DAY: vec3f = vec3f(73, 154, 223) / 255.0;
+    const COLOR_NIGHT: vec3f = vec3f(80, 42, 121) / 255.0;
+    const COLOR_SUN_AND_MOON: vec3f = vec3f(248, 241, 134) / 255.0;
+    var color = mix(COLOR_NIGHT, COLOR_DAY, sun_is_closer);
+    color = mix(color, COLOR_SUN_AND_MOON, mask);
 
     return vec4f(color, 1.0);
 }
