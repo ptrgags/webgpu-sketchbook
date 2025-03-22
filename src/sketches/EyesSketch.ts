@@ -14,7 +14,6 @@ import EYES_SHADER from '@/shaders/eyes.wgsl?url'
 export class EyesSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = EYES_SHADER
-  fragment_entry: string = 'eyes_main'
   position: Vec2
   x_axis: AnalogSignal = new AnalogConst(0.0)
   y_axis: AnalogSignal = new AnalogConst(0.0)

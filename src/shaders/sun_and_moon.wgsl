@@ -45,7 +45,7 @@ fn rotate(theta: f32) -> mat2x2f {
 }
 
 @fragment
-fn sun_and_moon(input: Interpolated) -> @location(0) vec4f {
+fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     const SMOOTH_RADIUS = 0.01;
 
     const MOON_RADIUS: f32 = 0.3;

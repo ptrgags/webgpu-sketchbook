@@ -8,7 +8,7 @@ fn sdf_segment(point: vec2f, a: vec2f, b: vec2f) -> f32 {
 }
 
 @fragment
-fn voronoi_main(input: Interpolated) -> @location(0) vec4f {
+fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let a = vec2f(0.25, 0.25);
     let b = vec2f(0.25, 0.75);
 
