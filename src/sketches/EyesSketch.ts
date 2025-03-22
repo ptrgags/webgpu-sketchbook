@@ -30,11 +30,10 @@ export class EyesSketch implements QuadMachineSketch {
     const [arrows_x, arrows_y] = input.keyboard.arrow_axes
     const [wasd_x, wasd_y] = input.keyboard.wasd_axes
 
-    // TODO: also include keyboard arrows and WASD
     this.x_axis = new AnalogCascade([ls_x, dpad_x, arrows_x, wasd_x])
     this.y_axis = new AnalogCascade([ls_y, dpad_y, arrows_y, wasd_y])
 
-    // TODO: also include keyboard Z using DigitalCascade
+    // add an action button to control blinking the eye
     const a_button = input.gamepad.digital_button(GamepadButtons.A)
     const z_key = input.keyboard.digital_key('KeyZ')
     const c_pitch = input.midi.pitch_signal(PitchClass.C)
@@ -58,33 +57,4 @@ export class EyesSketch implements QuadMachineSketch {
     this.x_axis.update(time)
     this.y_axis.update(time)
   }
-
-  // Input precedence:
-  //
-  // Gamepad > Keyboard
-  // Gamepad: JoystickDpad > DPad
-  // Keyboard: Arrows > WASD
-  //
-  // AButton: A on Gamepad, Z on keyboard
-
-  // Inputs used:
-  // DPad
-  // AButton
-
-  // on update:
-  //
-  // down(DPad):
-  //    position += speed * direction(DPad) * dt
-  //    position = clamp(position, -1, 1)
-
-  // on uniform update:
-  // blink: f32 = LinearADSR(AButton, attack: A, decay: 0, sustain: 1, release: release_time, t) // trapezoid envelope
-  // flags: u32
-  //    0-3: down(DPad)
-
-  // Shader:
-  // - basic quad shader pipeline with centered UVs
-  // - compute min distance to 4 neighbors and make voronoi diagram
-  // - also compute distance to player
-  // - if player distance is smaller, change to color based on any(flags[0:3])
 }
