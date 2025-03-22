@@ -10,6 +10,18 @@ import PageLink from '@/components/PageLink.vue'
                 <img
                     src="@/assets/thumbnails/sun-and-moon.png"
                     alt=""
+                />
+            </template>
+            <template #link>
+                <RouterLink to="/raymarch">Sphere Tracer</RouterLink>
+            </template>
+            <template #description>Blah blah blah</template>
+        </PageLink>
+        <PageLink>
+            <template #thumbnail>
+                <img
+                    src="@/assets/thumbnails/sun-and-moon.png"
+                    alt=""
                     width="250"
                     height="350"
                 />
@@ -31,19 +43,7 @@ import PageLink from '@/components/PageLink.vue'
                 <RouterLink to="/eyes">Eyes</RouterLink> (2025)
             </template>
         </PageLink>
-        <PageLink>
-            <template #thumbnail>
-                <!--
-                <img
-                    src="@/assets/thumbnails/sun-and-moon.png"
-                    alt=""
-                />-->
-            </template>
-            <template #link>
-                <RouterLink to="/raymarch">Raymarch</RouterLink>
-            </template>
-            <template #description>Blah blah blah</template>
-        </PageLink>
+        
     </div>
 </template>
 

@@ -115,7 +115,7 @@ fn toon_shading(light: vec3f, normal: vec3f) -> f32 {
 }
 
 @fragment
-fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
+fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     const EYE: vec3f = vec3f(0.0, 0.0, 1.0);
 
     let pixel = vec3f(input.uv, 0.0);
@@ -124,7 +124,7 @@ fn raymarch_main(input: Interpolated) -> @location(0) vec4f {
     let ray = Ray(EYE, dir);
     let result = raymarch(ray);
 
-    const LIGHT: vec3f = normalize(vec3f(0.0, 1.0, 0.5));
+    const LIGHT: vec3f = normalize(vec3f(-0.1, 1.0, 0.5));
     let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
     let diffuse_color = srgb_to_linear(vec3f(1.0, 0.5, 0.0));
 
