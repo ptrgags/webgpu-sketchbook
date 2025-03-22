@@ -27,7 +27,7 @@ const router = createRouter({
     },
     {
       path: '/raymarch',
-      component: () => import('@/views/QuadMachineView.vue'),
+      component: () => import('@/views/SphereTracerView.vue'),
       props: {
         sketch: RaymarchSketch
       }
