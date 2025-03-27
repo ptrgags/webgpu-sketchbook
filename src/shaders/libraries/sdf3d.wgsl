@@ -1,3 +1,8 @@
+// SDFs from https://iquilezles.org/articles/distfunctions/
+// 
+// However, I'm adding more notes and intermediate variables to document
+// my understanding of how this math works.
+
 // Simpler calculation for a plane in the xy-direction at the given height
 // relative to the origin
 fn sdf_ground_plane(p: vec3f, height: f32) -> f32 {
@@ -18,7 +23,7 @@ fn sdf_cylinder(p: vec3f, dimensions_cyl: vec2f) -> f32 {
     let folded = vec2f(length(p.xz), abs(p.y));
 
     // vector relative to the "corner" of the cyllinder (circumference of cap)
-    let from_corner = folded - dimensions_cyld;
+    let from_corner = folded - dimensions_cyl;
 
     // The SDF is different inside/outside, so clamp each one to 0 and
     // glue them together at the end 
