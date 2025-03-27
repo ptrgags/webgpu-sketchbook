@@ -10,6 +10,8 @@ import PageLink from '@/components/PageLink.vue'
                 <img
                     src="@/assets/thumbnails/meltaway.png"
                     alt=""
+                    width="250"
+                    height="350"
                 />
             </template>
             <template #link>
