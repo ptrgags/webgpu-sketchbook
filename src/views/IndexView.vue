@@ -8,7 +8,7 @@ import PageLink from '@/components/PageLink.vue'
         <PageLink>
             <template #thumbnail>
                 <img
-                    src="@/assets/thumbnails/sun-and-moon.png"
+                    src="@/assets/thumbnails/meltaway.png"
                     alt=""
                 />
             </template>

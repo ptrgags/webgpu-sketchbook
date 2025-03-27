@@ -17,6 +17,7 @@ fn scene(p: vec3f) -> f32 {
     // Stack a bunch of clipping planes above each other and slide them back and
     // forth across the scene. This will peel away layers one at a time.
     let t = 0.8 * u_frame.time;
+    // for the screenshot, hardcode to 7 * PI / 8
     let melt_height = 0.45 * cos(t);
 
     // Outermost layer: box
