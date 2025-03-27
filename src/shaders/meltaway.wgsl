@@ -9,49 +9,73 @@ fn sdf_subtract(a: f32, b: f32) -> f32 {
     return max(a, -b);
 }
 
-const BOX_CENTER: vec3f = vec3f(0, -0.48, 0);
+const BOX_CENTER: vec3f = vec3f(0, -0.8, 0);
 const BOX_DIMENSIONS: vec3f = vec3f(0.5);
 const CYLINDER_DIMENSIONS: vec2f = vec2(0.4);
+const CONE_DIMENSIONS: vec2f = vec2f(0.3, 0.6);
+const CONE_CENTER: vec3f = BOX_CENTER + vec3f(0, 0.3, 0);
+const SPHERE_RADIUS: f32 = 0.1;
 
+// Nest several shapes inside each other.
+// See cross section graph: https://www.desmos.com/calculator/lxwswkpqdt
 fn scene(p: vec3f) -> f32 {
-    let t = u_frame.time;
+    
 
     // ground plane at -1
-    let ground = sdf_ground_plane(p, -1);
+    let ground = sdf_ground_plane(p, BOX_CENTER.y - BOX_DIMENSIONS.y);
 
     const DOWN: vec3f = vec3f(0, -1, 0);
 
+    // Stack a bunch of planes above each other and slide them back and forth
+    // across the scene. This will peel away layers one at a time.
+    let t = 0.8 * u_frame.time;
+    let melt_height = 0.45 * cos(t);
+
     // Outermost layer: box
     let box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
-    let box_plane = sdf_plane(p - BOX_CENTER - vec3f(0, 0.6 * cos(t), 0), DOWN);
+    let box_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height, 0), DOWN);
     let melted_box = sdf_subtract(box, box_plane);
 
-    // inner layer: cylinder
+    // cylinder inside box
     let cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
-    let cylinder_plane = sdf_plane(p - BOX_CENTER - vec3f(0, 0.6 * cos(t - PI / 8), 0), DOWN);
+    let cylinder_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.1, 0), DOWN);
     let melted_cylinder = sdf_subtract(cylinder, cylinder_plane);
 
-    let plane = sdf_plane(p - vec3f(0, 0.5 * sin(t), 0), vec3f(0, -1, 0));
+    // Cone inside cylinder
+    let cone = sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS);
+    let cone_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.2, 0), DOWN);
+    let melted_cone = sdf_subtract(cone, cone_plane);
 
-    let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
-
-    let melted_sphere = sdf_subtract(sphere, plane);
+    // sphere inside cone
+    let sphere = sdf_sphere(p - BOX_CENTER, SPHERE_RADIUS);
+    let sphere_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.3, 0), DOWN);
+    let melted_sphere = sdf_subtract(sphere, sphere_plane);
 
     // combine the layers into a scene
     var result = sdf_union(ground, melted_cylinder);
     result = sdf_union(result, melted_box);
-    //result = sdf_union(result, melted_cylinder);
-    //result = sdf_union(result, melted_box);
+    result = sdf_union(result, melted_cone);
+    result = sdf_union(result, melted_sphere);
+
+    //result = cone;
     return result;
 }
 
 const MATERIAL_GROUND: u32 = 0;
 const MATERIAL_CYLINDER: u32 = 1;
 const MATERIAL_BOX: u32 = 2;
+const MATERIAL_CONE: u32 = 3;
+const MATERIAL_SPHERE: u32 = 4;
 
 // Get material id from hit position
 fn get_material(p: vec3f) -> u32 {
     // Check from inner to outer since the shapes are nested
+    if (sdf_sphere(p - BOX_CENTER, SPHERE_RADIUS) < 0.01) {
+        return MATERIAL_SPHERE;
+    }
+    if (sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS) < 0.01) {
+        return MATERIAL_CONE;
+    }
     if (sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS) <= 0.01) {
         return MATERIAL_CYLINDER;
     }
@@ -70,10 +94,12 @@ fn select_diffuse(material_id: u32) -> vec3f {
         }
         case MATERIAL_CYLINDER: {
             return vec3f(0.72844, 0.0607, 0.16138);
-
-            // Save these for later
-            // vec(0.47399, 0.09463, 0.58649, 1)
-            //vec(0.19855, 0.15859, 0.8845, 1)
+        }
+        case MATERIAL_CONE: {
+            return vec3f(0.47399, 0.09463, 0.58649);
+        }
+        case MATERIAL_SPHERE: {
+            return vec3f(0.19855, 0.15859, 0.8845);
         }
         case MATERIAL_GROUND: {
             return vec3f(0.2375, 0.15836, 0.06289);
@@ -150,7 +176,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var color = vec3f(157, 205, 224) / 255.0;
     if (result.hit) {
         let t = 0.1 * 2.0 * PI * u_frame.time;
-        let light = normalize(vec3f(cos(t), 1.0, sin(t)));
+        let light = normalize(vec3f(-1, 1.0, 1));
         let diffuse = clamp(dot(light, result.normal), 0.0, 1.0);
 
         let material_id = get_material(result.position);

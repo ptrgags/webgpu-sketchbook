@@ -51,3 +51,38 @@ fn sdf_cylinder(p: vec3f, dimensions_cyl: vec2f) -> f32 {
     return inner + outer;
 }
 
+/**
+ * Cone with _vertex_ at the origin.
+ *
+ * dimensions_cyl is the (radius, height) of the bounding cylinder. The cone
+ * opens downwards unless height is negative
+ */
+fn sdf_cone(p: vec3f, dimensions_cyl: vec2f) -> f32 {
+    let bottom_corner = vec2f(dimensions_cyl.x, -dimensions_cyl.y);
+    let cylindrical = vec2f(length(p.xz), p.y);
+
+    // Project onto the sloped side of the cone, but clamp to have length in [0, 1]
+    let projected_side = bottom_corner * clamp(dot(cylindrical, bottom_corner)/dot(bottom_corner, bottom_corner), 0.0, 1.0); 
+    let from_side = cylindrical - projected_side;
+
+    // Similar but for the bottom of the cone
+    let projected_bottom = bottom_corner * vec2(clamp(cylindrical.x / bottom_corner.x, 0, 1), 1.0);
+    let from_bottom = cylindrical - projected_bottom;
+
+    let unsigned_dist = sqrt(min(dot(from_side, from_side), dot(from_bottom, from_bottom)));
+
+    // Usually -1 unless the dimensions for some reason were negative;
+    let open_direction = sign(bottom_corner.y);
+
+    // Determine if the point is inside or outside the cone by using a wedge
+    // product of the point and each edge.
+    //
+    // Magnitude of (cylindrical wedge bottom_corner)
+    let inside_side = open_direction * (cylindrical.x * bottom_corner.y - cylindrical.y * bottom_corner.x);
+    // axis-aligned so we can just use subtraction
+    let inside_bottom = open_direction * (cylindrical.y - bottom_corner.y);
+    let leading_sign = sign(max(inside_side, inside_bottom));
+
+    return leading_sign * unsigned_dist;
+
+}
