@@ -8,6 +8,19 @@ import PageLink from '@/components/PageLink.vue'
         <PageLink>
             <template #thumbnail>
                 <img
+                    src="@/assets/thumbnails/meltaway.png"
+                    alt=""
+                    width="250"
+                    height="350"
+                />
+            </template>
+            <template #link>
+                <RouterLink to="/meltaway">Meltaway</RouterLink> (2025)
+            </template>
+        </PageLink>
+        <PageLink>
+            <template #thumbnail>
+                <img
                     src="@/assets/thumbnails/sun-and-moon.png"
                     alt=""
                     width="250"
@@ -31,6 +44,7 @@ import PageLink from '@/components/PageLink.vue'
                 <RouterLink to="/eyes">Eyes</RouterLink> (2025)
             </template>
         </PageLink>
+        
     </div>
 </template>
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { QuadMachine, type QuadMachineSketch } from '@/machines/QuadMachine'
+import { type SphereTracerSketch, SphereTracerMachine} from "@/machines/SphereTracerMachine"
 import { Engine } from '@/webgpu/Engine'
 import { download_screenshot } from '@/webgpu/screenshot'
 import { onMounted } from 'vue'
 
 interface SketchConstructor {
-  new(): QuadMachineSketch
+  new(): SphereTracerSketch
 }
 
 const props = defineProps<{
@@ -13,7 +13,7 @@ const props = defineProps<{
 }>()
 
 const sketch = new props.sketch();
-const machine = new QuadMachine(sketch)
+const machine = new SphereTracerMachine(sketch)
 const renderer = new Engine(machine)
 
 function screenshot() {
