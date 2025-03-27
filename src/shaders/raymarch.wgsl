@@ -1,4 +1,4 @@
-
+const PI: f32 = 3.1415926;
 
 fn sdf_union(a: f32, b: f32) -> f32 {
     return min(a, b);
@@ -70,19 +70,19 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let ray = Ray(EYE, dir);
     let result = raymarch(ray);
 
-    const LIGHT: vec3f = normalize(vec3f(-0.2, 0.2, 0.2));
-    let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
+
+    let t = 0.1 * 2.0 * PI * u_frame.time;
+    let light = normalize(vec3f(cos(t), 1.0, sin(t)));
+    let diffuse = clamp(dot(light, result.normal), 0.0, 1.0);
     let diffuse_color = srgb_to_linear(vec3f(1.0, 0.5, 0.0));
 
-    let shadow_ray = Ray(result.hit_position + 0.01 * result.normal, LIGHT);
+    let shadow_ray = Ray(result.hit_position + 0.01 * result.normal, light);
     let shadow = raymarch_shadow(shadow_ray);
 
-    let toon = toon_values(result.normal, LIGHT, 0.01);
-
-    let t = fract(0.5 * u_frame.time);
-    let comparison = mix(toon, diffuse, t);
+    let toon = toon_values(result.normal, light, 0.005);
 
     let diff = abs(toon - diffuse);
+
 
     let color = shadow * diffuse_color * toon;
 
