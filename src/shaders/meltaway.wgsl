@@ -9,24 +9,79 @@ fn sdf_subtract(a: f32, b: f32) -> f32 {
     return max(a, -b);
 }
 
+const BOX_CENTER: vec3f = vec3f(0, -0.48, 0);
+const BOX_DIMENSIONS: vec3f = vec3f(0.5);
+const CYLINDER_DIMENSIONS: vec2f = vec2(0.4);
+
 fn scene(p: vec3f) -> f32 {
     let t = u_frame.time;
+
+    // ground plane at -1
+    let ground = sdf_ground_plane(p, -1);
+
+    const DOWN: vec3f = vec3f(0, -1, 0);
+
+    // Outermost layer: box
+    let box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
+    let box_plane = sdf_plane(p - BOX_CENTER - vec3f(0, 0.6 * cos(t), 0), DOWN);
+    let melted_box = sdf_subtract(box, box_plane);
+
+    // inner layer: cylinder
+    let cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
+    let cylinder_plane = sdf_plane(p - BOX_CENTER - vec3f(0, 0.6 * cos(t - PI / 8), 0), DOWN);
+    let melted_cylinder = sdf_subtract(cylinder, cylinder_plane);
+
     let plane = sdf_plane(p - vec3f(0, 0.5 * sin(t), 0), vec3f(0, -1, 0));
 
-    let ground = sdf_ground_plane(p, -0.51);
     let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
-    let cylinder = sdf_cylinder(p - vec3f(1.0, 0.0, -0.5), vec2(0.25, 0.5));
-    let box = sdf_box(p - vec3f(-1, 0.0, -0.2), vec3f(0.2, 0.5, 0.2));
 
     let melted_sphere = sdf_subtract(sphere, plane);
-    let melted_cylinder = sdf_subtract(cylinder, plane);
-    let melted_box = sdf_subtract(box, plane);
 
     // combine the layers into a scene
-    var result = sdf_union(melted_sphere, ground);
-    result = sdf_union(result, melted_cylinder);
+    var result = sdf_union(ground, melted_cylinder);
     result = sdf_union(result, melted_box);
+    //result = sdf_union(result, melted_cylinder);
+    //result = sdf_union(result, melted_box);
     return result;
+}
+
+const MATERIAL_GROUND: u32 = 0;
+const MATERIAL_CYLINDER: u32 = 1;
+const MATERIAL_BOX: u32 = 2;
+
+// Get material id from hit position
+fn get_material(p: vec3f) -> u32 {
+    // Check from inner to outer since the shapes are nested
+    if (sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS) <= 0.01) {
+        return MATERIAL_CYLINDER;
+    }
+    if (sdf_box(p - BOX_CENTER, BOX_DIMENSIONS) <= 0.01) {
+        return MATERIAL_BOX;
+    }
+
+    return MATERIAL_GROUND;
+}
+
+// returns a linear color
+fn select_diffuse(material_id: u32) -> vec3f {
+    switch material_id {
+        case MATERIAL_BOX: {
+            return vec3f(0.73459, 0.08124, 0.00322);
+        }
+        case MATERIAL_CYLINDER: {
+            return vec3f(0.72844, 0.0607, 0.16138);
+
+            // Save these for later
+            // vec(0.47399, 0.09463, 0.58649, 1)
+            //vec(0.19855, 0.15859, 0.8845, 1)
+        }
+        case MATERIAL_GROUND: {
+            return vec3f(0.2375, 0.15836, 0.06289);
+        }
+        default: {
+            return vec3f(1, 0, 1);
+        }
+    }
 }
 
 /**
@@ -91,21 +146,25 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let ray = Ray(eye, dir);
     let result = raymarch(ray);
 
+    // Sky
+    var color = vec3f(157, 205, 224) / 255.0;
+    if (result.hit) {
+        let t = 0.1 * 2.0 * PI * u_frame.time;
+        let light = normalize(vec3f(cos(t), 1.0, sin(t)));
+        let diffuse = clamp(dot(light, result.normal), 0.0, 1.0);
 
-    let t = 0.1 * 2.0 * PI * u_frame.time;
-    let light = normalize(vec3f(cos(t), 1.0, sin(t)));
-    let diffuse = clamp(dot(light, result.normal), 0.0, 1.0);
-    let diffuse_color = srgb_to_linear(vec3f(1.0, 0.5, 0.0));
+        let material_id = get_material(result.position);
+        let diffuse_color = select_diffuse(material_id); 
 
-    let shadow_ray = Ray(result.hit_position + 0.01 * result.normal, light);
-    let shadow = raymarch_shadow(shadow_ray);
+        let shadow_ray = Ray(result.position + 0.01 * result.normal, light);
+        let shadow = raymarch_shadow(shadow_ray);
 
-    let toon = toon_values(result.normal, light, 0.005);
+        let toon = toon_values(result.normal, light, 0.005);
 
-    let diff = abs(toon - diffuse);
+        color = shadow * diffuse_color * diffuse;
+        color = linear_to_srgb(color); 
+    }
 
 
-    let color = shadow * diffuse_color * diffuse; // toon;
-
-    return vec4f(linear_to_srgb(color), 1.0);
+    return vec4f(color, 1.0);
 }

@@ -4,9 +4,14 @@ struct Ray {
 }
 
 struct RaymarchResult {
-    iteration_scale: f32,
-    hit_position: vec3f,
+    // Position on the surface (or back plane) 
+    position: vec3f,
+    // Distance along the ray
+    dist: f32,
+    // Normal. Only valid if the ray hit something
     normal: vec3f,
+    // True if we hit something, false if the ray escaped
+    hit: bool
 }
 
 fn compute_normal(position: vec3f) -> vec3f {
@@ -22,14 +27,14 @@ fn compute_normal(position: vec3f) -> vec3f {
 }
 
 fn raymarch(ray: Ray) -> RaymarchResult {
-    const MAX_ITERATIONS: u32 = 100;
+    const MAX_ITERATIONS: u32 = 200;
     const MIN_DIST: f32 = 0.001;
     const MAX_DIST: f32 = 100.0;
     var t = 0.0;
     var position = ray.start;
 
     for (var i = 0u; i < MAX_ITERATIONS; i++) {
-        // We shot into space
+        // Looks like Team Rocket's blasting off agaaaaain! ✨
         if (t > MAX_DIST) {
             break;
         }
@@ -37,7 +42,7 @@ fn raymarch(ray: Ray) -> RaymarchResult {
         let dist = scene(position);
 
         if (dist < MIN_DIST) {
-            return RaymarchResult(f32(i) / f32(MAX_ITERATIONS), position, compute_normal(position));
+            return RaymarchResult(position, t, compute_normal(position), true);
         }
 
         // We're clear to move the given distance to get closer to the surface
@@ -46,7 +51,7 @@ fn raymarch(ray: Ray) -> RaymarchResult {
     }
 
     // We didn't hit anything
-    return RaymarchResult(1.0, position, vec3f(0.0, 0.0, -1.0));
+    return RaymarchResult(position, MAX_DIST, vec3f(0.0, 0.0, -1.0), false);
 }
 
 fn raymarch_shadow(ray: Ray) -> f32 {
