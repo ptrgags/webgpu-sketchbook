@@ -4,15 +4,28 @@ fn sdf_union(a: f32, b: f32) -> f32 {
     return min(a, b);
 }
 
+fn sdf_subtract(a: f32, b: f32) -> f32 {
+    // A - B = A intersect complement(B)
+    return max(a, -b);
+}
+
 fn scene(p: vec3f) -> f32 {
-    let ground = sdf_ground_plane(p, -0.5);
+    let t = u_frame.time;
+    let plane = sdf_plane(p - vec3f(0, 0.5 * sin(t), 0), vec3f(0, -1, 0));
+
+    let ground = sdf_ground_plane(p, -0.51);
     let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
     let cylinder = sdf_cylinder(p - vec3f(1.0, 0.0, -0.5), vec2(0.25, 0.5));
     let box = sdf_box(p - vec3f(-1, 0.0, -0.2), vec3f(0.2, 0.5, 0.2));
 
-    var result = sdf_union(sphere, ground);
-    result = sdf_union(result, cylinder);
-    result = sdf_union(result, box);
+    let melted_sphere = sdf_subtract(sphere, plane);
+    let melted_cylinder = sdf_subtract(cylinder, plane);
+    let melted_box = sdf_subtract(box, plane);
+
+    // combine the layers into a scene
+    var result = sdf_union(melted_sphere, ground);
+    result = sdf_union(result, melted_cylinder);
+    result = sdf_union(result, melted_box);
     return result;
 }
 
@@ -92,7 +105,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let diff = abs(toon - diffuse);
 
 
-    let color = shadow * diffuse_color * toon;
+    let color = shadow * diffuse_color * diffuse; // toon;
 
     return vec4f(linear_to_srgb(color), 1.0);
 }
