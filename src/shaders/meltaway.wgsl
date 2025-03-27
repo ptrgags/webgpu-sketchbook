@@ -25,21 +25,21 @@ fn scene(p: vec3f) -> f32 {
 
     const DOWN: vec3f = vec3f(0.0, -1, 0);
 
-    // Stack a bunch of planes above each other and slide them back and forth
-    // across the scene. This will peel away layers one at a time.
+    // Stack a bunch of clipping planes above each other and slide them back and
+    // forth across the scene. This will peel away layers one at a time.
     let t = 0.8 * u_frame.time;
     let melt_height = 0.45 * cos(t);
 
     // Outermost layer: box
-    var box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
+    let box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
     let box_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height, 0), DOWN);
     
     // cylinder inside box
-    var cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
+    let cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
     let cylinder_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.1, 0), DOWN);
     
     // Cone inside cylinder
-    var cone = sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS);
+    let cone = sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS);
     let cone_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.2, 0), DOWN);
     
     // sphere inside cone
@@ -49,14 +49,14 @@ fn scene(p: vec3f) -> f32 {
     // Cut a tiny bit of the inner shapes from the outer
     // shapes to prevent the colors from bleeding
     const CLEARANCE: f32 = 0.01;
-    box = sdf_subtract(box, cylinder - CLEARANCE);
-    cylinder = sdf_subtract(cylinder, cone - CLEARANCE);
-    cone = sdf_subtract(cone, sphere - CLEARANCE);
+    let fixed_box = sdf_subtract(box, cylinder - CLEARANCE);
+    let fixed_cylinder = sdf_subtract(cylinder, cone - CLEARANCE);
+    let fixed_cone = sdf_subtract(cone, sphere - CLEARANCE);
 
-
-    let melted_box = sdf_subtract(box, box_plane);
-    let melted_cylinder = sdf_subtract(cylinder, cylinder_plane);
-    let melted_cone = sdf_subtract(cone, cone_plane);
+    // Apply the clipping planes
+    let melted_box = sdf_subtract(fixed_box, box_plane);
+    let melted_cylinder = sdf_subtract(fixed_cylinder, cylinder_plane);
+    let melted_cone = sdf_subtract(fixed_cone, cone_plane);
     let melted_sphere = sdf_subtract(sphere, sphere_plane);
 
     // combine the layers into a scene
@@ -77,17 +77,19 @@ const MATERIAL_SPHERE: u32 = 4;
 
 // Get material id from hit position
 fn get_material(p: vec3f) -> u32 {
+    const EPSILON: f32 = 0.01;
+
     // Check from inner to outer since the shapes are nested
-    if (sdf_sphere(p - BOX_CENTER, SPHERE_RADIUS) < 0.01) {
+    if (sdf_sphere(p - BOX_CENTER, SPHERE_RADIUS) < EPSILON) {
         return MATERIAL_SPHERE;
     }
-    if (sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS) < 0.01) {
+    if (sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS) < EPSILON) {
         return MATERIAL_CONE;
     }
-    if (sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS) <= 0.01) {
+    if (sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS) < EPSILON) {
         return MATERIAL_CYLINDER;
     }
-    if (sdf_box(p - BOX_CENTER, BOX_DIMENSIONS) <= 0.01) {
+    if (sdf_box(p - BOX_CENTER, BOX_DIMENSIONS) < EPSILON) {
         return MATERIAL_BOX;
     }
 
@@ -166,8 +168,11 @@ fn toon_values(light: vec3f, normal: vec3f, blend_radius: f32) -> f32 {
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let angle = get_analog(0);
 
-    let s = sin(angle);
-    let c = cos(angle);
+    // Add a slight offset to the angle so we're looking
+    // at the cube at a slight angle by default
+    const OFFSET = PI / 8;
+    let s = sin(angle - OFFSET);
+    let c = cos(angle - OFFSET);
     let eye = 3.0 * vec3f(s, 0.0, c);
 
     let forward = vec3f(-s, 0, -c);
@@ -183,19 +188,17 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     // Sky
     var color = vec3f(157, 205, 224) / 255.0;
     if (result.hit) {
-        let t = 0.1 * 2.0 * PI * u_frame.time;
         let light = normalize(vec3f(-1, 1.0, 1));
-        let diffuse = clamp(dot(light, result.normal), 0.0, 1.0);
-
         let material_id = get_material(result.position);
         let diffuse_color = select_diffuse(material_id); 
 
         let shadow_ray = Ray(result.position + 0.01 * result.normal, light);
+        // For shadows, just darken things a bit
         let shadow = 0.5 + 0.5 * raymarch_shadow(shadow_ray);
 
-        let toon = toon_values(result.normal, light, 0.005);
+        let toon = toon_values(result.normal, light, 0.001);
 
-        color = shadow * diffuse_color * diffuse;
+        color = shadow * diffuse_color * toon;
         color = linear_to_srgb(color); 
     }
 
