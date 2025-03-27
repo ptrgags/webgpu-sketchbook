@@ -100,18 +100,23 @@ fn get_material(p: vec3f) -> u32 {
 fn select_diffuse(material_id: u32) -> vec3f {
     switch material_id {
         case MATERIAL_BOX: {
+            // orange
             return vec3f(0.73459, 0.08124, 0.00322);
         }
         case MATERIAL_CYLINDER: {
+            // pink
             return vec3f(0.72844, 0.0607, 0.16138);
         }
         case MATERIAL_CONE: {
+            // purple
             return vec3f(0.47399, 0.09463, 0.58649);
         }
         case MATERIAL_SPHERE: {
+            // blue
             return vec3f(0.19855, 0.15859, 0.8845);
         }
         case MATERIAL_GROUND: {
+            // dark tan
             return vec3f(0.2375, 0.15836, 0.06289);
         }
         default: {
