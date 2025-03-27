@@ -1,3 +1,16 @@
+const CONTEXT_RADIUS = 5
+
+function get_context(code: string, line_num: number): string {
+  const lines = code.split('\n')
+
+  const start_index = Math.max(line_num - CONTEXT_RADIUS, 0)
+  const context_lines = lines.slice(start_index, start_index + 2 * CONTEXT_RADIUS)
+
+  // Note: WGSL line numbers are 1-based so we subtract one
+  const labeled = context_lines.map((x, i) => `${start_index + i - 1}: ${x}`)
+  return labeled.join('\n')
+}
+
 export async function compile_shader(
   device: GPUDevice,
   source_promises: Promise<String>[]
@@ -15,7 +28,8 @@ export async function compile_shader(
       had_error ||= msg.type === 'error'
 
       if (had_error) {
-        throw new Error(`Shader failed to compile!\n${code}`)
+        const context = get_context(code, msg.lineNum)
+        throw new Error(`Shader failed to compile!\n${context}`)
       }
     }
   }
