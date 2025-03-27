@@ -15,7 +15,7 @@ import PageLink from '@/components/PageLink.vue'
                 />
             </template>
             <template #link>
-                <RouterLink to="/meltaway">Meltaway</RouterLink>
+                <RouterLink to="/meltaway">Meltaway</RouterLink> (2025)
             </template>
         </PageLink>
         <PageLink>
