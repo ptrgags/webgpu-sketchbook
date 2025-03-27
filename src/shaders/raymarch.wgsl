@@ -8,9 +8,11 @@ fn scene(p: vec3f) -> f32 {
     let ground = sdf_ground_plane(p, -0.5);
     let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
     let cylinder = sdf_cylinder(p - vec3f(1.0, 0.0, -0.5), vec2(0.25, 0.5));
+    let box = sdf_box(p - vec3f(-0.5, 0.0, -0.2), vec3f(0.2, 0.5, 0.2));
 
     var result = sdf_union(sphere, ground);
     result = sdf_union(result, cylinder);
+    result = sdf_union(result, box);
     return result;
 }
 
@@ -68,7 +70,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let ray = Ray(EYE, dir);
     let result = raymarch(ray);
 
-    const LIGHT: vec3f = normalize(vec3f(-0.2, 0.2, 0.0));
+    const LIGHT: vec3f = normalize(vec3f(-0.2, 0.2, 0.2));
     let diffuse = clamp(dot(LIGHT, result.normal), 0.0, 1.0);
     let diffuse_color = srgb_to_linear(vec3f(1.0, 0.5, 0.0));
 
