@@ -19,12 +19,11 @@ const SPHERE_RADIUS: f32 = 0.1;
 // Nest several shapes inside each other.
 // See cross section graph: https://www.desmos.com/calculator/lxwswkpqdt
 fn scene(p: vec3f) -> f32 {
-    
 
     // ground plane at -1
-    let ground = sdf_ground_plane(p, BOX_CENTER.y - BOX_DIMENSIONS.y);
+    let ground = sdf_ground_plane(p, BOX_CENTER.y - BOX_DIMENSIONS.y - 0.1);
 
-    const DOWN: vec3f = vec3f(0, -1, 0);
+    const DOWN: vec3f = vec3f(0.0, -1, 0);
 
     // Stack a bunch of planes above each other and slide them back and forth
     // across the scene. This will peel away layers one at a time.
@@ -32,23 +31,32 @@ fn scene(p: vec3f) -> f32 {
     let melt_height = 0.45 * cos(t);
 
     // Outermost layer: box
-    let box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
+    var box = sdf_box(p - BOX_CENTER, BOX_DIMENSIONS);
     let box_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height, 0), DOWN);
-    let melted_box = sdf_subtract(box, box_plane);
-
+    
     // cylinder inside box
-    let cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
+    var cylinder = sdf_cylinder(p - BOX_CENTER, CYLINDER_DIMENSIONS);
     let cylinder_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.1, 0), DOWN);
-    let melted_cylinder = sdf_subtract(cylinder, cylinder_plane);
-
+    
     // Cone inside cylinder
-    let cone = sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS);
+    var cone = sdf_cone(p - CONE_CENTER, CONE_DIMENSIONS);
     let cone_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.2, 0), DOWN);
-    let melted_cone = sdf_subtract(cone, cone_plane);
-
+    
     // sphere inside cone
     let sphere = sdf_sphere(p - BOX_CENTER, SPHERE_RADIUS);
     let sphere_plane = sdf_plane(p - BOX_CENTER - vec3f(0, melt_height + 0.3, 0), DOWN);
+
+    // Cut a tiny bit of the inner shapes from the outer
+    // shapes to prevent the colors from bleeding
+    const CLEARANCE: f32 = 0.01;
+    box = sdf_subtract(box, cylinder - CLEARANCE);
+    cylinder = sdf_subtract(cylinder, cone - CLEARANCE);
+    cone = sdf_subtract(cone, sphere - CLEARANCE);
+
+
+    let melted_box = sdf_subtract(box, box_plane);
+    let melted_cylinder = sdf_subtract(cylinder, cylinder_plane);
+    let melted_cone = sdf_subtract(cone, cone_plane);
     let melted_sphere = sdf_subtract(sphere, sphere_plane);
 
     // combine the layers into a scene
@@ -183,7 +191,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
         let diffuse_color = select_diffuse(material_id); 
 
         let shadow_ray = Ray(result.position + 0.01 * result.normal, light);
-        let shadow = raymarch_shadow(shadow_ray);
+        let shadow = 0.5 + 0.5 * raymarch_shadow(shadow_ray);
 
         let toon = toon_values(result.normal, light, 0.005);
 
