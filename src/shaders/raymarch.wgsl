@@ -8,7 +8,7 @@ fn scene(p: vec3f) -> f32 {
     let ground = sdf_ground_plane(p, -0.5);
     let sphere = sdf_sphere(p - vec3f(0.0, 0.0, -0.1), 0.5);
     let cylinder = sdf_cylinder(p - vec3f(1.0, 0.0, -0.5), vec2(0.25, 0.5));
-    let box = sdf_box(p - vec3f(-0.5, 0.0, -0.2), vec3f(0.2, 0.5, 0.2));
+    let box = sdf_box(p - vec3f(-1, 0.0, -0.2), vec3f(0.2, 0.5, 0.2));
 
     var result = sdf_union(sphere, ground);
     result = sdf_union(result, cylinder);
@@ -62,12 +62,20 @@ fn toon_values(light: vec3f, normal: vec3f, blend_radius: f32) -> f32 {
 
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
-    const EYE: vec3f = vec3f(0.0, 0.0, 1.0);
+    let angle = get_analog(0);
 
-    let pixel = vec3f(input.uv, 0.0);
-    let dir = normalize(pixel - EYE);
+    let s = sin(angle);
+    let c = cos(angle);
+    let eye = 3.0 * vec3f(s, 0.0, c);
 
-    let ray = Ray(EYE, dir);
+    let forward = vec3f(-s, 0, -c);
+    let right = vec3f(c, 0, -s);
+    let up = vec3f(0, 1, 0);
+
+    let pixel = input.uv.x * right + input.uv.y * up + 0.1 * forward;
+    let dir = normalize(pixel - eye);
+
+    let ray = Ray(eye, dir);
     let result = raymarch(ray);
 
 

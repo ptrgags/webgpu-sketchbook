@@ -7,6 +7,10 @@ import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer'
 import { NUM_VERTICES, QUAD_POSITIONS, UVS_CENTERED } from './QuadMachine'
 import { compile_shader } from '@/webgpu/compile_shader'
 import { fetch_text } from '@/core/fetch_text'
+import { AnalogConst } from '@/input/const_signal'
+import { ObserverSignal, type AnalogSignal } from '@/input/Signal'
+
+const ANGLE_SPEED = Math.PI / 48.0
 
 export interface SphereTracerSketch {
   imports?: LazyShader[]
@@ -21,6 +25,9 @@ export class SphereTracerMachine implements Machine {
   private sketch: SphereTracerSketch
   private vertex_buffer: VertexBuffer
   private render_pipeline: RenderPipeline
+
+  private angle: number = 0.0
+  private x_axis: AnalogSignal = new AnalogConst(0.0)
 
   constructor(sketch: SphereTracerSketch) {
     this.sketch = sketch
@@ -77,13 +84,22 @@ export class SphereTracerMachine implements Machine {
     await this.render_pipeline.create(device, vertex_state, fragment_state, bind_group)
   }
   configure_input(input: InputSystem) {
-    // TODO: configure inputs for basic camera controls
-    return
+    const [arrows_x, _] = input.keyboard.arrow_axes
+
+    this.x_axis = arrows_x
+
+    const angle_signal = new ObserverSignal(() => {
+      return this.angle
+    })
+
+    input.configure_uniforms({
+      analog: [angle_signal]
+    })
   }
 
   update(time: number): void {
-    // TODO: update the inputs as needed
-    return
+    this.x_axis.update(time)
+    this.angle += ANGLE_SPEED * this.x_axis.value
   }
 
   configure_passes(
