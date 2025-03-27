@@ -1,14 +1,3 @@
-const PI: f32 = 3.1415926;
-
-fn sdf_union(a: f32, b: f32) -> f32 {
-    return min(a, b);
-}
-
-fn sdf_subtract(a: f32, b: f32) -> f32 {
-    // A - B = A intersect complement(B)
-    return max(a, -b);
-}
-
 const BOX_CENTER: vec3f = vec3f(0, -0.8, 0);
 const BOX_DIMENSIONS: vec3f = vec3f(0.5);
 const CYLINDER_DIMENSIONS: vec2f = vec2(0.4);

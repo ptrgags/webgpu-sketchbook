@@ -1,5 +1,3 @@
-const PI: f32 = 3.1415926;
-
 fn sdf_circle(p: vec2f, radius: f32) -> f32 {
     let dist = length(p);
     return dist - radius;
