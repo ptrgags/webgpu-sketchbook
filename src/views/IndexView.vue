@@ -13,9 +13,8 @@ import PageLink from '@/components/PageLink.vue'
                 />
             </template>
             <template #link>
-                <RouterLink to="/raymarch">Sphere Tracer</RouterLink>
+                <RouterLink to="/meltaway">Meltaway</RouterLink>
             </template>
-            <template #description>Blah blah blah</template>
         </PageLink>
         <PageLink>
             <template #thumbnail>

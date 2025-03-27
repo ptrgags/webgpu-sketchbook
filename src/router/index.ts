@@ -26,7 +26,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/raymarch',
+      path: '/meltaway',
       component: () => import('@/views/SphereTracerView.vue'),
       props: {
         sketch: RaymarchSketch

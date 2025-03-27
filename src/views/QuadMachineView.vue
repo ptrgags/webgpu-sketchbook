@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { QuadMachine } from '@/machines/QuadMachine'
+import { QuadMachine, type QuadMachineSketch } from '@/machines/QuadMachine'
 import { Engine } from '@/webgpu/Engine'
 import { download_screenshot } from '@/webgpu/screenshot'
 import { onMounted } from 'vue'
