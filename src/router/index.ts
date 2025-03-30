@@ -1,8 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
-//import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
-//import { EyesSketch } from '@/sketches/EyesSketch'
-//import { MeltawaySketch } from '@/sketches/MeltawaySketch'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { find_sketch } from '@/data/sketches'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -13,24 +12,19 @@ const router = createRouter({
     },
     {
       path: '/sketch/:sketch_id',
-      component: () => import('@/views/SketchView.vue')
-    }
-    /*
-    {
-      path: '/eyes',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: EyesSketch
+      component: () => import('@/views/SketchView.vue'),
+      beforeEnter: (to) => {
+        const sketch_id = to.params.sketch_id
+        const id = Array.isArray(sketch_id) ? sketch_id[0] : sketch_id
+        if (!find_sketch(id)) {
+          return { path: '/404' }
+        }
       }
     },
     {
-      path: '/meltaway',
-      component: () => import('@/views/SphereTracerView.vue'),
-      props: {
-        sketch: MeltawaySketch
-      }
+      path: '/404',
+      component: NotFoundView
     }
-      */
   ]
 })
 

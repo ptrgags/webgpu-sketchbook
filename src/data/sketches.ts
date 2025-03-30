@@ -24,7 +24,7 @@ export const SKETCHES: SketchMetadata[] = [
     type: 'sphere-tracer',
     make_machine: () => new SphereTracerMachine(new MeltawaySketch()),
     description: `
-    <p>
+    <p> lorem ipsum alakazam
     </p>
     `
   },
@@ -51,3 +51,7 @@ export const SKETCHES: SketchMetadata[] = [
     `
   }
 ]
+
+export function find_sketch(id: string): SketchMetadata | undefined {
+  return SKETCHES.find((x) => x.id === id)
+}
