@@ -1,7 +1,26 @@
+<script setup lang="ts">
+import {computed} from 'vue'
+import {type SketchMetadata} from '@/data/sketches';
+const props = defineProps<{
+  sketch: SketchMetadata
+}>()
+
+const base_url = import.meta.env.BASE_URL
+
+const img_url = computed(() => {
+  return `${base_url}/src/assets/thumbnails/${props.sketch.id}.png`
+})
+
+const page_url = computed(() => {
+  return `/${props.sketch.id}`
+})
+
+</script>
+
 <template>
     <div class="link">
-        <slot name="thumbnail"></slot>
-        <slot name="link"></slot>
+      <img :src="img_url" alt="" width="250" height="350" />
+      <RouterLink :to="page_url">{{ props.sketch.title }}</RouterLink> ({{ props.sketch.years }})
     </div>
 </template>
 
