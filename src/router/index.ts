@@ -1,8 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
-import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
-import { EyesSketch } from '@/sketches/EyesSketch'
-import { MeltawaySketch } from '@/sketches/MeltawaySketch'
+//import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
+//import { EyesSketch } from '@/sketches/EyesSketch'
+//import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -12,12 +12,10 @@ const router = createRouter({
       component: IndexView
     },
     {
-      path: '/sun-and-moon',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: SunAndMoonSketch
-      }
-    },
+      path: '/sketch/:sketch_id',
+      component: () => import('@/views/SketchView.vue')
+    }
+    /*
     {
       path: '/eyes',
       component: () => import('@/views/QuadMachineView.vue'),
@@ -32,6 +30,7 @@ const router = createRouter({
         sketch: MeltawaySketch
       }
     }
+      */
   ]
 })
 

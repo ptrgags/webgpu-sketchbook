@@ -12,7 +12,7 @@ const img_url = computed(() => {
 })
 
 const page_url = computed(() => {
-  return `/${props.sketch.id}`
+  return `/sketch/${props.sketch.id}`
 })
 
 </script>
