@@ -2,6 +2,7 @@ import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
 import { EyesSketch } from '@/sketches/EyesSketch'
 import { MeltawaySketch } from '@/sketches/MeltawaySketch'
+import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 
@@ -17,6 +18,14 @@ export interface SketchMetadata {
 }
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'stripey-ring',
+    title: 'Stripey Ring',
+    years: '2025',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new StripeyRingSketch()),
+    description: `<p>lorem ipsum</p>`
+  },
   {
     id: 'meltaway',
     title: 'Meltaway',

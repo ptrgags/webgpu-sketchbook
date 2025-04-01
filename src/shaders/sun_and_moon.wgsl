@@ -1,8 +1,3 @@
-fn sdf_circle(p: vec2f, radius: f32) -> f32 {
-    let dist = length(p);
-    return dist - radius;
-}
-
 fn sdf_subtract(dist_a: f32, dist_b: f32) -> f32 {
     return max(dist_a, -dist_b);
 }
