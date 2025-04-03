@@ -24,7 +24,8 @@ export const SKETCHES: SketchMetadata[] = [
     type: 'sphere-tracer',
     make_machine: () => new SphereTracerMachine(new MeltawaySketch()),
     description: `
-    <p> lorem ipsum alakazam
+    <p>
+        Keyboard: Left and right arrows to rotate the camera
     </p>
     `
   },
@@ -36,7 +37,22 @@ export const SKETCHES: SketchMetadata[] = [
     make_machine: () => new QuadMachine(new SunAndMoonSketch()),
     description: `
     <p>
+        This was an experiment that generalizes
+        <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagrams</a>.
+        Usually, a voronoi diagram is a map of "which point is the nearest
+        neighbor?". This gives a cellular pattern with sharp edges halfway
+        between the seed points
     </p>
+    <p>DIAGRAM of nearest neighbors</p>
+    <p>However, in shaders, it's commmon to use 
+    <a href="https://iquilezles.org/articles/distfunctions2d/">signed distance fields (SDFs)</a>
+    to get the minimum distance to a shape. Combining the concepts, the new
+    query is "which <em>shape</em> is the nearest neighbor?" This produces some unusual shaped cells.
+    Sometimes you get straight lines, sometimes curved lines depending on which shapes are used.
+    </p>
+    <p>
+        I wanted to pick shapes that interlock somewhat, so I went with a stylistic sun and moon.
+    <p>
     `
   },
   {
@@ -45,8 +61,9 @@ export const SKETCHES: SketchMetadata[] = [
     years: '2024-2025',
     type: 'quad',
     make_machine: () => new QuadMachine(new EyesSketch()),
-    description: `
-    <p>
+    description: `<p>
+        Gamepad: Left joystick or D-pad to move the eyes, A button to blink <br/>
+        Keyboard: Arrows or WASD to move the eyes, Z key to blink
     </p>
     `
   }

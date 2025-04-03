@@ -33,7 +33,7 @@ export class KeyboardInput {
 
   get wasd_axes(): [AnalogSignal, AnalogSignal] {
     return [
-      new TwoButtonAxis(this.digital_key('KeyW'), this.digital_key('KeyD')),
+      new TwoButtonAxis(this.digital_key('KeyA'), this.digital_key('KeyD')),
       new TwoButtonAxis(this.digital_key('KeyS'), this.digital_key('KeyW'))
     ]
   }
