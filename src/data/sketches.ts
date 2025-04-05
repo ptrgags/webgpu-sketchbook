@@ -29,8 +29,19 @@ export const SKETCHES: SketchMetadata[] = [
     </p>
     <p>
       This was a refresher on sphere tracing (also known as
-      <a href="https://iquilezles.org/articles/raymarchingdf/">ray marching</a>),
+      <a href="https://iquilezles.org/articles/raymarchingdf/">ray marching</a>).
+      Here I have several shapes nested inside each other. Each one has a separate
+      clipping plane. They descend upon the shapes one by one, peeling back one
+      layer of the shape at a time.
     </p>
+    <p>DIAGRAM of slicing the shapes</p>
+    <p>
+    I've been reading <cite>Artist's Master Series: Color and Light</cite> about
+    color theory. The section on matte (diffuse) lighting gives a rule of thumb
+    for placing colors on a sphere. This is what inspired the toon shading
+    style.
+    </p>
+    <p>DIAGRAM Hand-drawn value sketch of shapes</p>
     `
   },
   {
