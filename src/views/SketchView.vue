@@ -8,7 +8,10 @@ import ScreenshotButton from '@/components/ScreenshotButton.vue'
 const route = useRoute()
 
 const sketch_metadata = computed(() => {
-  return find_sketch(route.params.sketch_id)
+  const sketch_id = route.params.sketch_id
+  const id = Array.isArray(sketch_id) ? sketch_id[0] : sketch_id
+
+  return find_sketch(id)
 })
 
 onBeforeRouteUpdate((to) => {
@@ -22,9 +25,9 @@ onBeforeRouteUpdate((to) => {
 </script>
 
 <template>
-  <div class="vertical">
+  <div v-if="sketch_metadata" class="one-column vertical">
     <h1>{{ sketch_metadata.title }} ({{ sketch_metadata.years }})</h1>
-    <WebGPUSketch :sketch_metadata="sketch_metadata"></WebGPUSketch>
+    <WebGPUSketch  :sketch_metadata="sketch_metadata"></WebGPUSketch>
     <div class="break"></div>
     <ScreenshotButton></ScreenshotButton>
     <div class="break"></div>

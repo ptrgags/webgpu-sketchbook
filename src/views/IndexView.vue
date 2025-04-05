@@ -4,7 +4,7 @@ import {SKETCHES} from '@/data/sketches'
 </script>
 
 <template>
-    <div class="vertical linklist">
+    <div class="one-column vertical">
         <h1>WebGPU Sketchbook</h1>
         <div class="description">
         <p>
@@ -22,11 +22,6 @@ import {SKETCHES} from '@/data/sketches'
 </template>
 
 <style scoped>
-.linklist {
-  width: 100%;
-  gap: 10px;
-  align-items: center;
-}
 
 img {
   width: 250px;

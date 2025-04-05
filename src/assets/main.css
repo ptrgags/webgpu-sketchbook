@@ -78,6 +78,17 @@ details {
   margin: 0 auto;
 }
 
+.one-column {
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+}
+
+/** For adding a break between text boxes */
+.break {
+  width: 100%;
+}
+
 @media screen and (max-width: 1000px) {
   .horizontal {
     flex-direction: column;

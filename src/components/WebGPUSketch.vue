@@ -20,3 +20,12 @@ onMounted(() => {
 <template>
     <canvas id="webgpu-canvas" width="500" height="700"></canvas>
 </template>
+
+<style scoped>
+
+canvas {
+    max-width: 100vw;
+    object-fit: contain;
+}
+
+</style>
