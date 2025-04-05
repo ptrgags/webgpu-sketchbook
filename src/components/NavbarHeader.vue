@@ -5,7 +5,8 @@ import { RouterLink } from 'vue-router';
 <template>
     <header>
         <nav>
-            <RouterLink to="/">Home</RouterLink>
+            <a href="https://ptrgags.github.io">Peter Gagliardi</a>
+            &gt; <RouterLink to="/">WebGPU Sketchbook</RouterLink>
             |
             <a href="https://github.com/ptrgags/webgpu-sketchbook">GitHub</a>
         </nav>

@@ -29,11 +29,13 @@ const page_url = computed(() => {
   background-color: var(--color-background);
   padding: 10px;
   margin: 10px 0;
-  width: 50%;
+  width: 60%;
+  max-width: 600px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+  border-radius: 10px;
   gap: 10px;
 }
 
