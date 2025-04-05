@@ -1,6 +1,21 @@
 import { Vec2 } from '@/core/Vec2'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from './Signal'
 
+export function prevent_mobile_scroll(canvas: HTMLCanvasElement) {
+  const callback = (e: TouchEvent) => {
+    if (e.target === canvas) {
+      e.preventDefault()
+    }
+  }
+
+  // Since we're calling event.preventDefault(), we need to mark the event
+  // as not passive.
+  const options = { passive: false }
+  document.body.addEventListener('touchstart', callback, options)
+  document.body.addEventListener('touchend', callback, options)
+  document.body.addEventListener('touchmove', callback, options)
+}
+
 function compute_position(canvas: HTMLCanvasElement, client_x: number, client_y: number): Vec2 {
   const bounding_rect = canvas.getBoundingClientRect()
   const x = client_x - bounding_rect.left
@@ -11,6 +26,8 @@ function compute_position(canvas: HTMLCanvasElement, client_x: number, client_y:
 function clamp(x: number, a: number, b: number): number {
   return Math.min(Math.max(x, a), b)
 }
+
+const DEAD_ZONE_RADIUS = 0.1
 
 export class PointerInput {
   pressed: boolean
@@ -24,6 +41,8 @@ export class PointerInput {
   }
 
   init() {
+    prevent_mobile_scroll(this.canvas)
+
     this.canvas.addEventListener('pointerdown', (e) => {
       this.pressed = true
       this.position = compute_position(this.canvas, e.clientX, e.clientY)
@@ -51,8 +70,15 @@ export class PointerInput {
       const center_x = width / 2
       const scale = width / 2
 
-      const x = this.position.x
-      return clamp((x - center_x) / scale, -1, 1)
+      const x = (this.position.x - center_x) / scale
+
+      // Create a dead zone near the center of the screen to minimize
+      // false positives
+      if (Math.abs(x) < DEAD_ZONE_RADIUS) {
+        return 0
+      }
+
+      return clamp(x, -1, 1)
     })
 
     const y_axis = new ObserverSignal(() => {
@@ -63,10 +89,16 @@ export class PointerInput {
       // a 1:1 aspect ratio
       const scale = width / 2
 
-      const y = this.position.y
+      const y = (this.position.y - center_y) / scale
+
+      // Create a dead zone near the center of the screen to minimize
+      // false positives
+      if (Math.abs(y) < DEAD_ZONE_RADIUS) {
+        return 0
+      }
 
       // flip result so y is up
-      return -clamp((y - center_y) / scale, -1, 1)
+      return -clamp(y, -1, 1)
     })
 
     return [x_axis, y_axis]
