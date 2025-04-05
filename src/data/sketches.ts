@@ -25,7 +25,11 @@ export const SKETCHES: SketchMetadata[] = [
     make_machine: () => new SphereTracerMachine(new MeltawaySketch()),
     description: `
     <p>
-        Keyboard: Left and right arrows to rotate the camera
+        Keyboard: Left and right arrows to rotate the camera.
+    </p>
+    <p>
+      This was a refresher on sphere tracing (also known as
+      <a href="https://iquilezles.org/articles/raymarchingdf/">ray marching</a>),
     </p>
     `
   },
@@ -41,29 +45,35 @@ export const SKETCHES: SketchMetadata[] = [
         <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagrams</a>.
         Usually, a voronoi diagram is a map of "which point is the nearest
         neighbor?". This gives a cellular pattern with sharp edges halfway
-        between the seed points
+        between the seed points.
     </p>
     <p>DIAGRAM of nearest neighbors</p>
     <p>However, in shaders, it's commmon to use 
     <a href="https://iquilezles.org/articles/distfunctions2d/">signed distance fields (SDFs)</a>
     to get the minimum distance to a shape. Combining the concepts, the new
-    query is "which <em>shape</em> is the nearest neighbor?" This produces some unusual shaped cells.
-    Sometimes you get straight lines, sometimes curved lines depending on which shapes are used.
+    query is "which <em>shape</em> is the nearest neighbor?" This produces some
+    unusual shaped cells.
+    Sometimes you get straight lines, others you get curved lines
     </p>
+    <p>DIAGRAM of nearest neighbor to shapes<p>
     <p>
-        I wanted to pick shapes that interlock somewhat, so I went with a stylistic sun and moon.
+        I wanted to pick shapes that interlock somewhat, so I chose a
+        stylistic sun and moon.
     <p>
     `
   },
   {
     id: 'eyes',
     title: 'Eyes',
-    years: '2024-2025',
+    years: '2024',
     type: 'quad',
     make_machine: () => new QuadMachine(new EyesSketch()),
     description: `<p>
-        Gamepad: Left joystick or D-pad to move the eyes, A button to blink <br/>
-        Keyboard: Arrows or WASD to move the eyes, Z key to blink
+        Gamepad: Left joystick or D-pad to move the eyes, A button to blink. <br/>
+        Keyboard: Arrows or WASD to move the eyes, Z key to blink.
+    </p>
+    <p>
+      This was just a fun warm-up project when first setting up this repo.
     </p>
     `
   }
