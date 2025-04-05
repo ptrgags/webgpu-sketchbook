@@ -25,6 +25,8 @@ export const SKETCHES: SketchMetadata[] = [
     make_machine: () => new SphereTracerMachine(new MeltawaySketch()),
     description: `
     <p>
+        Touchscreen: Drag towards the left/right halves of the canvas to rotate the camera.
+        Mouse: Hover the mouse towards the left/right halves of the canvas to rotate the camera.
         Keyboard: Left and right arrows to rotate the camera.
     </p>
     <p>
@@ -80,11 +82,15 @@ export const SKETCHES: SketchMetadata[] = [
     type: 'quad',
     make_machine: () => new QuadMachine(new EyesSketch()),
     description: `<p>
+        Touchscreen: Drag around the canvas to direct the eyes. Touch to blink<br/>
+        Mouse: Move the cursor to direct the eyes. Click to blink.
         Gamepad: Left joystick or D-pad to move the eyes, A button to blink. <br/>
         Keyboard: Arrows or WASD to move the eyes, Z key to blink.
     </p>
     <p>
-      This was just a fun warm-up project when first setting up this repo.
+      This was just a fun warm-up project when first setting up this repo. I
+      was exploring how to handle several types of interaction devices in
+      a consistent way.
     </p>
     `
   }

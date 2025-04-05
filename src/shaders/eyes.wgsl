@@ -29,10 +29,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     //let angle = radians(45.0);
     //let gaze = direction(angle + u_frame.time);
-    var gaze = dir;
-    if (dot(dir, dir) > 1.0) {
-        gaze = normalize(gaze);
-    }
+    let gaze = normalize(dir);
 
     // Eyelid close position, a little below the center line
     const LID_CLOSE: f32 = -0.1;

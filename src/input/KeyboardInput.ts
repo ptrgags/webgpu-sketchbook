@@ -11,10 +11,12 @@ export class KeyboardInput {
   init() {
     window.addEventListener('keydown', (e) => {
       this.keysPressed.set(e.code, true)
+      e.preventDefault()
     })
 
     window.addEventListener('keyup', (e) => {
       this.keysPressed.set(e.code, false)
+      e.preventDefault()
     })
   }
 

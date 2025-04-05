@@ -27,9 +27,11 @@ export class Engine {
   machine: Machine
   u_frame: UniformStruct
   bind_group: BindGroup
+  canvas: HTMLCanvasElement
 
   constructor(machine: Machine) {
-    this.input = new InputSystem()
+    this.canvas = get_canvas('webgpu-canvas')
+    this.input = new InputSystem(this.canvas)
     this.machine = machine
 
     const time = new Uniform(UniformType.F32, new Float32Array([0.0]))
@@ -47,10 +49,9 @@ export class Engine {
     this.input.init()
 
     const device = await get_device()
-    const canvas = get_canvas('webgpu-canvas')
-    const context = get_context(canvas)
+    const context = get_context(this.canvas)
 
-    await this.create_resources(device, canvas, context)
+    await this.create_resources(device, context)
 
     this.configure_input()
 
@@ -72,12 +73,12 @@ export class Engine {
     requestAnimationFrame(render)
   }
 
-  async create_resources(device: GPUDevice, canvas: HTMLCanvasElement, context: GPUCanvasContext) {
+  async create_resources(device: GPUDevice, context: GPUCanvasContext) {
     this.u_frame.create(device)
     this.input.create_resources(device)
     this.bind_group.create(device)
 
-    await this.machine.create_resources(device, canvas, context, this.bind_group)
+    await this.machine.create_resources(device, this.canvas, context, this.bind_group)
   }
 
   configure_input() {

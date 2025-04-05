@@ -27,17 +27,19 @@ export class EyesSketch implements QuadMachineSketch {
     const [dpad_x, dpad_y] = input.gamepad.dpad_axes
     const [ls_x, ls_y] = input.gamepad.left_stick
 
+    const [pointer_x, pointer_y] = input.pointer.screen_axes
     const [arrows_x, arrows_y] = input.keyboard.arrow_axes
     const [wasd_x, wasd_y] = input.keyboard.wasd_axes
 
-    this.x_axis = new AnalogCascade([ls_x, dpad_x, arrows_x, wasd_x])
-    this.y_axis = new AnalogCascade([ls_y, dpad_y, arrows_y, wasd_y])
+    this.x_axis = new AnalogCascade([ls_x, dpad_x, arrows_x, wasd_x, pointer_x])
+    this.y_axis = new AnalogCascade([ls_y, dpad_y, arrows_y, wasd_y, pointer_y])
 
     // add an action button to control blinking the eye
     const a_button = input.gamepad.digital_button(GamepadButtons.A)
+    const pointer_pressed = input.pointer.pressed_signal
     const z_key = input.keyboard.digital_key('KeyZ')
     const c_pitch = input.midi.pitch_signal(PitchClass.C)
-    const blink_button = new DigitalCascade([a_button, z_key, c_pitch])
+    const blink_button = new DigitalCascade([a_button, pointer_pressed, z_key, c_pitch])
 
     const a_trigger = new TriggerSignal(blink_button)
     const a_release = new ReleaseSignal(blink_button)
