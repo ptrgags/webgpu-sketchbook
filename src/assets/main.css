@@ -78,6 +78,13 @@ details {
   margin: 0 auto;
 }
 
+.figure {
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+  max-width: 80vw;
+}
+
 .one-column {
   width: 100%;
   gap: 10px;

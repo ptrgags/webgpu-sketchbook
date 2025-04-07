@@ -41,6 +41,7 @@ onBeforeRouteUpdate((to) => {
 .break {
   width: 100%;
 }
+
 .description {
   max-width: 80%;
 }

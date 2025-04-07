@@ -16,6 +16,8 @@ export interface SketchMetadata {
   description: string
 }
 
+const base_url = import.meta.env.BASE_URL
+
 export const SKETCHES: SketchMetadata[] = [
   {
     id: 'meltaway',
@@ -36,14 +38,14 @@ export const SKETCHES: SketchMetadata[] = [
       clipping plane. They descend upon the shapes one by one, peeling back one
       layer of the shape at a time.
     </p>
-    <p>DIAGRAM of slicing the shapes</p>
+    <img width="250" height="350" class="figure" alt="animated diagram of the clipping planes" src="${base_url}/figures/2025-04-07_MeltawaySchematic.gif" />
     <p>
     I've been reading <cite>Artist's Master Series: Color and Light</cite> about
     color theory. The section on matte (diffuse) lighting gives a rule of thumb
-    for placing colors on a sphere. This is what inspired the toon shading
-    style.
+    for where to put the lights, midtones and darks on a sphere and other 3D shapes.
+    This is what inspired the lighting scheme. It's quite similar to toon shading.
     </p>
-    <p>DIAGRAM Hand-drawn value sketch of shapes</p>
+    <img width="500" class="figure" alt="digital illustration of shading a sphere" src="${base_url}/figures/2025-04-07_LightingASphereExplainer.png" />
     `
   },
   {
@@ -61,6 +63,7 @@ export const SKETCHES: SketchMetadata[] = [
         between the seed points.
     </p>
     <p>DIAGRAM of nearest neighbors</p>
+    <img width="500" class="figure" alt="voronoi diagram that points out the nearest neighbor properties" src="${base_url}/figures/2025-04-07_VoronoiExplainer.png" />
     <p>However, in shaders, it's commmon to use 
     <a href="https://iquilezles.org/articles/distfunctions2d/">signed distance fields (SDFs)</a>
     to get the minimum distance to a shape. Combining the concepts, the new
@@ -68,7 +71,7 @@ export const SKETCHES: SketchMetadata[] = [
     unusual shaped cells.
     Sometimes you get straight lines, others you get curved lines
     </p>
-    <p>DIAGRAM of nearest neighbor to shapes<p>
+    <img width="600" class="figure" alt="graph of a ball next to a wall. In the gap between them, a curve separates points that are closer to the ball from points that are closer to the wall." src="${base_url}/figures/2025-04-07_VoronoiSDFExplainer.png" />
     <p>
         I wanted to pick shapes that interlock somewhat, so I chose a
         stylistic sun and moon.

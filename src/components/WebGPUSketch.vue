@@ -24,7 +24,7 @@ onMounted(() => {
 <style scoped>
 
 canvas {
-    max-width: 100vw;
+    max-width: 80vw;
     object-fit: contain;
 }
 
