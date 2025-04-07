@@ -27,6 +27,10 @@ function clamp(x: number, a: number, b: number): number {
   return Math.min(Math.max(x, a), b)
 }
 
+function in_bounds(x: number, y: number, width: number, height: number): boolean {
+  return x >= 0 && x < width && y >= 0 && y < height
+}
+
 const DEAD_ZONE_RADIUS = 0.1
 
 export class PointerInput {
@@ -52,6 +56,10 @@ export class PointerInput {
       this.position = compute_position(this.canvas, e.clientX, e.clientY)
     })
 
+    this.canvas.addEventListener('pointerleave', (e) => {
+      this.position = compute_position(this.canvas, e.clientX, e.clientY)
+    })
+
     this.canvas.addEventListener('pointerup', (e) => {
       this.pressed = false
       this.position = compute_position(this.canvas, e.clientX, e.clientY)
@@ -66,9 +74,15 @@ export class PointerInput {
 
   get screen_axes(): [AnalogSignal, AnalogSignal] {
     const x_axis = new ObserverSignal(() => {
-      const { width } = this.canvas.getBoundingClientRect()
+      const { width, height } = this.canvas.getBoundingClientRect()
       const center_x = width / 2
       const scale = width / 2
+
+      // If the mouse leaves the canvas, return 0 as if springing back
+      // to center.
+      if (!in_bounds(this.position.x, this.position.y, width, height)) {
+        return 0
+      }
 
       const x = (this.position.x - center_x) / scale
 
@@ -84,6 +98,12 @@ export class PointerInput {
     const y_axis = new ObserverSignal(() => {
       const { width, height } = this.canvas.getBoundingClientRect()
       const center_y = height / 2
+
+      // If the mouse leaves the canvas, return 0 as if springing back
+      // to center.
+      if (!in_bounds(this.position.x, this.position.y, width, height)) {
+        return 0
+      }
 
       // Scale with the same units as the x-axis to ensure the pixels are
       // a 1:1 aspect ratio
