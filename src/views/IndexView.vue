@@ -1,60 +1,44 @@
 <script setup lang="ts">
 import PageLink from '@/components/PageLink.vue'
+import {SKETCHES} from '@/data/sketches'
 </script>
 
 <template>
     <div class="one-column vertical">
         <h1>WebGPU Sketchbook</h1>
-        <PageLink>
-            <template #thumbnail>
-                <img
-                    src="@/assets/thumbnails/meltaway.png"
-                    alt=""
-                    width="250"
-                    height="350"
-                />
-            </template>
-            <template #link>
-                <RouterLink to="/meltaway">Meltaway</RouterLink> (2025)
-            </template>
-        </PageLink>
-        <PageLink>
-            <template #thumbnail>
-                <img
-                    src="@/assets/thumbnails/sun-and-moon.png"
-                    alt=""
-                    width="250"
-                    height="350"
-                />
-            </template>
-            <template #link>
-                <RouterLink to="/sun-and-moon">Sun And Moon</RouterLink> (2025)
-            </template>
-        </PageLink>
-        <PageLink>
-            <template #thumbnail>
-                <img
-                    src="@/assets/thumbnails/eyes.png"
-                    alt=""
-                    width="250"
-                    height="350"
-                />
-            </template>
-            <template #link>
-                <RouterLink to="/eyes">Eyes</RouterLink> (2025)
-            </template>
-        </PageLink>
-        
+        <div class="description">
+        <p>
+          A collection of shader art experiments for graphics cards using
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/WebGPU_API">WebGPU</a>. 
+          This is a relatively new browser feature, so not every browser will support it. 
+          For best results, use Chrome or Edge</p>
+        <p>See also <a href="https://ptrgags.dev/p5-sketchbook/">P5 Sketchbook</a> for more of my math art.</p>
+        </div>
+        <div class="break"></div>
+        <template v-for="sketch in SKETCHES" :key="sketch.id">
+            <PageLink :sketch="sketch"></PageLink>
+        </template>
     </div>
 </template>
 
 <style scoped>
+
 img {
   width: 250px;
   height: 350px;
 }
 
-.expand {
+.description {
   width: 50%;
+}
+
+.break {
+  width: 100%;
+  height: 0;
+}
+
+.one-column {
+  width: 80%;
+  margin: 0 auto;
 }
 </style>

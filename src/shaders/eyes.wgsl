@@ -27,10 +27,8 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     
     let dir = vec2f(get_analog(0), get_analog(1));
 
-    //let angle = radians(45.0);
-    //let gaze = direction(angle + u_frame.time);
     var gaze = dir;
-    if (dot(dir, dir) > 1.0) {
+    if (dot(dir, dir) > 0) {
         gaze = normalize(gaze);
     }
 

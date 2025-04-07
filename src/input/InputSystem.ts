@@ -3,6 +3,7 @@ import { GamepadInput } from './GamepadInput'
 import type { AnalogSignal, DigitalSignal } from './Signal'
 import { KeyboardInput } from './KeyboardInput'
 import { MidiInput } from './MidiInput'
+import { PointerInput } from './PointerInput'
 
 const DIGITAL_VECTORS = 2
 const DIGITAL_COMPONENTS = DIGITAL_VECTORS * 4
@@ -23,16 +24,17 @@ export class InputSystem {
   midi: MidiInput
   gamepad: GamepadInput
   keyboard: KeyboardInput
-  // mouse
+  pointer: PointerInput
 
   u_input: UniformStruct
   digital_signals: DigitalSignal[] = []
   analog_signals: AnalogSignal[] = []
 
-  constructor() {
+  constructor(canvas: HTMLCanvasElement) {
     this.midi = new MidiInput()
     this.gamepad = new GamepadInput()
     this.keyboard = new KeyboardInput()
+    this.pointer = new PointerInput(canvas)
 
     const digital = new UniformArray(
       UniformType.VEC4U,
@@ -60,6 +62,7 @@ export class InputSystem {
     this.midi.init()
     this.gamepad.init()
     this.keyboard.init()
+    this.pointer.init()
   }
 
   update_digital(time: number) {
