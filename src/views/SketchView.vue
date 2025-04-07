@@ -43,6 +43,13 @@ onBeforeRouteUpdate((to) => {
 }
 
 .description {
+  max-width: 60%;
+}
+
+@media screen and (max-width: 400px)  {
+.description {
   max-width: 80%;
 }
+}
+
 </style>
