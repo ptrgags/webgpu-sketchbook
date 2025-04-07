@@ -8,7 +8,7 @@ const props = defineProps<{
 const base_url = import.meta.env.BASE_URL
 
 const img_url = computed(() => {
-  return `${base_url}/src/assets/thumbnails/${props.sketch.id}.png`
+  return `${base_url}/thumbnails/${props.sketch.id}.png`
 })
 
 const page_url = computed(() => {
