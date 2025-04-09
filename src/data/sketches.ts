@@ -31,7 +31,8 @@ export const LAB_SKETCHES: SketchMetadata[] = [
     <p>Notes</p>
     <ul>
       <li>Need a nicer color scheme</li>
-      <li>Bananas</li>
+      <li>How many rings do I want on the page?</li>
+      <li>User interaction - should the mouse move the ring? or move the circle? or something else?</li>
     </ul>
     `
   }

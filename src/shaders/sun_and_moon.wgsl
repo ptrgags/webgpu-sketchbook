@@ -1,12 +1,3 @@
-fn sdf_subtract(dist_a: f32, dist_b: f32) -> f32 {
-    return max(dist_a, -dist_b);
-}
-
-fn sdf_line(p: vec2f, normal: vec2f, distance: f32) -> f32 {
-    // normal * p = distance
-    return dot(p, normal) - distance;
-}
-
 fn sdf_rays(p: vec2f, n: f32) -> f32 {
     let r = length(p);
     let theta = atan2(p.y, p.x);
