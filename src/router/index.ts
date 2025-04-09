@@ -1,9 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
-import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
-import { EyesSketch } from '@/sketches/EyesSketch'
-import { RaymarchSketch } from '@/sketches/RaymarchSketch'
-import { ColorSpacesSketch } from '@/sketches/ColorSpacesSketch'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { find_sketch } from '@/data/sketches'
+import LabView from '@/views/LabView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -13,32 +12,23 @@ const router = createRouter({
       component: IndexView
     },
     {
-      path: '/sun-and-moon',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: SunAndMoonSketch
+      path: '/sketch/:sketch_id',
+      component: () => import('@/views/SketchView.vue'),
+      beforeEnter: (to) => {
+        const sketch_id = to.params.sketch_id
+        const id = Array.isArray(sketch_id) ? sketch_id[0] : sketch_id
+        if (!find_sketch(id)) {
+          return { path: '/404' }
+        }
       }
     },
     {
-      path: '/eyes',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: EyesSketch
-      }
+      path: '/lab',
+      component: LabView
     },
     {
-      path: '/raymarch',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: RaymarchSketch
-      }
-    },
-    {
-      path: '/color-spaces',
-      component: () => import('@/views/QuadMachineView.vue'),
-      props: {
-        sketch: ColorSpacesSketch
-      }
+      path: '/404',
+      component: NotFoundView
     }
   ]
 })

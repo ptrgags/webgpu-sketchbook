@@ -1,18 +1,19 @@
 import { fetch_text } from '@/core/fetch_text'
 import type { Machine } from '@/webgpu/Engine'
 import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer'
-import QUAD_MACHINE_SHADER from '@/shaders/quad_machine.wgsl?url'
 import { compile_shader } from '@/webgpu/compile_shader'
 import { RenderPipeline } from '@/webgpu/RenderPipeline'
 import type { BindGroup } from '@/webgpu/BindGroup'
 import type { InputSystem } from '@/input/InputSystem'
+import { LazyShader, MACHINE_LIBRARY } from '@/core/ShaderLibrary'
 
 // This should go somewhere more common.
 const WIDTH = 500
 const HEIGHT = 700
 
 // position (x, y, 0, 1). zw is set in the shader.
-const QUAD_POSITIONS = [
+// exported because sphere tracer also uses this geometry.
+export const QUAD_POSITIONS = [
   // top left triangle
   [-1, 1],
   [-1, -1],
@@ -39,7 +40,8 @@ const UVS_BASIC = [
 // so the aspect ratio is square
 const U_MAX = 1.0
 const V_MAX = HEIGHT / WIDTH
-const UVS_CENTERED = [
+// exported because SphereTracer also uses this
+export const UVS_CENTERED = [
   // top left triangle
   [-U_MAX, V_MAX],
   [-U_MAX, -V_MAX],
@@ -50,7 +52,7 @@ const UVS_CENTERED = [
   [U_MAX, -V_MAX]
 ].flat()
 
-const NUM_VERTICES = 6
+export const NUM_VERTICES = 6
 
 export enum QuadUVMode {
   /**
@@ -70,7 +72,7 @@ export enum QuadUVMode {
 export interface QuadMachineSketch {
   uv_mode: QuadUVMode
   shader_url: string
-  fragment_entry?: string
+  imports?: LazyShader[]
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void
@@ -109,9 +111,13 @@ export class QuadMachine implements Machine {
 
     this.vertex_buffer.create(device)
 
-    const base_shader_code = await fetch_text(QUAD_MACHINE_SHADER)
-    const sketch_code = await fetch_text(this.sketch.shader_url)
-    const shader_module = await compile_shader(device, base_shader_code + sketch_code)
+    const imports = this.sketch.imports ?? []
+    const import_promises = imports.map((x) => x.fetch_wgsl())
+    const shader_module = await compile_shader(device, [
+      MACHINE_LIBRARY.quad.fetch_wgsl(),
+      ...import_promises,
+      fetch_text(this.sketch.shader_url)
+    ])
 
     const vertex_state: GPUVertexState = {
       module: shader_module,
@@ -121,7 +127,7 @@ export class QuadMachine implements Machine {
 
     const fragment_state: GPUFragmentState = {
       module: shader_module,
-      entryPoint: this.sketch.fragment_entry ?? 'fragment_default',
+      entryPoint: 'fragment_main',
       targets: [
         {
           format: 'bgra8unorm'
