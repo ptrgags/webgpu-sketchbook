@@ -1,5 +1,6 @@
 import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
+import { ColorSpacesSketch } from '@/sketches/ColorSpacesSketch'
 import { EyesSketch } from '@/sketches/EyesSketch'
 import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
@@ -33,6 +34,18 @@ export const LAB_SKETCHES: SketchMetadata[] = [
       <li>What color scheme to use? the grey background is bland</li>
       <li>Do I want to add more shapes?</li>
       <li>User interaction - should the mouse move the ring? or move the circle? or something else?</li>
+    </ul>
+    `
+  },
+  {
+    id: 'oklch-visualizer',
+    title: 'OKLCH Visualizer',
+    years: '2025',
+    type: 'sphere-tracer',
+    make_machine: () => new QuadMachine(new ColorSpacesSketch()),
+    description: `
+    <p>Notes:</p>
+    <ul>
     </ul>
     `
   }
