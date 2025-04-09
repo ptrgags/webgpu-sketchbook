@@ -1,6 +1,6 @@
 import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
-import { ColorSpacesSketch } from '@/sketches/ColorSpacesSketch'
+import { OklchVisualizerSketch } from '@/sketches/OklchVisualizerSketch'
 import { EyesSketch } from '@/sketches/EyesSketch'
 import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
@@ -42,7 +42,7 @@ export const LAB_SKETCHES: SketchMetadata[] = [
     title: 'OKLCH Visualizer',
     years: '2025',
     type: 'sphere-tracer',
-    make_machine: () => new SphereTracerMachine(new ColorSpacesSketch()),
+    make_machine: () => new SphereTracerMachine(new OklchVisualizerSketch()),
     description: `
     <p>
       Touchscreen: Drag towards the left/right sides of the canvas to rotate the view. <br/>
