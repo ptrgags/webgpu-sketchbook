@@ -19,15 +19,25 @@ export interface SketchMetadata {
 
 const base_url = import.meta.env.BASE_URL
 
-export const SKETCHES: SketchMetadata[] = [
+// WIP sketches
+export const LAB_SKETCHES: SketchMetadata[] = [
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
     years: '2025',
     type: 'quad',
     make_machine: () => new QuadMachine(new StripeyRingSketch()),
-    description: `<p>lorem ipsum</p>`
-  },
+    description: `
+    <p>Notes</p>
+    <ul>
+      <li>Need a nicer color scheme</li>
+      <li>Bananas</li>
+    </ul>
+    `
+  }
+]
+
+export const GALLERY_SKETCHES: SketchMetadata[] = [
   {
     id: 'meltaway',
     title: 'Meltaway',
@@ -109,6 +119,8 @@ export const SKETCHES: SketchMetadata[] = [
   }
 ]
 
+export const ALL_SKETCHES = GALLERY_SKETCHES.concat(LAB_SKETCHES)
+
 export function find_sketch(id: string): SketchMetadata | undefined {
-  return SKETCHES.find((x) => x.id === id)
+  return ALL_SKETCHES.find((x) => x.id === id)
 }
