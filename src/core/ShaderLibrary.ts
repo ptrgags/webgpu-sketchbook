@@ -3,6 +3,7 @@ import SDF3D_SHADER from '@/shaders/libraries/sdf3d.wgsl?url'
 import SDF2D_SHADER from '@/shaders/libraries/sdf2d.wgsl?url'
 import SRGB_SHADER from '@/shaders/libraries/srgb.wgsl?url'
 import CSG_SHADER from '@/shaders/libraries/csg.wgsl?url'
+import OKLCH_SHADER from '@/shaders/libraries/oklch.wgsl?url'
 import CONST_SHADER from '@/shaders/libraries/constants.wgsl?url'
 import SPHERE_TRACER_MACHINE_SHADER from '@/shaders/machines/sphere_tracer_machine.wgsl?url'
 import { fetch_text } from './fetch_text'
@@ -40,6 +41,7 @@ export const MACHINE_LIBRARY = {
 export const SHADER_LIBRARY = {
   sdf3d: new LazyShader(SDF3D_SHADER),
   sdf2d: new LazyShader(SDF2D_SHADER),
+  oklch: new LazyShader(OKLCH_SHADER),
   srgb: new LazyShader(SRGB_SHADER),
   csg: new LazyShader(CSG_SHADER),
   constants: new LazyShader(CONST_SHADER)
