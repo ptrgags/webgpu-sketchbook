@@ -9,6 +9,7 @@ import { compile_shader } from '@/webgpu/compile_shader'
 import { fetch_text } from '@/core/fetch_text'
 import { AnalogConst } from '@/input/const_signal'
 import { ObserverSignal, type AnalogSignal } from '@/input/Signal'
+import { AnalogCascade } from '@/input/CascadeSignal'
 
 const ANGLE_SPEED = Math.PI / 48.0
 
@@ -84,9 +85,10 @@ export class SphereTracerMachine implements Machine {
     await this.render_pipeline.create(device, vertex_state, fragment_state, bind_group)
   }
   configure_input(input: InputSystem) {
-    const [arrows_x, _] = input.keyboard.arrow_axes
+    const [arrows_x] = input.keyboard.arrow_axes
+    const [pointer_x] = input.pointer.screen_axes
 
-    this.x_axis = arrows_x
+    this.x_axis = new AnalogCascade([arrows_x, pointer_x])
 
     const angle_signal = new ObserverSignal(() => {
       return this.angle

@@ -1,14 +1,14 @@
 :root {
-  --color-background-dark: #552d1d;
-  --color-background: #664122;
-  --color-background-light: #946336;
+  --color-background-dark: oklch(0.2 0.1 20);
+  --color-background: oklch(from var(--color-background-dark) calc(l + 0.1) c h);
+  --color-background-light: oklch(from var(--color-background) calc(l + 0.1) c h);
 
-  --color-text: #e7e7e7;
+  --color-text: oklch(0.8 0 0);
 
-  --color-accent-dark: #bdc45c;
-  --color-accent: #dfdd56;
+  --color-accent-dark: oklch(0.8 0.8 115);
+  --color-accent: oklch(from var(--color-accent-dark) calc(l + 0.2) c h);
 
-  --color-accent2: #2593ee;
+  --color-accent2: oklch(0.65 0.1652 249.21)
 }
 
 body {
@@ -63,7 +63,7 @@ details {
 .vertical {
   display: flex;
   flex-wrap: wrap;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
 }
 
@@ -76,6 +76,24 @@ details {
 
 .center {
   margin: 0 auto;
+}
+
+.figure {
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+  max-width: 80vw;
+}
+
+.one-column {
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+}
+
+/** For adding a break between text boxes */
+.break {
+  width: 100%;
 }
 
 @media screen and (max-width: 1000px) {

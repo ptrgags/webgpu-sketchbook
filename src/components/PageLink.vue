@@ -8,7 +8,7 @@ const props = defineProps<{
 const base_url = import.meta.env.BASE_URL
 
 const img_url = computed(() => {
-  return `${base_url}/src/assets/thumbnails/${props.sketch.id}.png`
+  return `${base_url}/thumbnails/${props.sketch.id}.png`
 })
 
 const page_url = computed(() => {
@@ -29,11 +29,13 @@ const page_url = computed(() => {
   background-color: var(--color-background);
   padding: 10px;
   margin: 10px 0;
-  width: 50%;
+  width: 60%;
+  max-width: 600px;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
+  border-radius: 10px;
   gap: 10px;
 }
 
