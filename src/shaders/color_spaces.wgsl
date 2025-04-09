@@ -31,12 +31,29 @@ fn oklch_to_oklab(oklch: vec3f) -> vec3f {
 
 fn scene(p: vec3f) -> f32 {
     let ground = sdf_ground_plane(p, -1.0);
-    let cyl = sdf_cylinder(p, vec2f(0.5));
+    const MAX_CHROMA: f32 = 0.4;
+    const MAX_LIGHTNESS: f32 = 1.0;
+    let cyl = sdf_cylinder(p, vec2f(MAX_CHROMA, 0.5 * MAX_LIGHTNESS));
 
     var dist = 1e10;
     dist = sdf_union(dist, ground);
     dist = sdf_union(dist, cyl);
     return dist;
+}
+
+fn handle_out_of_gamut(srgb: vec3f, default_color: vec3f) -> vec3f {
+    let out_of_gamut = any(srgb > vec3f(1.0));
+    return select(srgb, default_color, out_of_gamut);
+}
+
+fn oklch_color(p: vec3f, default_color: vec3f) -> vec3f {
+    let chroma = length(p.xz);
+    let hue = atan2(p.z, p.x);
+    let lightness = p.y + 0.5;
+    let oklch = vec3f(lightness, chroma, hue);
+
+    let srgb = oklch_to_linear_srgb(oklch);
+    return handle_out_of_gamut(srgb, default_color);
 }
 
 @fragment
@@ -45,7 +62,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let s = sin(angle);
     let c = cos(angle);
-    let eye = 3.0 * vec3f(s, 0, c);
+    let eye = 3.0 * vec3f(s, 0.5, c);
     let forward = vec3f(-s, 0, -c);
     let right = vec3f(c, 0, -s);
     let up = vec3f(0, 1, 0);
@@ -62,49 +79,14 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
         let light = normalize(vec3f(-1, 1.0, 1));
         let diffuse = clamp(dot(light, result.normal), 0, 1);
 
-        color = linear_to_srgb(vec3f(diffuse));
+        let is_cylinder = result.position.y > -0.6;
+        
+        let plane_color = diffuse * vec3f(0.1, 0.2, 0.4);
+        let out_of_gamut_color = diffuse * vec3f(0.2);
+
+        color = select(plane_color, oklch_color(result.position, out_of_gamut_color), result.position.y > -0.6);
+        color = linear_to_srgb(color);
     }
-    
-    /*
-    let id = floor(input.uv * 10);
-    let t = id.x / 10.0;
-
-    const MAX_CHROMA: f32 = 0.37;
-
-    var color = vec3f(0.0);
-    if (id.y == 0.0) {
-        //color = CIE_XYZ_TO_SRGB * vec3f(t, 0, 0);
-    } else if (id.y == 1.0) {
-        //color = CIE_XYZ_TO_SRGB * vec3f(0, t, 0);
-    } else if (id.y == 2.0) {
-        //color = CIE_XYZ_TO_SRGB * vec3f(0, 0, t);
-    } else if (id.y == 3.0) {
-        // increasing lightness
-        color = linear_to_srgb(oklch_to_linear_srgb(vec3f(t, 0, 0)));
-    } else if (id.y == 4.0) {
-        // increasing chroma
-        color = linear_to_srgb(oklch_to_linear_srgb(vec3f(0.5, MAX_CHROMA * t, 0)));
-    } else if (id.y == 5.0) {
-        // around the color wheel
-        color = linear_to_srgb(oklch_to_linear_srgb(vec3f(0.5, 0.5 * MAX_CHROMA, t * 2.0 * 3.141592)));
-    } else if (id.y == 6.0) {
-        // mix some colors!
-        let color_a = vec3f(0.8, 0.15, 91.0 * 3.1415 / 180.0); // yellow
-        let color_b = vec3f(0.5, 0.25, 147.04 * 3.1415 / 180.0); // green
-        let mixed = mix(color_a, color_b, t);
-        color = linear_to_srgb(oklch_to_linear_srgb(mixed));
-    } else if (id.y == 7.0) {
-        // mix a color with its opponent
-        let angle = 150.0;
-        let color_a = oklch_to_oklab(vec3f(0.8, 0.1, angle * 3.1415 / 180.0)); // yellow
-        let color_b = oklch_to_oklab(vec3f(0.8, 0.1, (angle + 180.0) * 3.1415 / 180.0)); // not yellow
-        let mixed = mix(color_a, color_b, t);
-        color = linear_to_srgb(oklab_to_linear_srgb(mixed));
-    }
-
-    let in_gamut = 1.0 - step(vec3f(1.0), color);
-    return vec4f(in_gamut * color, 1.0);
-    */
 
     return vec4f(color, 1.0);
 }
