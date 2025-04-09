@@ -1,6 +1,8 @@
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from './Signal'
 import { TwoButtonAxis } from './TwoButtonAxis'
 
+const ARROW_KEYS = ['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp']
+
 export class KeyboardInput {
   keysPressed: Map<string, boolean>
 
@@ -11,12 +13,16 @@ export class KeyboardInput {
   init() {
     window.addEventListener('keydown', (e) => {
       this.keysPressed.set(e.code, true)
-      e.preventDefault()
+      if (ARROW_KEYS.includes(e.code)) {
+        e.preventDefault()
+      }
     })
 
     window.addEventListener('keyup', (e) => {
       this.keysPressed.set(e.code, false)
-      e.preventDefault()
+      if (ARROW_KEYS.includes(e.code)) {
+        e.preventDefault()
+      }
     })
   }
 

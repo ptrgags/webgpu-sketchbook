@@ -42,10 +42,12 @@ export const LAB_SKETCHES: SketchMetadata[] = [
     title: 'OKLCH Visualizer',
     years: '2025',
     type: 'sphere-tracer',
-    make_machine: () => new QuadMachine(new ColorSpacesSketch()),
+    make_machine: () => new SphereTracerMachine(new ColorSpacesSketch()),
     description: `
     <p>Notes:</p>
     <ul>
+      <li>Link to the <a href="https://oklch.com/">oklch color picker</a> </li>
+      <li>See if <a href="https://iquilezles.org/articles/distance/">This article on distance estimation</a> could help carve the cylinder into the shape of the olkch color volume</li>
     </ul>
     `
   }

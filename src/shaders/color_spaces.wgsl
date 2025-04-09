@@ -1,9 +1,3 @@
-const CIE_XYZ_TO_SRGB: mat3x3f = mat3x3f(
-    3.2406255, -0.9689307, 0.0557101,
-    -1.5372080, 1.8757561, -0.2040211,
-    -0.4986286, 0.0415175, 1.0569959
-);
-
 fn oklab_to_linear_srgb(oklab: vec3f) -> vec3f {
 	let l_ = oklab.x + 0.3963377774 * oklab.y + 0.2158037573 * oklab.z;    
 	let m_ = oklab.x - 0.1055613458 * oklab.y - 0.0638541728 * oklab.z;    
@@ -35,8 +29,43 @@ fn oklch_to_oklab(oklch: vec3f) -> vec3f {
     return vec3f(lightness, a, b);
 }
 
+fn scene(p: vec3f) -> f32 {
+    let ground = sdf_ground_plane(p, -1.0);
+    let cyl = sdf_cylinder(p, vec2f(0.5));
+
+    var dist = 1e10;
+    dist = sdf_union(dist, ground);
+    dist = sdf_union(dist, cyl);
+    return dist;
+}
+
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
+    let angle = get_analog(0);
+
+    let s = sin(angle);
+    let c = cos(angle);
+    let eye = 3.0 * vec3f(s, 0, c);
+    let forward = vec3f(-s, 0, -c);
+    let right = vec3f(c, 0, -s);
+    let up = vec3f(0, 1, 0);
+
+    let pixel = input.uv.x * right + input.uv.y * up + 0.1 * forward;
+    let dir = normalize(pixel - eye);
+
+    let ray = Ray(eye, dir);
+    let result = raymarch(ray);
+
+    // sky
+    var color = vec3f(0.8, 0.8, 1.0);
+    if (result.hit) {
+        let light = normalize(vec3f(-1, 1.0, 1));
+        let diffuse = clamp(dot(light, result.normal), 0, 1);
+
+        color = linear_to_srgb(vec3f(diffuse));
+    }
+    
+    /*
     let id = floor(input.uv * 10);
     let t = id.x / 10.0;
 
@@ -44,11 +73,11 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     var color = vec3f(0.0);
     if (id.y == 0.0) {
-        color = CIE_XYZ_TO_SRGB * vec3f(t, 0, 0);
+        //color = CIE_XYZ_TO_SRGB * vec3f(t, 0, 0);
     } else if (id.y == 1.0) {
-        color = CIE_XYZ_TO_SRGB * vec3f(0, t, 0);
+        //color = CIE_XYZ_TO_SRGB * vec3f(0, t, 0);
     } else if (id.y == 2.0) {
-        color = CIE_XYZ_TO_SRGB * vec3f(0, 0, t);
+        //color = CIE_XYZ_TO_SRGB * vec3f(0, 0, t);
     } else if (id.y == 3.0) {
         // increasing lightness
         color = linear_to_srgb(oklch_to_linear_srgb(vec3f(t, 0, 0)));
@@ -75,10 +104,11 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let in_gamut = 1.0 - step(vec3f(1.0), color);
     return vec4f(in_gamut * color, 1.0);
+    */
+
+    return vec4f(color, 1.0);
 }
 
-fn linear_to_srgb(linear: vec3f) -> vec3f {
-    return pow(linear, vec3f(1.0 / 2.2));
-}
+
 
 
