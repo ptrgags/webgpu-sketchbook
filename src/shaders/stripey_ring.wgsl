@@ -20,7 +20,8 @@ fn meta_mask(uv: vec2f) -> f32 {
     let point = sdf_point(uv - vec2f(0.2, 0.3));
     let ring = sdf_circle(uv - center, 0.4);
 
-    return step(10.0, metaball(point) + metaball(ring));
+    const METABALL_THRESHOLD: f32 = 10.0;
+    return step(METABALL_THRESHOLD, metaball(point) + metaball(ring));
 }
 
 @fragment
