@@ -2,6 +2,7 @@ import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
 import { EyesSketch } from '@/sketches/EyesSketch'
 import { MeltawaySketch } from '@/sketches/MeltawaySketch'
+import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 
@@ -18,7 +19,26 @@ export interface SketchMetadata {
 
 const base_url = import.meta.env.BASE_URL
 
-export const SKETCHES: SketchMetadata[] = [
+// WIP sketches
+export const LAB_SKETCHES: SketchMetadata[] = [
+  {
+    id: 'stripey-ring',
+    title: 'Stripey Ring',
+    years: '2025',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new StripeyRingSketch()),
+    description: `
+    <p>Notes</p>
+    <ul>
+      <li>What color scheme to use? the grey background is bland</li>
+      <li>Do I want to add more shapes?</li>
+      <li>User interaction - should the mouse move the ring? or move the circle? or something else?</li>
+    </ul>
+    `
+  }
+]
+
+export const GALLERY_SKETCHES: SketchMetadata[] = [
   {
     id: 'meltaway',
     title: 'Meltaway',
@@ -100,6 +120,8 @@ export const SKETCHES: SketchMetadata[] = [
   }
 ]
 
+export const ALL_SKETCHES = GALLERY_SKETCHES.concat(LAB_SKETCHES)
+
 export function find_sketch(id: string): SketchMetadata | undefined {
-  return SKETCHES.find((x) => x.id === id)
+  return ALL_SKETCHES.find((x) => x.id === id)
 }

@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { find_sketch } from '@/data/sketches'
+import LabView from '@/views/LabView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -20,6 +21,10 @@ const router = createRouter({
           return { path: '/404' }
         }
       }
+    },
+    {
+      path: '/lab',
+      component: LabView
     },
     {
       path: '/404',

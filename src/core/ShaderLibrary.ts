@@ -1,5 +1,6 @@
 import QUAD_MACHINE_SHADER from '@/shaders/machines/quad_machine.wgsl?url'
 import SDF3D_SHADER from '@/shaders/libraries/sdf3d.wgsl?url'
+import SDF2D_SHADER from '@/shaders/libraries/sdf2d.wgsl?url'
 import SRGB_SHADER from '@/shaders/libraries/srgb.wgsl?url'
 import CSG_SHADER from '@/shaders/libraries/csg.wgsl?url'
 import CONST_SHADER from '@/shaders/libraries/constants.wgsl?url'
@@ -38,6 +39,7 @@ export const MACHINE_LIBRARY = {
 // Shader libraries that can be manually imported by a sketch
 export const SHADER_LIBRARY = {
   sdf3d: new LazyShader(SDF3D_SHADER),
+  sdf2d: new LazyShader(SDF2D_SHADER),
   srgb: new LazyShader(SRGB_SHADER),
   csg: new LazyShader(CSG_SHADER),
   constants: new LazyShader(CONST_SHADER)
