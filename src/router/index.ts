@@ -23,13 +23,17 @@ const router = createRouter({
       }
     },
     {
+        path: '/gh-pages-test',
+        component: TemporaryView
+    }
+    {
       path: '/lab',
       component: LabView
     },
     {
       path: '/404',
       component: NotFoundView
-    }
+    },
   ]
 })
 

@@ -2,7 +2,7 @@ name: Github Actions Trial Run
 on:
   push
 jobs:
-  setup:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -13,15 +13,26 @@ jobs:
         run: ls -l
       - name: Check package.json
         run: cat package.json
-      #- name: Run tests
-      #  run: npm run test-once
       - name: Build the code
         run: npm run build
       - name: Check what we have
         run: ls -l dist/
-  afterwards:
+      - name: Upload static files
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url}}
+
     runs-on: ubuntu-latest
-    needs: [setup]
     steps:
-      - name: Are files persisted?
-        run: ls -l
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
