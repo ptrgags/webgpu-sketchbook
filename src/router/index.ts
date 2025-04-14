@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import IndexView from '@/views/IndexView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import TemporaryView from '@/views/TemporaryView.vue'
 import { find_sketch } from '@/data/sketches'
 import LabView from '@/views/LabView.vue'
 
@@ -25,7 +26,7 @@ const router = createRouter({
     {
         path: '/gh-pages-test',
         component: TemporaryView
-    }
+    },
     {
       path: '/lab',
       component: LabView
