@@ -19,3 +19,9 @@ jobs:
         run: npm run build
       - name: Check what we have
         run: ls -l dist/
+  afterwards:
+    runs-on: ubuntu-latest
+    needs: [setup]
+    steps:
+      - name: Are files persisted?
+        run: ls -l
