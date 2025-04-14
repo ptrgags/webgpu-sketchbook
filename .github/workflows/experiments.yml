@@ -9,5 +9,18 @@ jobs:
         run: echo "hello world"
       - name: "where am I?"
         run: pwd
-      - name: "Where is the workspace?"
-        run: echo "${{ github.workspace }}"
+      - name: "Do I have npm?"
+        run: npm -v
+  in-parallel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Say Hi Again"
+        run: echo hi
+  afterwards:
+    needs: [explore-actions, in-parallel]
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v4
+      - name: "See what we have"
+        run: ls -l
