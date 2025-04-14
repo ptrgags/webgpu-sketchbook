@@ -12,7 +12,7 @@ jobs:
       - name: Check what we have
         run: ls -l
       - name: Run tests
-        run: npm run test
+        run: npm test
       - name: Build the code
         run: npm run build
       - name: Check what we have
