@@ -2,25 +2,17 @@ name: Github Actions Trial Run
 on:
   push
 jobs:
-  explore-actions:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Say Hello"
-        run: echo "hello world"
-      - name: "where am I?"
-        run: pwd
-      - name: "Do I have npm?"
-        run: npm -v
-  in-parallel:
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Say Hi Again"
-        run: echo hi
-  afterwards:
-    needs: [explore-actions, in-parallel]
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v4
       - name: "See what we have"
         run: ls -l
+      - name: "install npm stuff"
+        run: npm install
+  test:
+    needs: [setup]
+    steps:
+      - name: "run test"
+      - run: npx vitest run
