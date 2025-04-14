@@ -11,6 +11,8 @@ jobs:
         run: npm install
       - name: Check what we have
         run: ls -l
+      - name: Check package.json
+        run: cat package.json
       - name: Run tests
         run: npm test
       - name: Build the code
