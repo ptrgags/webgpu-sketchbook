@@ -2,11 +2,12 @@ name: Github Actions Trial Run
 on:
   push
 jobs:
-  runs-on: ubuntu-latest
-  steps:
-    - name: "Say Hello"
-      run: echo "hello world"
-    - name: "where am I?"
-      run: pwd
-    - name: "Where is the workspace?"
-      run: echo "${{ github.workspace }}"
+  explore-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Say Hello"
+        run: echo "hello world"
+      - name: "where am I?"
+        run: pwd
+      - name: "Where is the workspace?"
+        run: echo "${{ github.workspace }}"
