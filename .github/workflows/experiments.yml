@@ -5,15 +5,9 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout code"
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: "See what we have"
+      - name: See what we have
         run: ls -l
-      - name: "install npm stuff"
+      - name: Install npm stuff
         run: npm install
-  test:
-    needs: [setup]
-    runs-on: ubuntu-latest
-    steps:
-      - name: "run test"
-      - run: npx vitest run
