@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install npm stuff
         run: npm install
+      - name: Check what we have
+        run: ls -l
       - name: Run tests
         run: npx vitest run
       - name: Build the code
