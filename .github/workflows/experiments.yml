@@ -7,7 +7,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: See what we have
-        run: ls -l
       - name: Install npm stuff
         run: npm install
+      - name: Run tests
+        run: npx vitest run
+      - name: Build the code
+        run: npm run build
+      - name: Check what we have
+        run: ls -l dist/
