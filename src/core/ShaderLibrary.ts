@@ -5,6 +5,7 @@ import SRGB_SHADER from '@/shaders/libraries/srgb.wgsl?url'
 import CSG_SHADER from '@/shaders/libraries/csg.wgsl?url'
 import OKLCH_SHADER from '@/shaders/libraries/oklch.wgsl?url'
 import CONST_SHADER from '@/shaders/libraries/constants.wgsl?url'
+import SHAPE_MACHINE_SHADER from '@/shaders/machines/shape.wgsl?url'
 import SPHERE_TRACER_MACHINE_SHADER from '@/shaders/machines/sphere_tracer_machine.wgsl?url'
 import { fetch_text } from './fetch_text'
 
@@ -34,7 +35,8 @@ export class LazyShader {
 // Machines will use these shaders internally
 export const MACHINE_LIBRARY = {
   quad: new LazyShader(QUAD_MACHINE_SHADER),
-  sphere_tracer: new LazyShader(SPHERE_TRACER_MACHINE_SHADER)
+  sphere_tracer: new LazyShader(SPHERE_TRACER_MACHINE_SHADER),
+  shape: new LazyShader(SHAPE_MACHINE_SHADER)
 }
 
 // Shader libraries that can be manually imported by a sketch
