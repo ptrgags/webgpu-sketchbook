@@ -11,5 +11,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  base: '/webgpu-sketchbook/'
+  base: '/webgpu-sketchbook/',
+  server: {
+    watch: {
+      usePolling: true
+    }
+  }
 })
