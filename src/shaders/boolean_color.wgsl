@@ -33,6 +33,14 @@ fn rect_mask(position: vec2f, dimensions: vec2f, uv: vec2f) -> f32 {
     return masks.x * masks.y;
 }
 
+fn bitwise_boolean(a: vec3f, b: vec3f) -> vec3f {
+    let a_u32 = vec3u(255 * a);
+    let b_u32 = vec3u(255 * b);
+
+    let combined_u32 = a_u32 ^ b_u32;
+    return vec3f(combined_u32) / 255;
+}
+
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var from_corner = (input.uv - vec2f(-1.0, 1.0)) / 2;
@@ -44,6 +52,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let a_swatches = palette_lookup(OKLCH_PALETTES[0], a_step);
     let b_swatches = palette_lookup(OKLCH_PALETTES[0], b_step);
+    let mixed_color = bitwise_boolean(a_swatches, b_swatches);
 
     let mask_a = rect_mask(vec2f(0, 1), vec2f(1, 16), grid_id);
     let mask_b = rect_mask(vec2f(1, 0), vec2f(16, 1), grid_id);
@@ -53,7 +62,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var color = vec3f(0.0);
     color = mix(color, a_swatches, mask_a);
     color = mix(color, b_swatches, mask_b);
-    color = mix(color, vec3f(1.0), mask_table);
+    color = mix(color, mixed_color, mask_table);
 
     return vec4f(color, 1.0);
 }
