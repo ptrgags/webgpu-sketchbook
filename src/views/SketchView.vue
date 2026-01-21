@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute, onBeforeRouteUpdate } from 'vue-router'
-import { find_sketch, LAB_SKETCHES } from '@/data/sketches'
+import { find_sketch } from '@/data/sketches'
 import WebGPUSketch from '@/components/WebGPUSketch.vue'
 import ScreenshotButton from '@/components/ScreenshotButton.vue'
 
@@ -26,7 +26,7 @@ onBeforeRouteUpdate((to) => {
 
 <template>
   <div v-if="sketch_metadata" class="one-column vertical">
-    <h1>{{ sketch_metadata.title }} <span v-if="LAB_SKETCHES.includes(sketch_metadata)">🧪</span> ({{ sketch_metadata.years }})</h1>
+    <h1>{{ sketch_metadata.title }} <span v-if="sketch_metadata.is_lab">🧪</span> ({{ sketch_metadata.years }})</h1>
     <WebGPUSketch  :sketch_metadata="sketch_metadata"></WebGPUSketch>
     <div class="break"></div>
     <ScreenshotButton></ScreenshotButton>
