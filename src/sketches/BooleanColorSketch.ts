@@ -8,7 +8,7 @@ import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
 import BOOLEAN_COLOR_SHADER from '@/shaders/boolean_color.wgsl?url'
 
 const BOOLEAN_COUNT = 16
-const PALETTE_COUNT = 4
+const PALETTE_COUNT = 28
 
 /**
  * Because JavaScript uses trunc-based modulo, not floor based.
@@ -26,7 +26,8 @@ export class BooleanColorSketch implements QuadMachineSketch {
   imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.srgb, SHADER_LIBRARY.oklch]
   palette_a: number = 0
   palette_b: number = 0
-  boolean_op: number = 0
+  // start with an interesting operator, AND
+  boolean_op: number = 1
   z_key: DigitalSignal = new DigitalConst(false)
   x_key: DigitalSignal = new DigitalConst(false)
   increment: AnalogSignal = new AnalogConst(0)

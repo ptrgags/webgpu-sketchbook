@@ -13,12 +13,41 @@ const YELLOW: vec3f = vec3f(1, 1, 0);
 const WHITE: vec3f = vec3f(1);
 
 const PALETTES = array(
-    // Grayscale
+    // Grayscale (diagonal of sRGB cube)
     Gradient(BLACK, WHITE),
+    // Edges around the color wheel
+    Gradient(RED, YELLOW),
+    Gradient(YELLOW, GREEN),
+    Gradient(GREEN, CYAN),
+    Gradient(CYAN, BLUE),
+    Gradient(BLUE, MAGENTA),
+    Gradient(MAGENTA, RED),
+    // Edges across faces from primary -> primary
+    // and secondary -> secondary
+    Gradient(RED, GREEN),
+    Gradient(GREEN, BLUE),
+    Gradient(BLUE, RED),
+    Gradient(YELLOW, CYAN),
+    Gradient(CYAN, MAGENTA),
+    Gradient(MAGENTA, YELLOW),
     // Colors to their inverses (through grey)
     Gradient(RED, CYAN),
     Gradient(GREEN, MAGENTA),
     Gradient(BLUE, YELLOW),
+    // Monochrome palettes from black
+    Gradient(BLACK, RED),
+    Gradient(BLACK, YELLOW),
+    Gradient(BLACK, GREEN),
+    Gradient(BLACK, CYAN),
+    Gradient(BLACK, BLUE),
+    Gradient(BLACK, MAGENTA),
+    // Monochrome palettes from white
+    Gradient(WHITE, RED),
+    Gradient(WHITE, YELLOW),
+    Gradient(WHITE, GREEN),
+    Gradient(WHITE, CYAN),
+    Gradient(WHITE, BLUE),
+    Gradient(WHITE, MAGENTA),
 );
 
 const GRADIENT_STEPS: f32 = 16.0;
