@@ -6,6 +6,7 @@ import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
+import { BooleanColorSketch } from '@/sketches/BooleanColorSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -22,6 +23,20 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'boolean-color',
+    title: 'Boolean Color',
+    years: '2026-01',
+    is_lab: true,
+    type: 'quad',
+    make_machine: () => new QuadMachine(new BooleanColorSketch()),
+    description: `
+    <p>
+      In image editors like Krita, sometimes bitwise boolean operations are allowed as layer blend modes.
+      It's not obvious what color the output should be, so let's try them out with various color palettes!
+    </p>
+    `
+  },
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
