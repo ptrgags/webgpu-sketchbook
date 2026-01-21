@@ -199,7 +199,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let a_step = grid_id.y - 1.0;
     let b_step = grid_id.x - 1.0;
 
-    let selected_op = OP_AND;
+    let selected_op = OP_XNOR;
 
     let a_swatches = vec3f(a_step / (GRADIENT_STEPS - 1));
     let b_swatches = vec3f(b_step / (GRADIENT_STEPS - 1));
