@@ -6,6 +6,7 @@ import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
+import { DistanceMetricSketch } from '@/sketches/DistanceMetrics.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -22,6 +23,14 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'distance-metrics',
+    title: 'Distance Metrics',
+    years: '2026',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new DistanceMetricSketch()),
+    description: 'TODO'
+  },
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
