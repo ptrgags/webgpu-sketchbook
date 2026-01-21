@@ -33,12 +33,88 @@ fn rect_mask(position: vec2f, dimensions: vec2f, uv: vec2f) -> f32 {
     return masks.x * masks.y;
 }
 
-fn bitwise_boolean(a: vec3f, b: vec3f) -> vec3f {
+const OP_FALSE: u32 = 0;
+const OP_AND: u32 = 1;
+const OP_A_NOT_IMPLIES_B: u32 = 2;
+const OP_A: u32 = 3;
+const OP_B_NOT_IMPLIES_A: u32 = 4;
+const OP_B: u32 = 5;
+const OP_XOR: u32 = 6;
+const OP_OR: u32 = 7;
+const OP_NOR: u32 = 8;
+const OP_XNOR: u32 = 9;
+const OP_NOT_B: u32 = 10;
+const OP_B_IMPLIES_A: u32 = 11;
+const OP_NOT_A: u32 = 12;
+const OP_A_IMPLIES_B: u32 = 13;
+const OP_NAND: u32 = 14;
+const OP_TRUE: u32 = 15;
+
+
+fn bitwise_op(a: vec3u, b: vec3u, op: u32) -> vec3u {
+    switch(op) {
+        case OP_FALSE: {
+            return vec3u(0);
+        } 
+        case OP_AND: {
+            return a & b;
+        }
+        case OP_A_NOT_IMPLIES_B: {
+            return a & (~b);
+        }
+        case OP_A: {
+            return a;
+        }
+        case OP_B_NOT_IMPLIES_A: {
+            return (~a) & b;
+        }
+        case OP_B: {
+            return b;
+        }
+        case OP_XOR: {
+            return a ^ b;
+        }
+        case OP_OR: {
+            return a | b;
+        }
+        case OP_NOR: {
+            return ~(a | b);
+        }
+        case OP_XNOR: {
+            return ~(a ^ b);
+        }
+        case OP_NOT_B: {
+            return ~b;
+        }
+        case OP_B_IMPLIES_A: {
+            return a | (~b);
+        }
+        case OP_NOT_A: {
+            return ~a;
+        }
+        case OP_A_IMPLIES_B: {
+            return (~a) | b;
+        }
+        case OP_NAND: {
+            return ~(a & b);
+        }
+        case OP_TRUE: {
+            return vec3u(0xFF);
+        }
+        default: {
+            // same as OP_FALSE
+            return vec3u(0);
+        }
+    }
+}
+
+fn bitwise_color(a: vec3f, b: vec3f, op: u32) -> vec3f {
     let a_u32 = vec3u(255 * a);
     let b_u32 = vec3u(255 * b);
 
-    let combined_u32 = a_u32 ^ b_u32;
-    return vec3f(combined_u32) / 255;
+    let combined_u32 = bitwise_op(a_u32, b_u32, op);
+    let combined_u8 = combined_u32 & vec3u(0xFF);
+    return vec3f(combined_u8) / 255;
 }
 
 @fragment
@@ -50,9 +126,9 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let a_step = grid_id.y - 1.0;
     let b_step = grid_id.x - 1.0;
 
-    let a_swatches = palette_lookup(OKLCH_PALETTES[0], a_step);
-    let b_swatches = palette_lookup(OKLCH_PALETTES[0], b_step);
-    let mixed_color = bitwise_boolean(a_swatches, b_swatches);
+    let a_swatches = vec3f(a_step / (GRADIENT_STEPS - 1));
+    let b_swatches = vec3f(b_step / (GRADIENT_STEPS - 1));
+    let mixed_color = bitwise_color(a_swatches, b_swatches, OP_NOR);
 
     let mask_a = rect_mask(vec2f(0, 1), vec2f(1, 16), grid_id);
     let mask_b = rect_mask(vec2f(1, 0), vec2f(16, 1), grid_id);
