@@ -8,7 +8,7 @@ import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
 import BOOLEAN_COLOR_SHADER from '@/shaders/boolean_color.wgsl?url'
 
 const BOOLEAN_COUNT = 16
-const PALETTE_COUNT = 1
+const PALETTE_COUNT = 4
 
 /**
  * Because JavaScript uses trunc-based modulo, not floor based.

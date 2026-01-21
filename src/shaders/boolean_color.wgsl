@@ -1,12 +1,24 @@
-struct OklchGradient {
+struct Gradient {
     start_color: vec3f,
-    end_color: vec3f,
+    end_color: vec3f
 }
 
-const OKLCH_PALETTES = array(
-    OklchGradient(vec3f(0.0, 0.0, 0.0), vec3f(1.0, 0.0, 0.0)),
-    OklchGradient(vec3f(0.7, 0.1, 0), vec3f(0.7, 0.1, 3.1415)),
-    OklchGradient(vec3f(0.5, 0.1, 14.0), vec3f(0.5, 0.1, 14.0))
+const BLACK: vec3f = vec3f(0);
+const RED: vec3f = vec3f(1, 0, 0);
+const GREEN: vec3f = vec3f(0, 1, 0);
+const BLUE: vec3f = vec3f(0, 0, 1);
+const CYAN: vec3f = vec3f(0, 1, 1);
+const MAGENTA: vec3f = vec3f(1, 0, 1);
+const YELLOW: vec3f = vec3f(1, 1, 0);
+const WHITE: vec3f = vec3f(1);
+
+const PALETTES = array(
+    // Grayscale
+    Gradient(BLACK, WHITE),
+    // Colors to their inverses (through grey)
+    Gradient(RED, CYAN),
+    Gradient(GREEN, MAGENTA),
+    Gradient(BLUE, YELLOW),
 );
 
 const GRADIENT_STEPS: f32 = 16.0;
@@ -16,13 +28,10 @@ fn handle_out_of_gamut(srgb: vec3f, default_color: vec3f) -> vec3f {
     return select(srgb, default_color, out_of_gamut);
 }
 
-fn palette_lookup(gradient: OklchGradient, step: f32) -> vec3f {
+fn palette_lookup(gradient: Gradient, step: f32) -> vec3f {
     let t = step / (GRADIENT_STEPS - 1.0);
     let clamped_t = clamp(t, 0.0, 1.0);
-    let color_oklch = mix(gradient.start_color, gradient.end_color, clamped_t);
-    let color_srgb = oklab_to_linear_srgb(color_oklch);
-    let fixed_color = handle_out_of_gamut(color_srgb, vec3f(0.5));
-    return linear_to_srgb(fixed_color);
+    return mix(gradient.start_color, gradient.end_color, clamped_t);
 }
 
 
@@ -199,13 +208,13 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let a_step = grid_id.y - 1.0;
     let b_step = grid_id.x - 1.0;
 
-    let palette_a_index = get_analog(0);
-    let palette_b_index = get_analog(1);
+    let palette_a_index = u32(get_analog(0));
+    let palette_b_index = u32(get_analog(1));
     let selected_op = u32(get_analog(2));
 
-    let a_swatches = vec3f(a_step / (GRADIENT_STEPS - 1));
-    let b_swatches = vec3f(b_step / (GRADIENT_STEPS - 1));
-    let mixed_color = bitwise_color(a_swatches, b_swatches, selected_op);
+    let a_color = palette_lookup(PALETTES[palette_a_index], a_step);
+    let b_color = palette_lookup(PALETTES[palette_b_index], b_step);
+    let mixed_color = bitwise_color(a_color, b_color, selected_op);
 
     let mask_a = rect_mask(vec2f(0, 1), vec2f(1, 16), grid_id);
     let mask_b = rect_mask(vec2f(1, 0), vec2f(16, 1), grid_id);
@@ -218,8 +227,8 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     // background layer
     var color = vec3f(0.0);
-    color = mix(color, a_swatches, mask_a);
-    color = mix(color, b_swatches, mask_b);
+    color = mix(color, a_color, mask_a);
+    color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
     
     color = mix(color, vec3f(1.0, 0.0, 0.0), venn_mask);
