@@ -16,16 +16,17 @@ export interface SketchMetadata {
   type: SketchType
   make_machine(): Machine
   description: string
+  is_lab?: boolean
 }
 
 const base_url = import.meta.env.BASE_URL
 
-// WIP sketches
-export const LAB_SKETCHES: SketchMetadata[] = [
+export const SKETCHES: SketchMetadata[] = [
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
     years: '2025',
+    is_lab: true,
     type: 'quad',
     make_machine: () => new QuadMachine(new StripeyRingSketch()),
     description: `
@@ -41,6 +42,7 @@ export const LAB_SKETCHES: SketchMetadata[] = [
     id: 'oklch-visualizer',
     title: 'OKLCH Visualizer',
     years: '2025',
+    is_lab: true,
     type: 'sphere-tracer',
     make_machine: () => new SphereTracerMachine(new OklchVisualizerSketch()),
     description: `
@@ -67,10 +69,7 @@ export const LAB_SKETCHES: SketchMetadata[] = [
       <li>Another thought would be to take a cube mesh with many subdivisions and warp it into the oklch volume</li>
     </ul>
     `
-  }
-]
-
-export const GALLERY_SKETCHES: SketchMetadata[] = [
+  },
   {
     id: 'meltaway',
     title: 'Meltaway',
@@ -152,8 +151,6 @@ export const GALLERY_SKETCHES: SketchMetadata[] = [
   }
 ]
 
-export const ALL_SKETCHES = GALLERY_SKETCHES.concat(LAB_SKETCHES)
-
 export function find_sketch(id: string): SketchMetadata | undefined {
-  return ALL_SKETCHES.find((x) => x.id === id)
+  return SKETCHES.find((x) => x.id === id)
 }
