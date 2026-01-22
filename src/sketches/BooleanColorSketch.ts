@@ -27,6 +27,7 @@ export class BooleanColorSketch implements QuadMachineSketch {
   palette_a: number = 0
   palette_b: number = 0
   // start with an interesting operator, AND
+  // See constants in the shader
   boolean_op: number = 1
   z_key: DigitalSignal = new DigitalConst(false)
   x_key: DigitalSignal = new DigitalConst(false)
