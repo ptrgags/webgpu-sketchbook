@@ -42,17 +42,9 @@ export class BooleanColorSketch implements QuadMachineSketch {
     const down_released = new ReleaseSignal(down_arrow)
     this.increment = new TwoButtonAxis(down_released, up_released)
 
-    const palette_a = new ObserverSignal(() => {
-      return this.palette_a
-    })
-
-    const palette_b = new ObserverSignal(() => {
-      return this.palette_b
-    })
-
-    const boolean_op = new ObserverSignal(() => {
-      return this.boolean_op
-    })
+    const palette_a = new ObserverSignal(() => this.palette_a)
+    const palette_b = new ObserverSignal(() => this.palette_b)
+    const boolean_op = new ObserverSignal(() => this.boolean_op)
 
     input.configure_uniforms({
       analog: [palette_a, palette_b, boolean_op]
