@@ -1,6 +1,7 @@
 import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
 import { Vec2 } from '@/core/Vec2.js'
-import { AnalogConst, DigitalConst } from '@/input/const_signal.js'
+import { DigitalCascade } from '@/input/CascadeSignal.js'
+import { AnalogConst } from '@/input/const_signal.js'
 import { GamepadButtons } from '@/input/GamepadInput.js'
 import type { InputSystem } from '@/input/InputSystem.js'
 import { ReleaseSignal } from '@/input/ReleaseSignal.js'
@@ -25,32 +26,54 @@ function mod(x: number, n: number) {
 // Size of one square in the diagram
 const SQUARE_SIZE_PX = 500 / 17
 
+function modify(modifier: DigitalSignal, button: DigitalSignal): DigitalSignal {
+  return new ObserverSignal(() => {
+    return modifier.value && button.value
+  })
+}
+
+function no_modifiers(
+  mod_a: DigitalSignal,
+  mod_b: DigitalSignal,
+  button: DigitalSignal
+): DigitalSignal {
+  return new ObserverSignal(() => {
+    return !mod_a.value && !mod_b.value && button.value
+  })
+}
+
 export class BooleanColorSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = BOOLEAN_COLOR_SHADER
   imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.srgb, SHADER_LIBRARY.oklch]
+
+  // Uniform values
   palette_a: number = 0
   palette_b: number = 0
   // start with an interesting operator, AND
   // See constants in the shader
   boolean_op: number = 1
-  z_key: DigitalSignal = new DigitalConst(false)
-  x_key: DigitalSignal = new DigitalConst(false)
-  increment: AnalogSignal = new AnalogConst(0)
+
+  // these pulse 1.0 when the uniform should be incremented (mod n)
+  // and -1.0 when the uniform should be decremented
+  palette_a_delta: AnalogSignal = new AnalogConst(0.0)
+  palette_b_delta: AnalogSignal = new AnalogConst(0.0)
+  op_delta: AnalogSignal = new AnalogConst(0.0)
 
   configure_input(input: InputSystem) {
     // keyboard input
-    const z_key = input.keyboard.digital_key('KeyZ')
-    const x_key = input.keyboard.digital_key('KeyX')
+    const key_z = input.keyboard.digital_key('KeyZ')
+    const key_x = input.keyboard.digital_key('KeyX')
+    const arrow_up = input.keyboard.digital_key('ArrowUp')
+    const arrow_down = input.keyboard.digital_key('ArrowDown')
 
     // gamepad input
     const gamepad_a = input.gamepad.digital_button(GamepadButtons.A)
     const gamepad_b = input.gamepad.digital_button(GamepadButtons.B)
+    const dpad_up = input.gamepad.digital_button(GamepadButtons.Up)
+    const dpad_down = input.gamepad.digital_button(GamepadButtons.Down)
 
-    const pressed = input.pointer.pressed_signal
-    const [screen_x, screen_y] = input.pointer.screen_axes
-
-    // Virtual buttons for incrementing/decrementing.
+    // pointer input
     const vb_palette_a_decrement = input.pointer.virtual_button(
       new Vec2(0, 100 + SQUARE_SIZE_PX),
       new Vec2(SQUARE_SIZE_PX, 8 * SQUARE_SIZE_PX)
@@ -70,33 +93,78 @@ export class BooleanColorSketch implements QuadMachineSketch {
     const vb_op_decrement = input.pointer.virtual_button(new Vec2(150, 0), new Vec2(100, 100))
     const vb_op_increment = input.pointer.virtual_button(new Vec2(250, 0), new Vec2(100, 100))
 
-    const up_arrow = input.keyboard.digital_key('ArrowUp')
-    const down_arrow = input.keyboard.digital_key('ArrowDown')
-    const up_released = new ReleaseSignal(up_arrow)
-    const down_released = new ReleaseSignal(down_arrow)
-    this.increment = new TwoButtonAxis(down_released, up_released)
+    // Merge the inputs, with priority Gamepad > Keyboard > Pointer
+    const palette_a_increment = new ReleaseSignal(
+      new DigitalCascade([
+        modify(gamepad_a, dpad_up),
+        modify(key_z, arrow_up),
+        vb_palette_a_increment
+      ])
+    )
+    const palette_a_decrement = new ReleaseSignal(
+      new DigitalCascade([
+        modify(gamepad_a, dpad_down),
+        modify(key_z, arrow_down),
+        vb_palette_a_decrement
+      ])
+    )
+    const palette_b_increment = new ReleaseSignal(
+      new DigitalCascade([
+        modify(gamepad_b, dpad_up),
+        modify(key_x, arrow_up),
+        vb_palette_b_increment
+      ])
+    )
+    const palette_b_decrement = new ReleaseSignal(
+      new DigitalCascade([
+        modify(gamepad_b, dpad_down),
+        modify(key_x, arrow_down),
+        vb_palette_b_decrement
+      ])
+    )
+    const op_increment = new ReleaseSignal(
+      new DigitalCascade([
+        no_modifiers(gamepad_a, gamepad_b, dpad_up),
+        no_modifiers(key_z, key_x, arrow_up),
+        vb_op_increment
+      ])
+    )
+    const op_decrement = new ReleaseSignal(
+      new DigitalCascade([
+        no_modifiers(gamepad_a, gamepad_b, dpad_down),
+        no_modifiers(key_z, key_x, arrow_down),
+        vb_op_decrement
+      ])
+    )
 
+    // finally, let's combine the increment/decrement pairs
+    // into a digital axis so the value is either -1.0 or 1.0
+    // when the button is released
+    this.palette_a_delta = new TwoButtonAxis(palette_a_decrement, palette_a_increment)
+    this.palette_b_delta = new TwoButtonAxis(palette_b_decrement, palette_b_increment)
+    this.op_delta = new TwoButtonAxis(op_decrement, op_increment)
+
+    // Create signals for the uniforms
     const palette_a = new ObserverSignal(() => this.palette_a)
     const palette_b = new ObserverSignal(() => this.palette_b)
     const boolean_op = new ObserverSignal(() => this.boolean_op)
-
     input.configure_uniforms({
       analog: [palette_a, palette_b, boolean_op]
     })
   }
 
   update(time: number) {
-    this.increment.update(time)
+    this.palette_a_delta.update(time)
+    this.palette_b_delta.update(time)
+    this.op_delta.update(time)
 
-    if (this.z_key.value) {
-      this.palette_a += this.increment.value
-      this.palette_a = mod(this.palette_a, PALETTE_COUNT)
-    } else if (this.x_key.value) {
-      this.palette_b += this.increment.value
-      this.palette_b = mod(this.palette_b, PALETTE_COUNT)
-    } else {
-      this.boolean_op += this.increment.value
-      this.boolean_op = mod(this.boolean_op, BOOLEAN_COUNT)
-    }
+    this.palette_a += this.palette_a_delta.value
+    this.palette_a = mod(this.palette_a, PALETTE_COUNT)
+
+    this.palette_b += this.palette_b_delta.value
+    this.palette_b = mod(this.palette_b, PALETTE_COUNT)
+
+    this.boolean_op += this.op_delta.value
+    this.boolean_op = mod(this.boolean_op, BOOLEAN_COUNT)
   }
 }
