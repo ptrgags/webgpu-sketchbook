@@ -1,5 +1,7 @@
 import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
+import { Vec2 } from '@/core/Vec2.js'
 import { AnalogConst, DigitalConst } from '@/input/const_signal.js'
+import { GamepadButtons } from '@/input/GamepadInput.js'
 import type { InputSystem } from '@/input/InputSystem.js'
 import { ReleaseSignal } from '@/input/ReleaseSignal.js'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from '@/input/Signal.js'
@@ -20,6 +22,9 @@ function mod(x: number, n: number) {
   return ((x % n) + n) % n
 }
 
+// Size of one square in the diagram
+const SQUARE_SIZE_PX = 500 / 17
+
 export class BooleanColorSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = BOOLEAN_COLOR_SHADER
@@ -34,8 +39,36 @@ export class BooleanColorSketch implements QuadMachineSketch {
   increment: AnalogSignal = new AnalogConst(0)
 
   configure_input(input: InputSystem) {
-    this.z_key = input.keyboard.digital_key('KeyZ')
-    this.x_key = input.keyboard.digital_key('KeyX')
+    // keyboard input
+    const z_key = input.keyboard.digital_key('KeyZ')
+    const x_key = input.keyboard.digital_key('KeyX')
+
+    // gamepad input
+    const gamepad_a = input.gamepad.digital_button(GamepadButtons.A)
+    const gamepad_b = input.gamepad.digital_button(GamepadButtons.B)
+
+    const pressed = input.pointer.pressed_signal
+    const [screen_x, screen_y] = input.pointer.screen_axes
+
+    // Virtual buttons for incrementing/decrementing.
+    const vb_palette_a_decrement = input.pointer.virtual_button(
+      new Vec2(0, 100 + SQUARE_SIZE_PX),
+      new Vec2(SQUARE_SIZE_PX, 8 * SQUARE_SIZE_PX)
+    )
+    const vb_palette_a_increment = input.pointer.virtual_button(
+      new Vec2(0, 100 + 9 * SQUARE_SIZE_PX),
+      new Vec2(SQUARE_SIZE_PX, 8 * SQUARE_SIZE_PX)
+    )
+    const vb_palette_b_decrement = input.pointer.virtual_button(
+      new Vec2(SQUARE_SIZE_PX, 100),
+      new Vec2(8 * SQUARE_SIZE_PX, SQUARE_SIZE_PX)
+    )
+    const vb_palette_b_increment = input.pointer.virtual_button(
+      new Vec2(9 * SQUARE_SIZE_PX, 100),
+      new Vec2(8 * SQUARE_SIZE_PX, SQUARE_SIZE_PX)
+    )
+    const vb_op_decrement = input.pointer.virtual_button(new Vec2(150, 0), new Vec2(100, 100))
+    const vb_op_increment = input.pointer.virtual_button(new Vec2(250, 0), new Vec2(100, 100))
 
     const up_arrow = input.keyboard.digital_key('ArrowUp')
     const down_arrow = input.keyboard.digital_key('ArrowDown')
