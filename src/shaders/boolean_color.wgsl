@@ -255,12 +255,12 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let venn_mask = venn * venn_boundary;
 
     // background layer
-    var color = vec3f(0.0);
+    var color = BLACK;
     color = mix(color, a_color, mask_a);
     color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
     
-    color = mix(color, vec3f(1.0, 0.0, 0.0), venn_mask);
+    color = mix(color, RED, venn_mask);
 
     return vec4f(color, 1.0);
 }
