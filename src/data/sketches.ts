@@ -6,6 +6,7 @@ import { MeltawaySketch } from '@/sketches/MeltawaySketch'
 import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
+import { BooleanColorSketch } from '@/sketches/BooleanColorSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -22,6 +23,25 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'boolean-color',
+    title: 'Boolean Color',
+    years: '2026-01',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new BooleanColorSketch()),
+    description: `
+    <p>
+      Touchscreen: Touch the palette on the left or top to cycle through gradient options. Touch the Venn diagram at the top to cycle through boolean operations.<br/>
+      Gamepad: D-pad up/down = cycle boolean operation. A + up/down = cycle palette A. B + up/down = cycle palette B.<br/>
+      Keyboard: up/down arrows = cycle boolean operation. Z + up/down = cycle palette A. X + up/down = cycle palette B.
+    </p>
+    <p>
+      This sketch explores what happens when you take two colors and combine them with a bitwise logic operator (such as A AND B or A XOR B).
+      Some image editors (such as Krita) allow these operations as blend modes. The resulting color can be hard to predict, so I made this tool
+      to explore the results for various color combinations.
+    </p>
+    `
+  },
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
