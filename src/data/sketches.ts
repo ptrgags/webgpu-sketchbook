@@ -27,7 +27,6 @@ export const SKETCHES: SketchMetadata[] = [
     id: 'boolean-color',
     title: 'Boolean Color',
     years: '2026-01',
-    is_lab: true,
     type: 'quad',
     make_machine: () => new QuadMachine(new BooleanColorSketch()),
     description: `
