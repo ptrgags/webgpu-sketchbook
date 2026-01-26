@@ -125,13 +125,16 @@ export class PointerInput {
     return [x_axis, y_axis]
   }
 
-  virtual_button(position_px: Vec2, dimensions_px: Vec2): DigitalSignal {
+  virtual_button(position_uv: Vec2, dimensions_uv: Vec2): DigitalSignal {
     return new ObserverSignal(() => {
+      const { width, height } = this.canvas.getBoundingClientRect()
+      const mouse_u = this.position.x / width
+      const mouse_v = this.position.y / height
       const mouse_over_button = in_bounds(
-        this.position.x - position_px.x,
-        this.position.y - position_px.y,
-        dimensions_px.x,
-        dimensions_px.y
+        mouse_u - position_uv.x,
+        mouse_v - position_uv.y,
+        dimensions_uv.x,
+        dimensions_uv.y
       )
       return this.pressed && mouse_over_button
     })

@@ -23,8 +23,15 @@ function mod(x: number, n: number) {
   return ((x % n) + n) % n
 }
 
-// Size of one square in the diagram
-const SQUARE_SIZE_PX = 500 / 17
+// I'm used to working with 500x700 px images, this is one pixel
+// in UV coordinates
+const PIXEL = new Vec2(1 / 500, 1 / 700)
+
+// The grid starts at 100 px down the canvas
+// It's initially a 16x16 px grid with 1 extra row and column
+const GRID_Y = 100 * PIXEL.y
+const ASPECT_RATIO = 5 / 7
+const SQUARE_SIZE = new Vec2(1 / 17, ASPECT_RATIO / 17)
 
 function modify(modifier: DigitalSignal, button: DigitalSignal): DigitalSignal {
   return new ObserverSignal(() => {
@@ -74,24 +81,31 @@ export class BooleanColorSketch implements QuadMachineSketch {
     const dpad_down = input.gamepad.digital_button(GamepadButtons.Down)
 
     // pointer input
+
     const vb_palette_a_decrement = input.pointer.virtual_button(
-      new Vec2(0, 100 + SQUARE_SIZE_PX),
-      new Vec2(SQUARE_SIZE_PX, 8 * SQUARE_SIZE_PX)
+      new Vec2(0, GRID_Y + SQUARE_SIZE.y),
+      new Vec2(SQUARE_SIZE.x, 8 * SQUARE_SIZE.y)
     )
     const vb_palette_a_increment = input.pointer.virtual_button(
-      new Vec2(0, 100 + 9 * SQUARE_SIZE_PX),
-      new Vec2(SQUARE_SIZE_PX, 8 * SQUARE_SIZE_PX)
+      new Vec2(0, GRID_Y + 9 * SQUARE_SIZE.y),
+      new Vec2(SQUARE_SIZE.x, 8 * SQUARE_SIZE.y)
     )
     const vb_palette_b_decrement = input.pointer.virtual_button(
-      new Vec2(SQUARE_SIZE_PX, 100),
-      new Vec2(8 * SQUARE_SIZE_PX, SQUARE_SIZE_PX)
+      new Vec2(SQUARE_SIZE.x, GRID_Y),
+      new Vec2(8 * SQUARE_SIZE.x, SQUARE_SIZE.y)
     )
     const vb_palette_b_increment = input.pointer.virtual_button(
-      new Vec2(9 * SQUARE_SIZE_PX, 100),
-      new Vec2(8 * SQUARE_SIZE_PX, SQUARE_SIZE_PX)
+      new Vec2(9 * SQUARE_SIZE.x, GRID_Y),
+      new Vec2(8 * SQUARE_SIZE.x, SQUARE_SIZE.y)
     )
-    const vb_op_decrement = input.pointer.virtual_button(new Vec2(150, 0), new Vec2(100, 100))
-    const vb_op_increment = input.pointer.virtual_button(new Vec2(250, 0), new Vec2(100, 100))
+    const vb_op_decrement = input.pointer.virtual_button(
+      new Vec2(150 * PIXEL.x, 0),
+      new Vec2(100 * PIXEL.x, 100 * PIXEL.y)
+    )
+    const vb_op_increment = input.pointer.virtual_button(
+      new Vec2(250 * PIXEL.x, 0),
+      new Vec2(100 * PIXEL.x, 100 * PIXEL.y)
+    )
 
     // Merge the inputs, with priority Gamepad > Keyboard > Pointer
     const palette_a_increment = new ReleaseSignal(
