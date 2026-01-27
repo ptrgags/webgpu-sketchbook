@@ -122,7 +122,7 @@ export class BooleanColorSketch implements QuadMachineSketch {
     const gamepad_buttons: ButtonLayout = {
       a_button: input.gamepad.digital_button(GamepadButtons.A),
       b_button: input.gamepad.digital_button(GamepadButtons.B),
-      x_button: input.gamepad.digital_button(GamepadButtons.B),
+      x_button: input.gamepad.digital_button(GamepadButtons.X),
       y_button: input.gamepad.digital_button(GamepadButtons.Y),
       up_button: input.gamepad.digital_button(GamepadButtons.Up),
       down_button: input.gamepad.digital_button(GamepadButtons.Down)
@@ -161,11 +161,11 @@ export class BooleanColorSketch implements QuadMachineSketch {
       )
     }
     const vb_bit_depth = {
-      decrement: input.pointer.virtual_button(
+      increment: input.pointer.virtual_button(
         new Vec2(0, 600 * PIXEL.y),
         new Vec2(250 * PIXEL.x, 100 * PIXEL.y)
       ),
-      increment: input.pointer.virtual_button(
+      decrement: input.pointer.virtual_button(
         new Vec2(250 * PIXEL.x, 600 * PIXEL.y),
         new Vec2(250 * PIXEL.x, 100 * PIXEL.y)
       )
