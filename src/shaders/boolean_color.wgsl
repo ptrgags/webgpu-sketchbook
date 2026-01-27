@@ -147,11 +147,13 @@ fn bitwise_color(color_a: vec3f, color_b: vec3f, op: u32) -> vec3f {
     return vec3f(combined) / 255.0;
 }
 
+const SDF_INFINITY: f32 = 1.0e10;
+
 fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
     switch(op) {
         case OP_FALSE: {
             // positive infinity, i.e. we're far away from the shape
-            return 1.0e10;
+            return SDF_INFINITY;
         } 
         case OP_AND: {
             return max(a, b);
@@ -199,11 +201,11 @@ fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
         }
         case OP_TRUE: {
             // negative infinity, i.e. we're guaranteed to be inside the shape
-            return -1.0e10;
+            return -SDF_INFINITY;
         }
         default: {
             // same as OP_FALSE
-            return 1.0e10;
+            return SDF_INFINITY;
         }
     }
 }
@@ -226,7 +228,7 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
 const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
 const CIRCLE_STEP: vec2f = vec2f(0.25, 0.0);
 fn all_bits(uv: vec2f) -> f32 {
-    var sdf = 10000.0;
+    var sdf = SDF_INFINITY;
 
     for (var i = 0; i < 8; i++) {
         let center = FIRST_CIRCLE_CENTER + f32(i) * CIRCLE_STEP;
@@ -238,7 +240,7 @@ fn all_bits(uv: vec2f) -> f32 {
 }
 
 fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
-    var sdf = 10000.0;
+    var sdf = SDF_INFINITY;
 
     for (var i: u32 = 0; i < bit_depth; i++) {
         let center = FIRST_CIRCLE_CENTER + f32(7 - i) * CIRCLE_STEP;
