@@ -57,7 +57,7 @@ export class BooleanColorSketch implements QuadMachineSketch {
   // start with an interesting operator, AND
   // See constants in the shader
   boolean_op: number = 1
-  bit_count: number = 1
+  bit_count: number = 3
 
   // these pulse 1.0 when the uniform should be incremented (mod n)
   // and -1.0 when the uniform should be decremented
@@ -196,8 +196,5 @@ export class BooleanColorSketch implements QuadMachineSketch {
 
     this.bit_count += this.bit_delta.value
     this.bit_count = mod(this.bit_count, MAX_BITS)
-    if (this.bit_delta.value != 0) {
-      console.log(this.bit_count)
-    }
   }
 }
