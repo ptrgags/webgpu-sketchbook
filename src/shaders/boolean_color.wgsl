@@ -208,6 +208,8 @@ fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
     }
 }
 
+
+const FEATHER: f32 = 0.005;
 fn venn_diagram(uv: vec2f, op: u32) -> f32 {
     const RADIUS_CIRCLE = 30.0 / 250.0;
     const CIRCLE_Y: f32 = 300.0 / 250.0;
@@ -217,12 +219,12 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
     let circle_b = sdf_circle(uv - CENTER_B, RADIUS_CIRCLE);
 
     let combined = sdf_boolean(circle_a, circle_b, op);
-    return 1.0 - step(0, combined);
+    return smoothstep(FEATHER, -FEATHER, combined);
 }
+
 
 const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
 const CIRCLE_STEP: vec2f = vec2f(0.25, 0.0);
-
 fn all_bits(uv: vec2f) -> f32 {
     var sdf = 10000.0;
 
@@ -232,7 +234,7 @@ fn all_bits(uv: vec2f) -> f32 {
         sdf = min(sdf, sdf_circle(uv - center, radius));
     }
 
-    return 1.0 - step(0.0, sdf);
+    return smoothstep(FEATHER, -FEATHER, sdf);
 }
 
 fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
@@ -244,7 +246,7 @@ fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
         sdf = min(sdf, sdf_circle(uv - center, radius));
     }
 
-    return 1.0 - step(0.0, sdf);
+    return smoothstep(FEATHER, -FEATHER, sdf);
 }
 
 @fragment
