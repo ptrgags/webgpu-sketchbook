@@ -50,11 +50,6 @@ const PALETTES = array(
     Gradient(WHITE, MAGENTA),
 );
 
-fn handle_out_of_gamut(srgb: vec3f, default_color: vec3f) -> vec3f {
-    let out_of_gamut = any(srgb < vec3f(0.0)) || any(srgb > vec3f(1.0));
-    return select(srgb, default_color, out_of_gamut);
-}
-
 fn palette_lookup(gradient: Gradient, step: f32, total_steps: f32) -> vec3f {
     let t = step / (total_steps - 1.0);
     let clamped_t = clamp(t, 0.0, 1.0);
