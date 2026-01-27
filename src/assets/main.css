@@ -8,7 +8,7 @@
   --color-accent-dark: oklch(0.8 0.8 115);
   --color-accent: oklch(from var(--color-accent-dark) calc(l + 0.2) c h);
 
-  --color-accent2: oklch(0.65 0.1652 249.21)
+  --color-accent2: oklch(0.65 0.1652 249.21);
 }
 
 body {
@@ -17,6 +17,11 @@ body {
   color: var(--color-text);
   background-color: var(--color-background-dark);
   font-family: sans-serif;
+}
+
+p {
+  line-height: 1.5em;
+  margin: 10px;
 }
 
 h1,
