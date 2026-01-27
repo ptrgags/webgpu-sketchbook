@@ -50,15 +50,8 @@ const PALETTES = array(
     Gradient(WHITE, MAGENTA),
 );
 
-const GRADIENT_STEPS: f32 = 16.0;
-
-fn handle_out_of_gamut(srgb: vec3f, default_color: vec3f) -> vec3f {
-    let out_of_gamut = any(srgb < vec3f(0.0)) || any(srgb > vec3f(1.0));
-    return select(srgb, default_color, out_of_gamut);
-}
-
-fn palette_lookup(gradient: Gradient, step: f32) -> vec3f {
-    let t = step / (GRADIENT_STEPS - 1.0);
+fn palette_lookup(gradient: Gradient, step: f32, total_steps: f32) -> vec3f {
+    let t = step / (total_steps - 1.0);
     let clamped_t = clamp(t, 0.0, 1.0);
     return mix(gradient.start_color, gradient.end_color, clamped_t);
 }
@@ -146,20 +139,21 @@ fn bitwise_op(a: vec3u, b: vec3u, op: u32) -> vec3u {
     }
 }
 
-fn bitwise_color(a: vec3f, b: vec3f, op: u32) -> vec3f {
-    let a_u32 = vec3u(255 * a);
-    let b_u32 = vec3u(255 * b);
+fn bitwise_color(color_a: vec3f, color_b: vec3f, op: u32) -> vec3f {
+    let a_quantized = vec3u(255.0 * color_a);
+    let b_quantized = vec3u(255.0 * color_b);
 
-    let combined_u32 = bitwise_op(a_u32, b_u32, op);
-    let combined_u8 = combined_u32 & vec3u(0xFF);
-    return vec3f(combined_u8) / 255;
+    let combined = bitwise_op(a_quantized, b_quantized, op) & vec3u(0xFF);
+    return vec3f(combined) / 255.0;
 }
+
+const SDF_INFINITY: f32 = 1.0e10;
 
 fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
     switch(op) {
         case OP_FALSE: {
             // positive infinity, i.e. we're far away from the shape
-            return 1.0e10;
+            return SDF_INFINITY;
         } 
         case OP_AND: {
             return max(a, b);
@@ -207,15 +201,17 @@ fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
         }
         case OP_TRUE: {
             // negative infinity, i.e. we're guaranteed to be inside the shape
-            return -1.0e10;
+            return -SDF_INFINITY;
         }
         default: {
             // same as OP_FALSE
-            return 1.0e10;
+            return SDF_INFINITY;
         }
     }
 }
 
+
+const FEATHER: f32 = 0.005;
 fn venn_diagram(uv: vec2f, op: u32) -> f32 {
     const RADIUS_CIRCLE = 30.0 / 250.0;
     const CIRCLE_Y: f32 = 300.0 / 250.0;
@@ -225,7 +221,35 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
     let circle_b = sdf_circle(uv - CENTER_B, RADIUS_CIRCLE);
 
     let combined = sdf_boolean(circle_a, circle_b, op);
-    return 1.0 - step(0, combined);
+    return smoothstep(FEATHER, -FEATHER, combined);
+}
+
+
+const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
+const CIRCLE_STEP: vec2f = vec2f(0.25, 0.0);
+const BIT_RADIUS: f32 = 0.1;
+fn all_bits(uv: vec2f) -> f32 {
+    var sdf = SDF_INFINITY;
+
+    for (var i = 0; i < 8; i++) {
+        let center = FIRST_CIRCLE_CENTER + f32(i) * CIRCLE_STEP;
+        let radius = BIT_RADIUS;
+        sdf = min(sdf, sdf_circle(uv - center, radius));
+    }
+
+    return smoothstep(FEATHER, -FEATHER, sdf);
+}
+
+fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
+    var sdf = SDF_INFINITY;
+
+    for (var i: u32 = 0; i < bit_depth; i++) {
+        let center = FIRST_CIRCLE_CENTER + f32(7 - i) * CIRCLE_STEP;
+        let radius = BIT_RADIUS;
+        sdf = min(sdf, sdf_circle(uv - center, radius));
+    }
+
+    return smoothstep(FEATHER, -FEATHER, sdf);
 }
 
 @fragment
@@ -233,34 +257,47 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var from_corner = (input.uv - vec2f(-1.0, 1.0)) / 2;
     from_corner.y = -from_corner.y;
 
-    let grid_id = floor((GRADIENT_STEPS + 1) * from_corner);
-    let a_step = grid_id.y - 1.0;
-    let b_step = grid_id.x - 1.0;
-
     let palette_a_index = u32(get_analog(0));
     let palette_b_index = u32(get_analog(1));
     let selected_op = u32(get_analog(2));
+    let bit_depth = u32(get_analog(3)) + 1;
 
-    let a_color = palette_lookup(PALETTES[palette_a_index], a_step);
-    let b_color = palette_lookup(PALETTES[palette_b_index], b_step);
+    let gradient_steps = f32(1 << bit_depth);
+
+    const SWATCH_THICKNESS: f32 = 1/17.0;
+    const TABLE_WIDTH: f32 = 16.0 / 17.0;
+
+    let table_uv = (from_corner - SWATCH_THICKNESS) / TABLE_WIDTH;
+    let grid_id = floor(gradient_steps * table_uv);
+    let a_step = grid_id.y;
+    let b_step = grid_id.x;
+
+    let a_color = palette_lookup(PALETTES[palette_a_index], a_step, gradient_steps);
+    let b_color = palette_lookup(PALETTES[palette_b_index], b_step, gradient_steps);
     let mixed_color = bitwise_color(a_color, b_color, selected_op);
 
-    let mask_a = rect_mask(vec2f(0, 1), vec2f(1, 16), grid_id);
-    let mask_b = rect_mask(vec2f(1, 0), vec2f(16, 1), grid_id);
-    let mask_table = rect_mask(vec2f(1, 1), vec2f(16, 16), grid_id);
+    let mask_a = rect_mask(vec2f(0, SWATCH_THICKNESS), vec2f(SWATCH_THICKNESS, TABLE_WIDTH), from_corner);
+    let mask_b = rect_mask(vec2f(SWATCH_THICKNESS, 0), vec2f(TABLE_WIDTH, SWATCH_THICKNESS), from_corner);
+    let mask_table = rect_mask(vec2f(SWATCH_THICKNESS), vec2f(TABLE_WIDTH), from_corner);
 
-    // venn  diagram
+    // venn diagram to show the boolean operation
     let venn = venn_diagram(input.uv, selected_op);
     let venn_boundary = rect_mask(vec2f(-100/250.0, 250.0 / 250.0), vec2f(200.0 / 250.0, 1.0), input.uv);
     let venn_mask = venn * venn_boundary;
+
+    let mask_all_bits = all_bits(input.uv);
+    let mask_selected_bits = some_bits(input.uv, bit_depth);
+    const GREY20: vec3f = vec3f(0.2);
+    const ORANGE: vec3f = vec3f(1.0, 0.5, 0.0);
 
     // background layer
     var color = BLACK;
     color = mix(color, a_color, mask_a);
     color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
-    
     color = mix(color, RED, venn_mask);
+    color = mix(color, GREY20, mask_all_bits);
+    color = mix(color, ORANGE, mask_selected_bits);
 
     return vec4f(color, 1.0);
 }

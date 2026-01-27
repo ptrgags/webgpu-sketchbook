@@ -30,10 +30,12 @@ export const SKETCHES: SketchMetadata[] = [
     type: 'quad',
     make_machine: () => new QuadMachine(new BooleanColorSketch()),
     description: `
+    <h3>Controls</h3>
     <p>
-      Touchscreen: Touch the palette on the left or top to cycle through gradient options. Touch the Venn diagram at the top to cycle through boolean operations.<br/>
-      Gamepad: D-pad up/down = cycle boolean operation. A + up/down = cycle palette A. B + up/down = cycle palette B.<br/>
-      Keyboard: up/down arrows = cycle boolean operation. Z + up/down = cycle palette A. X + up/down = cycle palette B.
+      <b>Cycle Palette A</b>: A + D-pad up/down (Gamepad), Z + up/down arrow (Keyboard), Click the top/bottom of left palette (Touchscreen)<br/>
+      <b>Cycle Palette B</b>: B + D-pad up/down (Gamepad), X + up/down arrow (Keyboard), Click the left/right of the top palette (Touchscreen)<br/>
+      <b>Select Boolean Operator</b>: X + D-pad up/down (Gamepad), A + up/down arrow (Keyboard), Click the left/right of the Venn Diagram (Touchscreen)<br/>
+      <b>Adjust Bit Depth</b>: Y + D-pad up/down (Gamepad), S + up/down arrow (Keyboard), Click the the left/right side of the bit visualization at the bottom (Touchscreen)<br/>
     </p>
     <p>
       This sketch explores what happens when you take two colors and combine them with a bitwise logic operator (such as A AND B or A XOR B).
