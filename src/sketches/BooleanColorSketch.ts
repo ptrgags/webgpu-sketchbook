@@ -162,11 +162,11 @@ export class BooleanColorSketch implements QuadMachineSketch {
     }
     const vb_bit_depth = {
       decrement: input.pointer.virtual_button(
-        new Vec2(0, 400 * PIXEL.y),
+        new Vec2(0, 600 * PIXEL.y),
         new Vec2(250 * PIXEL.x, 100 * PIXEL.y)
       ),
       increment: input.pointer.virtual_button(
-        new Vec2(250 * PIXEL.x, 400 * PIXEL.y),
+        new Vec2(250 * PIXEL.x, 600 * PIXEL.y),
         new Vec2(250 * PIXEL.x, 100 * PIXEL.y)
       )
     }
