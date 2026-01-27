@@ -232,17 +232,21 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let gradient_steps = f32(1 << bit_count);
 
-    let grid_id = floor((gradient_steps + 1) * from_corner);
-    let a_step = grid_id.y - 1.0;
-    let b_step = grid_id.x - 1.0;
+    const SWATCH_THICKNESS: f32 = 1/17.0;
+    const TABLE_WIDTH: f32 = 16.0 / 17.0;
+
+    let table_uv = (from_corner - SWATCH_THICKNESS) / TABLE_WIDTH;
+    let grid_id = floor(gradient_steps * table_uv);
+    let a_step = grid_id.y;
+    let b_step = grid_id.x;
 
     let a_color = palette_lookup(PALETTES[palette_a_index], a_step, gradient_steps);
     let b_color = palette_lookup(PALETTES[palette_b_index], b_step, gradient_steps);
     let mixed_color = bitwise_color(a_color, b_color, selected_op);
 
-    let mask_a = rect_mask(vec2f(0, 1), vec2f(1, gradient_steps), grid_id);
-    let mask_b = rect_mask(vec2f(1, 0), vec2f(gradient_steps, 1), grid_id);
-    let mask_table = rect_mask(vec2f(1, 1), vec2f(gradient_steps), grid_id);
+    let mask_a = rect_mask(vec2f(0, SWATCH_THICKNESS), vec2f(SWATCH_THICKNESS, TABLE_WIDTH), from_corner);
+    let mask_b = rect_mask(vec2f(SWATCH_THICKNESS, 0), vec2f(TABLE_WIDTH, SWATCH_THICKNESS), from_corner);
+    let mask_table = rect_mask(vec2f(SWATCH_THICKNESS), vec2f(TABLE_WIDTH), from_corner);
 
     // venn  diagram
     let venn = venn_diagram(input.uv, selected_op);
