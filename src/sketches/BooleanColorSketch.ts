@@ -12,6 +12,7 @@ import BOOLEAN_COLOR_SHADER from '@/shaders/boolean_color.wgsl?url'
 
 const BOOLEAN_COUNT = 16
 const PALETTE_COUNT = 28
+const MAX_BITS = 8
 
 /**
  * Because JavaScript uses trunc-based modulo, not floor based.
@@ -39,13 +40,9 @@ function modify(modifier: DigitalSignal, button: DigitalSignal): DigitalSignal {
   })
 }
 
-function no_modifiers(
-  mod_a: DigitalSignal,
-  mod_b: DigitalSignal,
-  button: DigitalSignal
-): DigitalSignal {
+function no_modifiers(button: DigitalSignal, modifiers: DigitalSignal[]): DigitalSignal {
   return new ObserverSignal(() => {
-    return !mod_a.value && !mod_b.value && button.value
+    return button.value && modifiers.every((x) => !x.value)
   })
 }
 
@@ -60,23 +57,27 @@ export class BooleanColorSketch implements QuadMachineSketch {
   // start with an interesting operator, AND
   // See constants in the shader
   boolean_op: number = 1
+  bit_count: number = 1
 
   // these pulse 1.0 when the uniform should be incremented (mod n)
   // and -1.0 when the uniform should be decremented
   palette_a_delta: AnalogSignal = new AnalogConst(0.0)
   palette_b_delta: AnalogSignal = new AnalogConst(0.0)
   op_delta: AnalogSignal = new AnalogConst(0.0)
+  bit_delta: AnalogSignal = new AnalogConst(0.0)
 
   configure_input(input: InputSystem) {
     // keyboard input
     const key_z = input.keyboard.digital_key('KeyZ')
     const key_x = input.keyboard.digital_key('KeyX')
+    const key_a = input.keyboard.digital_key('KeyA')
     const arrow_up = input.keyboard.digital_key('ArrowUp')
     const arrow_down = input.keyboard.digital_key('ArrowDown')
 
     // gamepad input
     const gamepad_a = input.gamepad.digital_button(GamepadButtons.A)
     const gamepad_b = input.gamepad.digital_button(GamepadButtons.B)
+    const gamepad_y = input.gamepad.digital_button(GamepadButtons.Y)
     const dpad_up = input.gamepad.digital_button(GamepadButtons.Up)
     const dpad_down = input.gamepad.digital_button(GamepadButtons.Down)
 
@@ -136,17 +137,26 @@ export class BooleanColorSketch implements QuadMachineSketch {
         vb_palette_b_decrement
       ])
     )
+    const bit_increment = new ReleaseSignal(
+      new DigitalCascade([modify(gamepad_y, dpad_up), modify(key_a, arrow_up)])
+    )
+    const bit_decrement = new ReleaseSignal(
+      new DigitalCascade([modify(gamepad_y, dpad_down), modify(key_a, arrow_down)])
+    )
+
+    const all_keyboard_modifiers = [key_z, key_x, key_a]
+    const all_gamepad_modifiers = [gamepad_a, gamepad_b, gamepad_y]
     const op_increment = new ReleaseSignal(
       new DigitalCascade([
-        no_modifiers(gamepad_a, gamepad_b, dpad_up),
-        no_modifiers(key_z, key_x, arrow_up),
+        no_modifiers(dpad_up, all_gamepad_modifiers),
+        no_modifiers(arrow_up, all_keyboard_modifiers),
         vb_op_increment
       ])
     )
     const op_decrement = new ReleaseSignal(
       new DigitalCascade([
-        no_modifiers(gamepad_a, gamepad_b, dpad_down),
-        no_modifiers(key_z, key_x, arrow_down),
+        no_modifiers(dpad_down, all_gamepad_modifiers),
+        no_modifiers(arrow_down, all_keyboard_modifiers),
         vb_op_decrement
       ])
     )
@@ -157,13 +167,15 @@ export class BooleanColorSketch implements QuadMachineSketch {
     this.palette_a_delta = new TwoButtonAxis(palette_a_decrement, palette_a_increment)
     this.palette_b_delta = new TwoButtonAxis(palette_b_decrement, palette_b_increment)
     this.op_delta = new TwoButtonAxis(op_decrement, op_increment)
+    this.bit_delta = new TwoButtonAxis(bit_decrement, bit_increment)
 
     // Create signals for the uniforms
     const palette_a = new ObserverSignal(() => this.palette_a)
     const palette_b = new ObserverSignal(() => this.palette_b)
     const boolean_op = new ObserverSignal(() => this.boolean_op)
+    const bit_count = new ObserverSignal(() => this.bit_count)
     input.configure_uniforms({
-      analog: [palette_a, palette_b, boolean_op]
+      analog: [palette_a, palette_b, boolean_op, bit_count]
     })
   }
 
@@ -171,6 +183,7 @@ export class BooleanColorSketch implements QuadMachineSketch {
     this.palette_a_delta.update(time)
     this.palette_b_delta.update(time)
     this.op_delta.update(time)
+    this.bit_delta.update(time)
 
     this.palette_a += this.palette_a_delta.value
     this.palette_a = mod(this.palette_a, PALETTE_COUNT)
@@ -180,5 +193,11 @@ export class BooleanColorSketch implements QuadMachineSketch {
 
     this.boolean_op += this.op_delta.value
     this.boolean_op = mod(this.boolean_op, BOOLEAN_COUNT)
+
+    this.bit_count += this.bit_delta.value
+    this.bit_count = mod(this.bit_count, MAX_BITS)
+    if (this.bit_delta.value != 0) {
+      console.log(this.bit_count)
+    }
   }
 }

@@ -50,15 +50,13 @@ const PALETTES = array(
     Gradient(WHITE, MAGENTA),
 );
 
-const GRADIENT_STEPS: f32 = 16.0;
-
 fn handle_out_of_gamut(srgb: vec3f, default_color: vec3f) -> vec3f {
     let out_of_gamut = any(srgb < vec3f(0.0)) || any(srgb > vec3f(1.0));
     return select(srgb, default_color, out_of_gamut);
 }
 
-fn palette_lookup(gradient: Gradient, step: f32) -> vec3f {
-    let t = step / (GRADIENT_STEPS - 1.0);
+fn palette_lookup(gradient: Gradient, step: f32, total_steps: f32) -> vec3f {
+    let t = step / (total_steps - 1.0);
     let clamped_t = clamp(t, 0.0, 1.0);
     return mix(gradient.start_color, gradient.end_color, clamped_t);
 }
@@ -146,13 +144,17 @@ fn bitwise_op(a: vec3u, b: vec3u, op: u32) -> vec3u {
     }
 }
 
-fn bitwise_color(a: vec3f, b: vec3f, op: u32) -> vec3f {
-    let a_u32 = vec3u(255 * a);
-    let b_u32 = vec3u(255 * b);
+fn bitwise_color(a: vec3f, b: vec3f, op: u32, bits: u32) -> vec3f {
+    let mask_u32 = u32((1 << bits) - 1);
+    let mask_f32 = f32(mask_u32);
 
-    let combined_u32 = bitwise_op(a_u32, b_u32, op);
-    let combined_u8 = combined_u32 & vec3u(0xFF);
-    return vec3f(combined_u8) / 255;
+    let a_quantized = vec3u(mask_f32 * a);
+    let b_quantized = vec3u(mask_f32 * b);
+    let combined = bitwise_op(a_quantized, b_quantized, op);
+
+    // Mask out the lowest N bits
+    let masked = combined & vec3u(mask_u32);
+    return vec3f(masked) / mask_f32;
 }
 
 fn sdf_boolean(a: f32, b: f32, op: u32) -> f32 {
@@ -233,21 +235,24 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var from_corner = (input.uv - vec2f(-1.0, 1.0)) / 2;
     from_corner.y = -from_corner.y;
 
-    let grid_id = floor((GRADIENT_STEPS + 1) * from_corner);
-    let a_step = grid_id.y - 1.0;
-    let b_step = grid_id.x - 1.0;
-
     let palette_a_index = u32(get_analog(0));
     let palette_b_index = u32(get_analog(1));
     let selected_op = u32(get_analog(2));
+    let bit_count = u32(get_analog(3)) + 1;
 
-    let a_color = palette_lookup(PALETTES[palette_a_index], a_step);
-    let b_color = palette_lookup(PALETTES[palette_b_index], b_step);
-    let mixed_color = bitwise_color(a_color, b_color, selected_op);
+    let gradient_steps = f32(1 << bit_count);
 
-    let mask_a = rect_mask(vec2f(0, 1), vec2f(1, 16), grid_id);
-    let mask_b = rect_mask(vec2f(1, 0), vec2f(16, 1), grid_id);
-    let mask_table = rect_mask(vec2f(1, 1), vec2f(16, 16), grid_id);
+    let grid_id = floor((gradient_steps + 1) * from_corner);
+    let a_step = grid_id.y - 1.0;
+    let b_step = grid_id.x - 1.0;
+
+    let a_color = palette_lookup(PALETTES[palette_a_index], a_step, gradient_steps);
+    let b_color = palette_lookup(PALETTES[palette_b_index], b_step, gradient_steps);
+    let mixed_color = bitwise_color(a_color, b_color, selected_op, bit_count);
+
+    let mask_a = rect_mask(vec2f(0, 1), vec2f(1, gradient_steps), grid_id);
+    let mask_b = rect_mask(vec2f(1, 0), vec2f(gradient_steps, 1), grid_id);
+    let mask_table = rect_mask(vec2f(1, 1), vec2f(gradient_steps), grid_id);
 
     // venn  diagram
     let venn = venn_diagram(input.uv, selected_op);
@@ -255,7 +260,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let venn_mask = venn * venn_boundary;
 
     // background layer
-    var color = BLACK;
+    var color = BLACK + 0.1;
     color = mix(color, a_color, mask_a);
     color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
