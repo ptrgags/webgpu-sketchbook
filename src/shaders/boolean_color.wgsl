@@ -227,12 +227,13 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
 
 const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
 const CIRCLE_STEP: vec2f = vec2f(0.25, 0.0);
+const BIT_RADIUS: f32 = 0.1;
 fn all_bits(uv: vec2f) -> f32 {
     var sdf = SDF_INFINITY;
 
     for (var i = 0; i < 8; i++) {
         let center = FIRST_CIRCLE_CENTER + f32(i) * CIRCLE_STEP;
-        let radius = 0.1;
+        let radius = BIT_RADIUS;
         sdf = min(sdf, sdf_circle(uv - center, radius));
     }
 
@@ -244,7 +245,7 @@ fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
 
     for (var i: u32 = 0; i < bit_depth; i++) {
         let center = FIRST_CIRCLE_CENTER + f32(7 - i) * CIRCLE_STEP;
-        let radius = 0.1;
+        let radius = BIT_RADIUS;
         sdf = min(sdf, sdf_circle(uv - center, radius));
     }
 
