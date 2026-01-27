@@ -220,6 +220,20 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
     return 1.0 - step(0, combined);
 }
 
+const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
+
+fn all_bits(uv: vec2f) -> f32 {
+    var sdf = 10000.0;
+
+    for (var i = 0; i < 8; i++) {
+        let center = FIRST_CIRCLE_CENTER + vec2f(f32(i) * 1.0/4.0, 0.0);
+        let radius = 0.1;
+        sdf = min(sdf, sdf_circle(uv - center, radius));
+    }
+
+    return 1.0 - step(0.0, sdf);
+}
+
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var from_corner = (input.uv - vec2f(-1.0, 1.0)) / 2;
@@ -228,9 +242,9 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let palette_a_index = u32(get_analog(0));
     let palette_b_index = u32(get_analog(1));
     let selected_op = u32(get_analog(2));
-    let bit_count = u32(get_analog(3)) + 1;
+    let bit_depth = u32(get_analog(3)) + 1;
 
-    let gradient_steps = f32(1 << bit_count);
+    let gradient_steps = f32(1 << bit_depth);
 
     const SWATCH_THICKNESS: f32 = 1/17.0;
     const TABLE_WIDTH: f32 = 16.0 / 17.0;
@@ -248,18 +262,22 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let mask_b = rect_mask(vec2f(SWATCH_THICKNESS, 0), vec2f(TABLE_WIDTH, SWATCH_THICKNESS), from_corner);
     let mask_table = rect_mask(vec2f(SWATCH_THICKNESS), vec2f(TABLE_WIDTH), from_corner);
 
-    // venn  diagram
+    // venn diagram to show the boolean operation
     let venn = venn_diagram(input.uv, selected_op);
     let venn_boundary = rect_mask(vec2f(-100/250.0, 250.0 / 250.0), vec2f(200.0 / 250.0, 1.0), input.uv);
     let venn_mask = venn * venn_boundary;
 
+    let mask_all_bits = all_bits(input.uv);
+    //let mask_selected_bits = some_bits(input.uv, bit_depth);
+
     // background layer
-    var color = BLACK + 0.1;
+    var color = BLACK;
     color = mix(color, a_color, mask_a);
     color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
-    
     color = mix(color, RED, venn_mask);
+    color = mix(color, vec3f(0.2), mask_all_bits);
+    //color = mix(color, ORANGE, some_bits);
 
     return vec4f(color, 1.0);
 }
