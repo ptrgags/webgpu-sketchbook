@@ -221,12 +221,25 @@ fn venn_diagram(uv: vec2f, op: u32) -> f32 {
 }
 
 const FIRST_CIRCLE_CENTER: vec2f = vec2f(-7.0/8.0, -12.0/10);
+const CIRCLE_STEP: vec2f = vec2f(0.25, 0.0);
 
 fn all_bits(uv: vec2f) -> f32 {
     var sdf = 10000.0;
 
     for (var i = 0; i < 8; i++) {
-        let center = FIRST_CIRCLE_CENTER + vec2f(f32(i) * 1.0/4.0, 0.0);
+        let center = FIRST_CIRCLE_CENTER + f32(i) * CIRCLE_STEP;
+        let radius = 0.1;
+        sdf = min(sdf, sdf_circle(uv - center, radius));
+    }
+
+    return 1.0 - step(0.0, sdf);
+}
+
+fn some_bits(uv: vec2f, bit_depth: u32) -> f32 {
+    var sdf = 10000.0;
+
+    for (var i: u32 = 0; i < bit_depth; i++) {
+        let center = FIRST_CIRCLE_CENTER + f32(7 - i) * CIRCLE_STEP;
         let radius = 0.1;
         sdf = min(sdf, sdf_circle(uv - center, radius));
     }
@@ -268,7 +281,9 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let venn_mask = venn * venn_boundary;
 
     let mask_all_bits = all_bits(input.uv);
-    //let mask_selected_bits = some_bits(input.uv, bit_depth);
+    let mask_selected_bits = some_bits(input.uv, bit_depth);
+    const GREY20: vec3f = vec3f(0.2);
+    const ORANGE: vec3f = vec3f(1.0, 0.5, 0.0);
 
     // background layer
     var color = BLACK;
@@ -276,8 +291,8 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     color = mix(color, b_color, mask_b);
     color = mix(color, mixed_color, mask_table);
     color = mix(color, RED, venn_mask);
-    color = mix(color, vec3f(0.2), mask_all_bits);
-    //color = mix(color, ORANGE, some_bits);
+    color = mix(color, GREY20, mask_all_bits);
+    color = mix(color, ORANGE, mask_selected_bits);
 
     return vec4f(color, 1.0);
 }
