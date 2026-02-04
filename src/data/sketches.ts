@@ -1,12 +1,12 @@
 import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
-import { OklchVisualizerSketch } from '@/sketches/OklchVisualizerSketch'
-import { EyesSketch } from '@/sketches/EyesSketch'
-import { MeltawaySketch } from '@/sketches/MeltawaySketch'
-import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
-import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
+import { OklchVisualizerSketch } from '@/sketches/OklchVisualizer/OklchVisualizerSketch'
+import { EyesSketch } from '@/sketches/Eyes/EyesSketch'
+import { MeltawaySketch } from '@/sketches/Meltaway/MeltawaySketch'
+import { StripeyRingSketch } from '@/sketches/StripeyRing/StripeyRingSketch'
+import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
-import { BooleanColorSketch } from '@/sketches/BooleanColorSketch.js'
+import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
