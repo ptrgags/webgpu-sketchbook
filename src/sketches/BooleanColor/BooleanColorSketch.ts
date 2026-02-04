@@ -8,7 +8,7 @@ import { ReleaseSignal } from '@/input/ReleaseSignal.js'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from '@/input/Signal.js'
 import { TwoButtonAxis } from '@/input/TwoButtonAxis.js'
 import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
-import BOOLEAN_COLOR_SHADER from '@/shaders/boolean_color.wgsl?url'
+import SHADER from './boolean_color.wgsl?url'
 
 const BOOLEAN_COUNT = 16
 const PALETTE_COUNT = 28
@@ -91,7 +91,7 @@ function make_delta_signal(
 
 export class BooleanColorSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
-  shader_url: string = BOOLEAN_COLOR_SHADER
+  shader_url: string = SHADER
   imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.srgb, SHADER_LIBRARY.oklch]
 
   // Uniform values

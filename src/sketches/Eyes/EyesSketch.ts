@@ -9,11 +9,11 @@ import type { AnalogSignal } from '@/input/Signal'
 import { TriggerSignal } from '@/input/TriggerSignal'
 import { AnalogConst } from '@/input/const_signal'
 import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
-import EYES_SHADER from '@/shaders/eyes.wgsl?url'
+import SHADER from './eyes.wgsl?url'
 
 export class EyesSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
-  shader_url: string = EYES_SHADER
+  shader_url: string = SHADER
   position: Vec2
   x_axis: AnalogSignal = new AnalogConst(0.0)
   y_axis: AnalogSignal = new AnalogConst(0.0)
