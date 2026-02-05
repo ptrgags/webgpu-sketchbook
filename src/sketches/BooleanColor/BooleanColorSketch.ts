@@ -92,7 +92,12 @@ function make_delta_signal(
 export class BooleanColorSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = SHADER
-  imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.srgb, SHADER_LIBRARY.oklch]
+  imports = [
+    SHADER_LIBRARY.sdf2d,
+    SHADER_LIBRARY.srgb,
+    SHADER_LIBRARY.oklch,
+    SHADER_LIBRARY.rect_mask
+  ]
 
   // Uniform values
   palette_a: number = 0

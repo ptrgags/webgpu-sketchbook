@@ -5,5 +5,5 @@ import SHADER from './scrambled_shapes.wgsl?url'
 export class ScrambledShapesSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = SHADER
-  imports = [SHADER_LIBRARY.sdf2d]
+  imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.rect_mask]
 }
