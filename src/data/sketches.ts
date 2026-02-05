@@ -7,6 +7,7 @@ import { StripeyRingSketch } from '@/sketches/StripeyRing/StripeyRingSketch'
 import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
+import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -23,6 +24,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'scrambled-shapes',
+    title: 'Scrambled Shapes',
+    years: '2026-02',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new ScrambledShapesSketch()),
+    description: 'TODO: Description'
+  },
   {
     id: 'boolean-color',
     title: 'Boolean Color',

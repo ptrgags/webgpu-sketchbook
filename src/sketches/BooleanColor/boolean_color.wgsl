@@ -56,14 +56,6 @@ fn palette_lookup(gradient: Gradient, step: f32, total_steps: f32) -> vec3f {
     return mix(gradient.start_color, gradient.end_color, clamped_t);
 }
 
-
-fn rect_mask(position: vec2f, dimensions: vec2f, uv: vec2f) -> f32 {
-    let top_left = step(position, uv);
-    let bottom_right = 1.0 - step(position + dimensions, uv);
-    let masks = top_left * bottom_right;
-    return masks.x * masks.y;
-}
-
 const OP_FALSE: u32 = 0;
 const OP_AND: u32 = 1;
 const OP_A_NOT_IMPLIES_B: u32 = 2;
@@ -276,9 +268,9 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let b_color = palette_lookup(PALETTES[palette_b_index], b_step, gradient_steps);
     let mixed_color = bitwise_color(a_color, b_color, selected_op);
 
-    let mask_a = rect_mask(vec2f(0, SWATCH_THICKNESS), vec2f(SWATCH_THICKNESS, TABLE_WIDTH), from_corner);
-    let mask_b = rect_mask(vec2f(SWATCH_THICKNESS, 0), vec2f(TABLE_WIDTH, SWATCH_THICKNESS), from_corner);
-    let mask_table = rect_mask(vec2f(SWATCH_THICKNESS), vec2f(TABLE_WIDTH), from_corner);
+    let mask_a = rect_mask(from_corner, vec2f(0, SWATCH_THICKNESS), vec2f(SWATCH_THICKNESS, TABLE_WIDTH));
+    let mask_b = rect_mask(from_corner, vec2f(SWATCH_THICKNESS, 0), vec2f(TABLE_WIDTH, SWATCH_THICKNESS));
+    let mask_table = rect_mask(from_corner, vec2f(SWATCH_THICKNESS), vec2f(TABLE_WIDTH));
 
     // venn diagram to show the boolean operation
     let venn = venn_diagram(input.uv, selected_op);
