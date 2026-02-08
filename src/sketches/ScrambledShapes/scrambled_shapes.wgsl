@@ -13,12 +13,17 @@ const CIRCLES = array(
 );
 const CIRCLE_COUNT = 3;
 
+struct MirrorCell {
+    id: vec2i,
+    folded_position: vec2f,
+}
+
 /**
  * Given a position (moving in a straight line over time), fold space
  * at the boundaries of a rectangle so the straight line gets folded into
  * a bouncing line.
  */
-fn bounce(pos: vec2f, corner: vec2f, dimensions: vec2f) -> vec2f {
+fn fold_space(pos: vec2f, corner: vec2f, dimensions: vec2f) -> MirrorCell {
     // Switch to a coordinate system that starts at 0 at the rectangle
     // corner and is (1, 1) at corner + dimensions.
     let pos_rect = (pos - corner)/dimensions;
@@ -35,7 +40,8 @@ fn bounce(pos: vec2f, corner: vec2f, dimensions: vec2f) -> vec2f {
     let mirrored_uv = select(cell_uv, 1.0 - cell_uv, cell_id % 2 == vec2i(0));
 
     // Convert back to the original coordinate space
-    return corner + mirrored_uv * dimensions;
+    let folded_position = corner + mirrored_uv * dimensions;
+    return MirrorCell(cell_id, folded_position);
 }
 
 const SCREEN_DIMS = vec2f(2.0, 2.0 * 7.0/5.0);
@@ -46,14 +52,13 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
 
     let bounce_corner = SCREEN_CORNER + circle.radius;
     let bounce_dimensions = SCREEN_DIMS - 2.0 * circle.radius;
-    let center = bounce(position, bounce_corner, bounce_dimensions);
+    let cell = fold_space(position, bounce_corner, bounce_dimensions);
 
-    let dist_circle = sdf_circle(uv - center, circle.radius);
+    let dist_circle = sdf_circle(uv - cell.folded_position, circle.radius);
     let circle_mask = 1.0 - step(0.0, dist_circle);
 
     const CIRCLE_COLOR = vec3f(1.0, 0.0, 0.0);
     return vec4f(CIRCLE_COLOR, circle_mask);
-
 }
 
 
