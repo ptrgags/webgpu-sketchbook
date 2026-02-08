@@ -92,7 +92,29 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
     const SEMITONE_OFFSET = vec2i(1, 5);
     let semitones = modulo(dot(cell.id, SEMITONE_OFFSET), 12);
 
-    let circle_color = PALETTE[semitones];
+    let base_color = PALETTE[semitones];
+
+    const THICKNESS = 0.01;
+    const FEATHER = 0.001;
+    var circle_color = mix(
+        vec3f(0), 
+        base_color,
+        smoothstep(
+            THICKNESS + FEATHER,
+            THICKNESS,
+            dist_circle
+        )
+    );
+    circle_color = mix(
+        circle_color, 
+        vec3f(1), 
+        smoothstep(
+            - THICKNESS, 
+            - circle.radius, 
+            dist_circle
+        )
+    );
+
     return vec4f(circle_color, circle_mask);
 }
 
@@ -105,6 +127,6 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
         let circle = bouncing_circle(input.uv, CIRCLES[i]);
         color = mix(color, circle.rgb, circle.a);
     }
-
+    
     return vec4f(color, 1.0);
 }
