@@ -11,11 +11,14 @@ struct BouncingCircle {
 const START_POINT = vec2f(0.0, 0.0);
 
 const CIRCLES = array(
-    BouncingCircle(START_POINT, vec2f(1.0, 0.5), 0.1),
-    BouncingCircle(START_POINT, vec2f(-1.5, 1.0), 0.2),
-    BouncingCircle(START_POINT, vec2f(-0.25, 1.5), 0.3)
+    BouncingCircle(START_POINT, vec2f(1.0, 0.5), 0.2),
+    BouncingCircle(START_POINT, vec2f(-1.5, 1.0), 0.3),
+    BouncingCircle(START_POINT, vec2f(-0.25, 1.5), 0.4),
+    BouncingCircle(START_POINT, vec2f(-0.5, -0.4), 0.3),
+    BouncingCircle(START_POINT, vec2f(-2, -0.2), 0.4),
+    BouncingCircle(START_POINT, vec2f(2, 2), 0.2),
 );
-const CIRCLE_COUNT = 3;
+const CIRCLE_COUNT = 6;
 
 struct MirrorCell {
     id: vec2i,
@@ -76,7 +79,6 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
     let cell = fold_space(position, bounce_corner, bounce_dimensions);
 
     let dist_circle = sdf_circle(uv - cell.folded_position, circle.radius);
-    let circle_mask = 1.0 - step(0.0, dist_circle);
 
     // Pick a color based on which cell we're in.
     // To describe this, I'm using a musical analogy of a bass guitar
@@ -115,18 +117,20 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
         )
     );
 
-    return vec4f(circle_color, circle_mask);
+    return vec4f(circle_color, dist_circle);
 }
 
 
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var color = vec3f(0.0, 0.0, 0.0);
-
+    var dist = 1.0e10;
     for (var i = 0; i < CIRCLE_COUNT; i++) {
         let circle = bouncing_circle(input.uv, CIRCLES[i]);
-        color = mix(color, circle.rgb, circle.a);
+        dist = sdf_union(dist, circle.a);
+
+        color = bitwise_color(color, circle.rgb, OP_OR);
     }
-    
+
     return vec4f(color, 1.0);
 }
