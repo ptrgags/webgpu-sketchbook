@@ -1,3 +1,7 @@
+fn modulo(x: i32, n: i32) -> i32 {
+    return ((x % n) + n) % n;
+}
+
 struct BouncingCircle {
     start_position: vec2f,
     velocity: vec2f,
@@ -47,6 +51,23 @@ fn fold_space(pos: vec2f, corner: vec2f, dimensions: vec2f) -> MirrorCell {
 const SCREEN_DIMS = vec2f(2.0, 2.0 * 7.0/5.0);
 const SCREEN_CORNER = vec2f(-1.0, -7.0/5.0);
 
+// 12 color "semitones" around the color wheel
+// TODO: do this in Oklch space instead of sRGB
+const PALETTE = array(
+    vec3f(1, 0, 0),
+    vec3f(1, 0.5, 0),
+    vec3f(1, 1, 0),
+    vec3f(0.5, 1, 0),
+    vec3f(0, 1, 0),
+    vec3f(0, 1, 0.5),
+    vec3f(0, 1, 1),
+    vec3f(0, 0.5, 1),
+    vec3f(0, 0, 1),
+    vec3f(0.5, 0, 1),
+    vec3f(1, 0, 1),
+    vec3f(1, 0, 0.5),
+);
+
 fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
     let position = circle.start_position + u_frame.time * circle.velocity;
 
@@ -57,8 +78,22 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
     let dist_circle = sdf_circle(uv - cell.folded_position, circle.radius);
     let circle_mask = 1.0 - step(0.0, dist_circle);
 
-    const CIRCLE_COLOR = vec3f(1.0, 0.0, 0.0);
-    return vec4f(CIRCLE_COLOR, circle_mask);
+    // Pick a color based on which cell we're in.
+    // To describe this, I'm using a musical analogy of a bass guitar
+    // fretboard, 
+    //
+    //   +5 semitones
+    //    ^
+    //    |
+    // G------------
+    // D------------
+    // A------------  --> +1 semitone
+    // E------------
+    const SEMITONE_OFFSET = vec2i(1, 5);
+    let semitones = modulo(dot(cell.id, SEMITONE_OFFSET), 12);
+
+    let circle_color = PALETTE[semitones];
+    return vec4f(circle_color, circle_mask);
 }
 
 
