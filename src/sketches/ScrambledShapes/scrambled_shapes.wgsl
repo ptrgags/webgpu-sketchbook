@@ -10,13 +10,22 @@ struct BouncingCircle {
 
 const START_POINT = vec2f(0.0, 0.0);
 
-const CIRCLES = array(
+const CIRCLES_A = array(
     BouncingCircle(START_POINT, vec2f(1.0, 0.5), 0.2),
     BouncingCircle(START_POINT, vec2f(-1.5, 1.0), 0.3),
     BouncingCircle(START_POINT, vec2f(-0.25, 1.5), 0.4),
     BouncingCircle(START_POINT, vec2f(-0.5, -0.4), 0.3),
     BouncingCircle(START_POINT, vec2f(-2, -0.2), 0.4),
     BouncingCircle(START_POINT, vec2f(2, 2), 0.2),
+);
+
+const CIRCLES_B = array(
+    BouncingCircle(START_POINT, vec2f(1.0, -0.5), 0.2),
+    BouncingCircle(START_POINT, vec2f(1.0, 1.5), 0.3),
+    BouncingCircle(START_POINT, vec2f(-0.25, -1.5), 0.4),
+    BouncingCircle(START_POINT, vec2f(-0.6, -0.4), 0.3),
+    BouncingCircle(START_POINT, vec2f(-2, -0.5), 0.4),
+    BouncingCircle(START_POINT, vec2f(0.5, 1), 0.2),
 );
 const CIRCLE_COUNT = 6;
 
@@ -71,8 +80,10 @@ const PALETTE = array(
     vec3f(1, 0, 0.5),
 );
 
+const ANIMATION_SPEED = 0.5;
+
 fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
-    let position = circle.start_position + u_frame.time * circle.velocity;
+    let position = circle.start_position + ANIMATION_SPEED * u_frame.time * circle.velocity;
 
     let bounce_corner = SCREEN_CORNER + circle.radius;
     let bounce_dimensions = SCREEN_DIMS - 2.0 * circle.radius;
@@ -123,14 +134,39 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
 
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
-    var color = vec3f(0.0, 0.0, 0.0);
-    var dist = 1.0e10;
+    var color_a = vec3f(0.0, 0.0, 0.0);
+    var dist_a = 1.0e10;
     for (var i = 0; i < CIRCLE_COUNT; i++) {
-        let circle = bouncing_circle(input.uv, CIRCLES[i]);
-        dist = sdf_union(dist, circle.a);
-
-        color = bitwise_color(color, circle.rgb, OP_OR);
+        let circle = bouncing_circle(input.uv, CIRCLES_A[i]);
+        dist_a = sdf_union(dist_a, circle.a);
+        color_a = bitwise_color(color_a, circle.rgb, OP_OR);
     }
+
+    var color_b = vec3f(0.0, 0.0, 0.0);
+    var dist_b = 1.0e10;
+    for (var i = 0; i < CIRCLE_COUNT; i++) {
+        let circle = bouncing_circle(input.uv, CIRCLES_B[i]);
+        dist_b = sdf_union(dist_a, circle.a);
+        color_b = bitwise_color(color_b, circle.rgb, OP_OR);
+    }
+
+    let color_and = bitwise_color(color_a, color_b, OP_AND);
+    let mask_and = 1.0 - step(0.0, sdf_intersect(dist_a, dist_b));
+
+    let color_just_a = bitwise_color(color_a, color_b, OP_A_NOT_IMPLIES_B);
+    let mask_just_a = 1.0 - step(0.0, sdf_subtract(dist_a, dist_b));
+
+    let color_just_b = bitwise_color(color_a, color_b, OP_B_NOT_IMPLIES_A);
+    let mask_just_b = 1.0 - step(0.0, sdf_subtract(dist_b, dist_a));
+
+    let color_nor = bitwise_color(color_a, color_b, OP_NOR);
+    let mask_nor = 1.0 - step(0.0, -sdf_union(dist_a, dist_b));
+
+    var color = vec3f(0.0);
+    color = mix(color, color_nor, mask_nor);
+    color = mix(color, color_and, mask_and);
+    color = mix(color, color_just_a, mask_just_a);
+    color = mix(color, color_just_b, mask_just_b);
 
     return vec4f(color, 1.0);
 }
