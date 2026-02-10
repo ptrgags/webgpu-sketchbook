@@ -8,32 +8,63 @@ struct BouncingCircle {
     radius: f32
 }
 
-const START_POINT = vec2f(0.0, 0.0);
 
-const START_A = vec2f(-1.0, 1.0);
-const VELOCITY_A = vec2f(1.0, -1.0);
-const RADIUS_A = 0.2;
+// See diagram 2026-02-10_ScrambledShapesMirrorCurve.pdf
+// Spacing between intersection points This is the
+// unit of length used to measure everything else
+const SPACING = vec2f(1.0/5.0, 1.0/5.0);
+
+// The curves have a length of 48 * SPACING, and we're dividing that into
+// 12 lengths.
+const CIRCLE_SPACING = 4 * SPACING;
+
+// this represents the coefficient speed/length(SPACING). Since this is
+// tweaked to taste, no need to compute the length exactly
+const SPEED = 2.0;
+
+// Layer A starts at the bottom left and moves up and to the right
+const START_A = vec2f(-3.0/5.0, -6.0/5.0);
+const SPACING_A = CIRCLE_SPACING;
+const VELOCITY_A = SPEED * SPACING;
+const RADIUS_A = 1.0/5.0;
 
 const CIRCLES_A = array(
-    BouncingCircle(START_A - 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
-    BouncingCircle(START_A - 0.5 * VELOCITY_A, VELOCITY_A, RADIUS_A),
-    BouncingCircle(START_A + 0.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
-    BouncingCircle(START_A + 0.5 * VELOCITY_A, VELOCITY_A, RADIUS_A),
-    BouncingCircle(START_A + 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  0.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  1.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  2.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  3.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  4.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  5.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  6.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  7.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  8.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A +  9.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A + 10.0 * SPACING_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A + 11.0 * SPACING_A, VELOCITY_A, RADIUS_A),
 );
 
-const START_B = vec2f(-1.0, -1.0);
-const VELOCITY_B = vec2f(1.0, 1.0);
-const RADIUS_B = 0.2;
+// The circles on the opposite side of the screen are a 180 degree rotation.
+// Since we're using centered coordinates, most things just negate
+const START_B = -START_A;
+const SPACING_B = -SPACING_A;
+const VELOCITY_B = -VELOCITY_A;
+const RADIUS_B = RADIUS_A;
 
 const CIRCLES_B = array(
-    BouncingCircle(START_B - 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
-    BouncingCircle(START_B - 0.5 * VELOCITY_B, VELOCITY_B, RADIUS_B),
-    BouncingCircle(START_B + 0.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
-    BouncingCircle(START_B + 0.5 * VELOCITY_B, VELOCITY_B, RADIUS_B),
-    BouncingCircle(START_B + 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  0.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  1.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  2.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  3.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  4.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  5.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  6.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  7.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  8.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B +  9.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B + 10.0 * SPACING_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B + 11.0 * SPACING_B, VELOCITY_B, RADIUS_B),
 );
-const CIRCLE_COUNT = 5;
+const CIRCLE_COUNT = 12;
 
 struct MirrorCell {
     id: vec2i,
@@ -86,10 +117,10 @@ const PALETTE = array(
     vec3f(1, 0, 0.5),
 );
 
-const ANIMATION_SPEED = 0.5;
+
 
 fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
-    let position = circle.start_position + ANIMATION_SPEED * u_frame.time * circle.velocity;
+    let position = circle.start_position + u_frame.time * circle.velocity;
 
     let bounce_corner = SCREEN_CORNER + circle.radius;
     let bounce_dimensions = SCREEN_DIMS - 2.0 * circle.radius;
