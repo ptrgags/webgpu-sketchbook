@@ -146,7 +146,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     var dist_b = 1.0e10;
     for (var i = 0; i < CIRCLE_COUNT; i++) {
         let circle = bouncing_circle(input.uv, CIRCLES_B[i]);
-        dist_b = sdf_union(dist_a, circle.a);
+        dist_b = sdf_union(dist_b, circle.a);
         color_b = bitwise_color(color_b, circle.rgb, OP_OR);
     }
 
