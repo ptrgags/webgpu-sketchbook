@@ -274,7 +274,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     // venn diagram to show the boolean operation
     let venn = venn_diagram(input.uv, selected_op);
-    let venn_boundary = rect_mask(vec2f(-100/250.0, 250.0 / 250.0), vec2f(200.0 / 250.0, 1.0), input.uv);
+    let venn_boundary = rect_mask(input.uv, vec2f(-100/250.0, 250.0 / 250.0), vec2f(200.0 / 250.0, 1.0));
     let venn_mask = venn * venn_boundary;
 
     let mask_all_bits = all_bits(input.uv);
