@@ -218,15 +218,12 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let background_color = fractal_background(input.uv);
 
-    //let color_and = bitwise_color(color_a, color_b, OP_NAND);
     let color_and = bitwise_color(bitwise_color(color_a, color_b, OP_AND), background_color, OP_OR);
     let mask_and = 1.0 - step(0.0, sdf_intersect(dist_a, dist_b));
 
-    //let color_just_a = bitwise_color(color_a, color_b, OP_A_NOT_IMPLIES_B);
     let color_just_a = bitwise_color(color_a, background_color, OP_XOR);
     let mask_just_a = 1.0 - step(0.0, sdf_subtract(dist_a, dist_b));
 
-    //let color_just_b = bitwise_color(color_a, color_b, OP_B_NOT_IMPLIES_A);
     let color_just_b = bitwise_color(color_b, background_color, OP_XNOR);
     let mask_just_b = 1.0 - step(0.0, sdf_subtract(dist_b, dist_a));
 
