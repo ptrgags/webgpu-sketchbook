@@ -10,9 +10,9 @@ struct BouncingCircle {
 
 const START_POINT = vec2f(0.0, 0.0);
 
-const START_A = vec2f(-0.1, -2.0);
-const VELOCITY_A = vec2f(1.0, 2.0);
-const RADIUS_A = 0.3;
+const START_A = vec2f(-1.0, 1.0);
+const VELOCITY_A = vec2f(1.0, -1.0);
+const RADIUS_A = 0.4;
 
 const CIRCLES_A = array(
     BouncingCircle(START_A - 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
@@ -22,9 +22,9 @@ const CIRCLES_A = array(
     BouncingCircle(START_A + 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
 );
 
-const START_B = vec2f(0.1, -2.0);
-const VELOCITY_B = vec2f(1.0, -2.0);
-const RADIUS_B = 0.3;
+const START_B = vec2f(-1.0, -1.0);
+const VELOCITY_B = vec2f(1.0, 1.0);
+const RADIUS_B = 0.4;
 
 const CIRCLES_B = array(
     BouncingCircle(START_B - 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
@@ -137,6 +137,35 @@ fn bouncing_circle(uv: vec2f, circle: BouncingCircle) -> vec4f {
     return vec4f(circle_color, dist_circle);
 }
 
+/**
+ * Compute 
+ */
+fn fractal_background(uv: vec2f) -> vec3f {
+    // All I'm trying to do here is get gradients from 0.0 to 1.0 along the
+    // diagonals of the canvas, but since we're in centered coordinates,
+    // the math is a little more of a pain.
+    const BOTTOM_LEFT = vec2f(-1.0, -7.0/5.0);
+    const BOTTOM_RIGHT = vec2f(1.0, -7.0/5.0);
+    const TOP_RIGHT = vec2f(1.0, 7.0/5.0);
+    const TOP_LEFT = vec2f(-1.0, 7.0/5.0);
+    const DIAG1 = TOP_RIGHT - BOTTOM_LEFT;
+    const DIAG2 = TOP_LEFT - BOTTOM_RIGHT;
+
+    // Dot products with the diagonals give a value from [0, MAX_DOT],
+    // divide this out so we get values in [0, 1]
+    const MAX_DOT = dot(DIAG1, DIAG1);
+    let dist_a = dot(uv - BOTTOM_LEFT, DIAG1) / MAX_DOT;
+    let dist_b = dot(uv - BOTTOM_RIGHT, DIAG2) / MAX_DOT;
+
+    // One diagonal is a blue -> green gradient, the other is black -> green
+    let gradient_a = mix(BLUE, GREEN, dist_a);
+    let gradient_b = dist_b * GREEN;
+
+    // XOR returns the bits that are different between the two colors. This
+    // shows the fractal 
+    return bitwise_color(gradient_a, gradient_b, OP_XOR);
+}
+
 
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
@@ -156,6 +185,8 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
         color_b = bitwise_color(color_b, circle.rgb, OP_OR);
     }
 
+    let background_color = fractal_background(input.uv);
+
     let color_and = bitwise_color(color_a, color_b, OP_AND);
     let mask_and = 1.0 - step(0.0, sdf_intersect(dist_a, dist_b));
 
@@ -168,11 +199,13 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let color_nor = bitwise_color(color_a, color_b, OP_NOR);
     let mask_nor = 1.0 - step(0.0, -sdf_union(dist_a, dist_b));
 
-    var color = vec3f(0.0);
-    color = mix(color, color_nor, mask_nor);
-    color = mix(color, color_and, mask_and);
-    color = mix(color, color_just_a, mask_just_a);
-    color = mix(color, color_just_b, mask_just_b);
+    
+
+    var color = background_color;
+    //color = mix(color, color_nor, mask_nor);
+    //color = mix(color, color_and, mask_and);
+    //color = mix(color, color_just_a, mask_just_a);
+    //color = mix(color, color_just_b, mask_just_b);
 
     return vec4f(color, 1.0);
 }
