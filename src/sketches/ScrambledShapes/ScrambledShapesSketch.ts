@@ -9,6 +9,7 @@ export class ScrambledShapesSketch implements QuadMachineSketch {
     SHADER_LIBRARY.sdf2d,
     SHADER_LIBRARY.csg,
     SHADER_LIBRARY.rect_mask,
+    SHADER_LIBRARY.colors_srgb,
     SHADER_LIBRARY.bitwise_color
   ]
 }

@@ -8,6 +8,7 @@ import CONST_SHADER from '@/shaders/libraries/constants.wgsl?url'
 import RECT_MASK_SHADER from '@/shaders/libraries/rect_mask.wgsl?url'
 import SPHERE_TRACER_MACHINE_SHADER from '@/shaders/machines/sphere_tracer_machine.wgsl?url'
 import BITWISE_COLOR_SHADER from '@/shaders/libraries/bitwise_color.wgsl?url'
+import COLORS_SRGB_SHADER from '@/shaders/libraries/colors_srgb.wgsl?url'
 import { fetch_text } from './fetch_text'
 
 export class LazyShader {
@@ -48,5 +49,6 @@ export const SHADER_LIBRARY = {
   csg: new LazyShader(CSG_SHADER),
   constants: new LazyShader(CONST_SHADER),
   rect_mask: new LazyShader(RECT_MASK_SHADER),
-  bitwise_color: new LazyShader(BITWISE_COLOR_SHADER)
+  bitwise_color: new LazyShader(BITWISE_COLOR_SHADER),
+  colors_srgb: new LazyShader(COLORS_SRGB_SHADER)
 }
