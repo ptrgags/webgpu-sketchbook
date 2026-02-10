@@ -3,15 +3,6 @@ struct Gradient {
     end_color: vec3f
 }
 
-const BLACK: vec3f = vec3f(0);
-const RED: vec3f = vec3f(1, 0, 0);
-const GREEN: vec3f = vec3f(0, 1, 0);
-const BLUE: vec3f = vec3f(0, 0, 1);
-const CYAN: vec3f = vec3f(0, 1, 1);
-const MAGENTA: vec3f = vec3f(1, 0, 1);
-const YELLOW: vec3f = vec3f(1, 1, 0);
-const WHITE: vec3f = vec3f(1);
-
 const PALETTES = array(
     // Grayscale (diagonal of sRGB cube)
     Gradient(BLACK, WHITE),
@@ -54,89 +45,6 @@ fn palette_lookup(gradient: Gradient, step: f32, total_steps: f32) -> vec3f {
     let t = step / (total_steps - 1.0);
     let clamped_t = clamp(t, 0.0, 1.0);
     return mix(gradient.start_color, gradient.end_color, clamped_t);
-}
-
-const OP_FALSE: u32 = 0;
-const OP_AND: u32 = 1;
-const OP_A_NOT_IMPLIES_B: u32 = 2;
-const OP_A: u32 = 3;
-const OP_B_NOT_IMPLIES_A: u32 = 4;
-const OP_B: u32 = 5;
-const OP_XOR: u32 = 6;
-const OP_OR: u32 = 7;
-const OP_NOR: u32 = 8;
-const OP_XNOR: u32 = 9;
-const OP_NOT_B: u32 = 10;
-const OP_B_IMPLIES_A: u32 = 11;
-const OP_NOT_A: u32 = 12;
-const OP_A_IMPLIES_B: u32 = 13;
-const OP_NAND: u32 = 14;
-const OP_TRUE: u32 = 15;
-
-
-fn bitwise_op(a: vec3u, b: vec3u, op: u32) -> vec3u {
-    switch(op) {
-        case OP_FALSE: {
-            return vec3u(0);
-        } 
-        case OP_AND: {
-            return a & b;
-        }
-        case OP_A_NOT_IMPLIES_B: {
-            return a & (~b);
-        }
-        case OP_A: {
-            return a;
-        }
-        case OP_B_NOT_IMPLIES_A: {
-            return (~a) & b;
-        }
-        case OP_B: {
-            return b;
-        }
-        case OP_XOR: {
-            return a ^ b;
-        }
-        case OP_OR: {
-            return a | b;
-        }
-        case OP_NOR: {
-            return ~(a | b);
-        }
-        case OP_XNOR: {
-            return ~(a ^ b);
-        }
-        case OP_NOT_B: {
-            return ~b;
-        }
-        case OP_B_IMPLIES_A: {
-            return a | (~b);
-        }
-        case OP_NOT_A: {
-            return ~a;
-        }
-        case OP_A_IMPLIES_B: {
-            return (~a) | b;
-        }
-        case OP_NAND: {
-            return ~(a & b);
-        }
-        case OP_TRUE: {
-            return vec3u(0xFF);
-        }
-        default: {
-            // same as OP_FALSE
-            return vec3u(0);
-        }
-    }
-}
-
-fn bitwise_color(color_a: vec3f, color_b: vec3f, op: u32) -> vec3f {
-    let a_quantized = vec3u(255.0 * color_a);
-    let b_quantized = vec3u(255.0 * color_b);
-
-    let combined = bitwise_op(a_quantized, b_quantized, op) & vec3u(0xFF);
-    return vec3f(combined) / 255.0;
 }
 
 const SDF_INFINITY: f32 = 1.0e10;

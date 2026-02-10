@@ -96,7 +96,9 @@ export class BooleanColorSketch implements QuadMachineSketch {
     SHADER_LIBRARY.sdf2d,
     SHADER_LIBRARY.srgb,
     SHADER_LIBRARY.oklch,
-    SHADER_LIBRARY.rect_mask
+    SHADER_LIBRARY.rect_mask,
+    SHADER_LIBRARY.colors_srgb,
+    SHADER_LIBRARY.bitwise_color
   ]
 
   // Uniform values
