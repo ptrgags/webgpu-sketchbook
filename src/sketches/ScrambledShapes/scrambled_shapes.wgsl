@@ -9,7 +9,7 @@ struct BouncingCircle {
 }
 
 
-// See diagram 2026-02-10_ScrambledShapesMirrorCurve.pdf
+// See diagram 2026-02-10_ScrambledShapesMirrorCurve.pdf in public/figures
 // Spacing between intersection points This is the
 // unit of length used to measure everything else
 const SPACING = vec2f(1.0/5.0, 1.0/5.0);

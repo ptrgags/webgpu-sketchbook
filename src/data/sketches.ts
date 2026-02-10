@@ -31,7 +31,14 @@ export const SKETCHES: SketchMetadata[] = [
     years: '2026-02',
     type: 'quad',
     make_machine: () => new QuadMachine(new ScrambledShapesSketch()),
-    description: 'TODO: Description'
+    description: `
+    <p>
+    TODO: Description
+    </p>
+    <p>
+        <a href="${base_url}/figures/2026-02-10_ScrambledShapesMirrorCurve.pdf">Concept art of circle trajectories</a>
+    </p>
+    `
   },
   {
     id: 'boolean-color',
