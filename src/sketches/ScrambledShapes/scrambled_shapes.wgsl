@@ -12,7 +12,7 @@ const START_POINT = vec2f(0.0, 0.0);
 
 const START_A = vec2f(-1.0, 1.0);
 const VELOCITY_A = vec2f(1.0, -1.0);
-const RADIUS_A = 0.4;
+const RADIUS_A = 0.2;
 
 const CIRCLES_A = array(
     BouncingCircle(START_A - 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
@@ -24,7 +24,7 @@ const CIRCLES_A = array(
 
 const START_B = vec2f(-1.0, -1.0);
 const VELOCITY_B = vec2f(1.0, 1.0);
-const RADIUS_B = 0.4;
+const RADIUS_B = 0.2;
 
 const CIRCLES_B = array(
     BouncingCircle(START_B - 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
@@ -187,13 +187,16 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let background_color = fractal_background(input.uv);
 
-    let color_and = bitwise_color(color_a, color_b, OP_AND);
+    //let color_and = bitwise_color(color_a, color_b, OP_NAND);
+    let color_and = bitwise_color(bitwise_color(color_a, color_b, OP_AND), background_color, OP_OR);
     let mask_and = 1.0 - step(0.0, sdf_intersect(dist_a, dist_b));
 
-    let color_just_a = bitwise_color(color_a, color_b, OP_A_NOT_IMPLIES_B);
+    //let color_just_a = bitwise_color(color_a, color_b, OP_A_NOT_IMPLIES_B);
+    let color_just_a = bitwise_color(color_a, background_color, OP_XOR);
     let mask_just_a = 1.0 - step(0.0, sdf_subtract(dist_a, dist_b));
 
-    let color_just_b = bitwise_color(color_a, color_b, OP_B_NOT_IMPLIES_A);
+    //let color_just_b = bitwise_color(color_a, color_b, OP_B_NOT_IMPLIES_A);
+    let color_just_b = bitwise_color(color_b, background_color, OP_XNOR);
     let mask_just_b = 1.0 - step(0.0, sdf_subtract(dist_b, dist_a));
 
     let color_nor = bitwise_color(color_a, color_b, OP_NOR);
@@ -203,9 +206,9 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     var color = background_color;
     //color = mix(color, color_nor, mask_nor);
-    //color = mix(color, color_and, mask_and);
-    //color = mix(color, color_just_a, mask_just_a);
-    //color = mix(color, color_just_b, mask_just_b);
+    color = mix(color, color_and, mask_and);
+    color = mix(color, color_just_a, mask_just_a);
+    color = mix(color, color_just_b, mask_just_b);
 
     return vec4f(color, 1.0);
 }
