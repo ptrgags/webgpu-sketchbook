@@ -199,13 +199,7 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let color_just_b = bitwise_color(color_b, background_color, OP_XNOR);
     let mask_just_b = 1.0 - step(0.0, sdf_subtract(dist_b, dist_a));
 
-    let color_nor = bitwise_color(color_a, color_b, OP_NOR);
-    let mask_nor = 1.0 - step(0.0, -sdf_union(dist_a, dist_b));
-
-    
-
     var color = background_color;
-    //color = mix(color, color_nor, mask_nor);
     color = mix(color, color_and, mask_and);
     color = mix(color, color_just_a, mask_just_a);
     color = mix(color, color_just_b, mask_just_b);
