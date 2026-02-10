@@ -10,24 +10,30 @@ struct BouncingCircle {
 
 const START_POINT = vec2f(0.0, 0.0);
 
+const START_A = vec2f(-0.1, -2.0);
+const VELOCITY_A = vec2f(1.0, 2.0);
+const RADIUS_A = 0.3;
+
 const CIRCLES_A = array(
-    BouncingCircle(START_POINT, vec2f(1.0, 0.5), 0.2),
-    BouncingCircle(START_POINT, vec2f(-1.5, 1.0), 0.3),
-    BouncingCircle(START_POINT, vec2f(-0.25, 1.5), 0.4),
-    BouncingCircle(START_POINT, vec2f(-0.5, -0.4), 0.3),
-    BouncingCircle(START_POINT, vec2f(-2, -0.2), 0.4),
-    BouncingCircle(START_POINT, vec2f(2, 2), 0.2),
+    BouncingCircle(START_A - 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A - 0.5 * VELOCITY_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A + 0.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A + 0.5 * VELOCITY_A, VELOCITY_A, RADIUS_A),
+    BouncingCircle(START_A + 1.0 * VELOCITY_A, VELOCITY_A, RADIUS_A),
 );
 
+const START_B = vec2f(0.1, -2.0);
+const VELOCITY_B = vec2f(1.0, -2.0);
+const RADIUS_B = 0.3;
+
 const CIRCLES_B = array(
-    BouncingCircle(START_POINT, vec2f(1.0, -0.5), 0.2),
-    BouncingCircle(START_POINT, vec2f(1.0, 1.5), 0.3),
-    BouncingCircle(START_POINT, vec2f(-0.25, -1.5), 0.4),
-    BouncingCircle(START_POINT, vec2f(-0.6, -0.4), 0.3),
-    BouncingCircle(START_POINT, vec2f(-2, -0.5), 0.4),
-    BouncingCircle(START_POINT, vec2f(0.5, 1), 0.2),
+    BouncingCircle(START_B - 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B - 0.5 * VELOCITY_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B + 0.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B + 0.5 * VELOCITY_B, VELOCITY_B, RADIUS_B),
+    BouncingCircle(START_B + 1.0 * VELOCITY_B, VELOCITY_B, RADIUS_B),
 );
-const CIRCLE_COUNT = 6;
+const CIRCLE_COUNT = 5;
 
 struct MirrorCell {
     id: vec2i,
