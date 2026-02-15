@@ -8,6 +8,7 @@ import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
 import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
+import { ThinFilmInterferenceSketch } from '@/sketches/ThinFilmInterference/ThinFilmInterferenceSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -24,6 +25,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'thin-film',
+    title: 'Thin Film Interference',
+    years: '2026-02',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new ThinFilmInterferenceSketch()),
+    description: '<p>TODO: Description</p>'
+  },
   {
     is_lab: true,
     id: 'scrambled-shapes',
