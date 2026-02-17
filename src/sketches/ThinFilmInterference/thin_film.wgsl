@@ -2,11 +2,11 @@ const IOR_AIR = 1.0003;
 // wavelengths in nanometers
 const WAVELENGTH_RED = 650;
 const WAVELENGTH_GREEN = 530;
-const WAVELENGTH_BLUE = 260;
+const WAVELENGTH_BLUE = 460;
 
 const MIN_THICKNESS = 0;
 const MAX_THICKNESS = 700;
-const IOR = 1.3;
+const IOR = 1.3; //1.333; //2.6;//1.3;
 const ANGLE = 0;
 
 /**
@@ -31,7 +31,7 @@ fn thin_film_interference(wavelength: f32, ior_film: f32, thickness: f32, angle1
     // https://physics.stackexchange.com/questions/611891/why-does-rm-tio-2-require-less-thickness-for-thin-film-interference-than-ligh
     let path_difference = 2.0 * ior_film * thickness * c2;
     //let intensity = abs(cos(path_difference/wavelength * PI));
-    let intensity = 0.5 + 0.5 * cos(PI * path_difference/wavelength);
+    let intensity = 0.5 - 0.5 * cos(PI * path_difference/wavelength);
     return intensity;
 }
 
@@ -39,13 +39,26 @@ fn thin_film_interference(wavelength: f32, ior_film: f32, thickness: f32, angle1
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let y = input.uv.y;
 
-    let thickness = mix(MIN_THICKNESS, MAX_THICKNESS, 1.0 - y);
-    let angle = 0.0; //mix(0, PI / 2, input.uv.x);
+    let thickness = mix(MIN_THICKNESS, MAX_THICKNESS, y);
+    
+    // constant n, incident angle from 0 to 90 degrees
+    //let angle = mix(0, PI / 2, input.uv.x);
+    //let ior = 1.3;
+    
+    // Constant incident angle of PI/6, ior from 1.0 to 2.0
+    let angle = PI/6;
+    let ior = mix(1.0, 2.0, input.uv.x);
 
     let color = vec3f(
-        thin_film_interference(WAVELENGTH_RED, IOR, thickness, angle),
-        thin_film_interference(WAVELENGTH_GREEN, IOR, thickness, angle),
-        thin_film_interference(WAVELENGTH_BLUE, IOR, thickness, angle),
+        thin_film_interference(WAVELENGTH_RED, ior, thickness, angle),
+        thin_film_interference(WAVELENGTH_GREEN, ior, thickness, angle),
+        thin_film_interference(WAVELENGTH_BLUE, ior, thickness, angle),
+    );
+
+    let wavelengths = vec3f(
+        WAVELENGTH_RED,
+        WAVELENGTH_GREEN,
+        WAVELENGTH_BLUE
     );
 
     return vec4f(color, 1.0);
