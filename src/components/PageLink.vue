@@ -15,12 +15,21 @@ const page_url = computed(() => {
   return `/sketch/${props.sketch.id}`
 })
 
+const title = computed(() => {
+  if (props.sketch.is_lab) {
+    return `WIP: ${props.sketch.title}`
+  }
+
+  return props.sketch.title
+})
+
 </script>
 
 <template>
     <div class="link">
-      <img :src="img_url" alt="" width="250" height="350" />
-      <RouterLink :to="page_url">{{ props.sketch.title }}</RouterLink> ({{ props.sketch.years }})
+      <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
+      <img v-else :src="img_url" alt="" width="250" height="350" />
+      <RouterLink :to="page_url">{{ title }}</RouterLink> ({{ props.sketch.years }})
     </div>
 </template>
 
@@ -41,6 +50,10 @@ const page_url = computed(() => {
 
 .description {
   max-width: 50%;
+}
+
+.test-tube {
+  font-size: 50px;
 }
 
 @media screen and (max-width: 500px) {

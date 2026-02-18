@@ -16,6 +16,7 @@ export function prevent_mobile_scroll(canvas: HTMLCanvasElement) {
   document.body.addEventListener('touchmove', callback, options)
 }
 
+// TODO: Need to implement https://github.com/ptrgags/p5-sketchbook/blob/main/sketchlib/fix_mouse_coords.js
 function compute_position(canvas: HTMLCanvasElement, client_x: number, client_y: number): Vec2 {
   const bounding_rect = canvas.getBoundingClientRect()
   const x = client_x - bounding_rect.left
@@ -122,5 +123,20 @@ export class PointerInput {
     })
 
     return [x_axis, y_axis]
+  }
+
+  virtual_button(position_uv: Vec2, dimensions_uv: Vec2): DigitalSignal {
+    return new ObserverSignal(() => {
+      const { width, height } = this.canvas.getBoundingClientRect()
+      const mouse_u = this.position.x / width
+      const mouse_v = this.position.y / height
+      const mouse_over_button = in_bounds(
+        mouse_u - position_uv.x,
+        mouse_v - position_uv.y,
+        dimensions_uv.x,
+        dimensions_uv.y
+      )
+      return this.pressed && mouse_over_button
+    })
   }
 }

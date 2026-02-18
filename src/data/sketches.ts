@@ -1,11 +1,13 @@
 import { QuadMachine } from '@/machines/QuadMachine'
 import { SphereTracerMachine } from '@/machines/SphereTracerMachine'
-import { OklchVisualizerSketch } from '@/sketches/OklchVisualizerSketch'
-import { EyesSketch } from '@/sketches/EyesSketch'
-import { MeltawaySketch } from '@/sketches/MeltawaySketch'
-import { StripeyRingSketch } from '@/sketches/StripeyRingSketch'
-import { SunAndMoonSketch } from '@/sketches/SunAndMoonSketch'
+import { OklchVisualizerSketch } from '@/sketches/OklchVisualizer/OklchVisualizerSketch'
+import { EyesSketch } from '@/sketches/Eyes/EyesSketch'
+import { MeltawaySketch } from '@/sketches/Meltaway/MeltawaySketch'
+import { StripeyRingSketch } from '@/sketches/StripeyRing/StripeyRingSketch'
+import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
+import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
+import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer'
 
@@ -16,16 +18,54 @@ export interface SketchMetadata {
   type: SketchType
   make_machine(): Machine
   description: string
+  is_lab?: boolean
 }
 
 const base_url = import.meta.env.BASE_URL
 
-// WIP sketches
-export const LAB_SKETCHES: SketchMetadata[] = [
+export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'scrambled-shapes',
+    title: 'Scrambled Shapes',
+    years: '2026-02',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new ScrambledShapesSketch()),
+    description: `
+    <p>
+    TODO: Description
+    </p>
+    <p>
+        <a href="${base_url}/figures/2026-02-10_ScrambledShapesMirrorCurve.pdf">Concept art of circle trajectories</a>
+    </p>
+    `
+  },
+  {
+    id: 'boolean-color',
+    title: 'Boolean Color',
+    years: '2026-01',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new BooleanColorSketch()),
+    description: `
+    <h3>Controls</h3>
+    <p>
+      <b>Cycle Palette A</b>: A + D-pad up/down (Gamepad), Z + up/down arrow (Keyboard), Click the top/bottom of left palette (Touchscreen)<br/>
+      <b>Cycle Palette B</b>: B + D-pad up/down (Gamepad), X + up/down arrow (Keyboard), Click the left/right of the top palette (Touchscreen)<br/>
+      <b>Select Boolean Operator</b>: X + D-pad up/down (Gamepad), A + up/down arrow (Keyboard), Click the left/right of the Venn Diagram (Touchscreen)<br/>
+      <b>Adjust Bit Depth</b>: Y + D-pad up/down (Gamepad), S + up/down arrow (Keyboard), Click the the left/right side of the bit visualization at the bottom (Touchscreen)<br/>
+    </p>
+    <p>
+      This sketch explores what happens when you take two colors and combine them with a bitwise logic operator (such as A AND B or A XOR B).
+      Some image editors (such as Krita) allow these operations as blend modes. The resulting color can be hard to predict, so I made this tool
+      to explore the results for various color combinations.
+    </p>
+    `
+  },
   {
     id: 'stripey-ring',
     title: 'Stripey Ring',
     years: '2025',
+    is_lab: true,
     type: 'quad',
     make_machine: () => new QuadMachine(new StripeyRingSketch()),
     description: `
@@ -41,6 +81,7 @@ export const LAB_SKETCHES: SketchMetadata[] = [
     id: 'oklch-visualizer',
     title: 'OKLCH Visualizer',
     years: '2025',
+    is_lab: true,
     type: 'sphere-tracer',
     make_machine: () => new SphereTracerMachine(new OklchVisualizerSketch()),
     description: `
@@ -67,10 +108,7 @@ export const LAB_SKETCHES: SketchMetadata[] = [
       <li>Another thought would be to take a cube mesh with many subdivisions and warp it into the oklch volume</li>
     </ul>
     `
-  }
-]
-
-export const GALLERY_SKETCHES: SketchMetadata[] = [
+  },
   {
     id: 'meltaway',
     title: 'Meltaway',
@@ -152,8 +190,6 @@ export const GALLERY_SKETCHES: SketchMetadata[] = [
   }
 ]
 
-export const ALL_SKETCHES = GALLERY_SKETCHES.concat(LAB_SKETCHES)
-
 export function find_sketch(id: string): SketchMetadata | undefined {
-  return ALL_SKETCHES.find((x) => x.id === id)
+  return SKETCHES.find((x) => x.id === id)
 }
