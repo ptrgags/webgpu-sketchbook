@@ -8,8 +8,10 @@ import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
 import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
+import { ShapeMachine } from '@/machines/ShapeMachine.js'
+import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 
-export type SketchType = 'quad' | 'sphere-tracer'
+export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
 export interface SketchMetadata {
   id: string
@@ -24,6 +26,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'srgb-cube',
+    title: 'sRGB Cube',
+    years: '2026-01',
+    type: 'shape',
+    make_machine: () => new ShapeMachine(new SRGBCubeSketch()),
+    description: ``
+  },
   {
     is_lab: true,
     id: 'scrambled-shapes',
