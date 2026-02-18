@@ -4,19 +4,21 @@ import type { InputSystem } from '@/input/InputSystem.js'
 import type { BindGroup } from '@/webgpu/BindGroup.js'
 import { compile_shader } from '@/webgpu/compile_shader.js'
 import type { Machine } from '@/webgpu/Engine.js'
+import { IndexBuffer } from '@/webgpu/IndexBuffer.js'
 import { RenderPipeline } from '@/webgpu/RenderPipeline.js'
 import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer.js'
 
-// Plane geometry
-// Sphere geometry
-// Cylinder geometry
-// Torus geometry
-// Mobius Strip Geometry
-// Polar Zonohedron Geometry?
+export interface ShapeGeometry {
+  positions: VertexAttribute
+  normals: VertexAttribute
+  uvs: VertexAttribute
+  indices: number[]
+}
 
 export interface ShapeMachineSketch {
   shader_url: string
   imports?: LazyShader[]
+  geometry: ShapeGeometry
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void
@@ -25,6 +27,7 @@ export interface ShapeMachineSketch {
 export class ShapeMachine implements Machine {
   private sketch: ShapeMachineSketch
   private vertex_buffer: VertexBuffer
+  private index_buffer: IndexBuffer
   private render_pipeline: RenderPipeline
   private num_vertices: number
 
@@ -34,9 +37,14 @@ export class ShapeMachine implements Machine {
     this.render_pipeline = new RenderPipeline()
 
     this.num_vertices = 1
-    const positions = new VertexAttribute(1, 2, [0, 0])
-    const uvs = new VertexAttribute(1, 2, [0, 0])
-    this.vertex_buffer = new VertexBuffer('shape_vertices', [positions, uvs])
+
+    const geometry = sketch.geometry
+    this.vertex_buffer = new VertexBuffer('shape_vertices', [
+      geometry.positions,
+      geometry.normals,
+      geometry.uvs
+    ])
+    this.index_buffer = new IndexBuffer('shape_indices', geometry.indices)
   }
 
   async create_resources(
@@ -53,6 +61,7 @@ export class ShapeMachine implements Machine {
     })
 
     this.vertex_buffer.create(device)
+    this.index_buffer.create(device)
 
     const imports = this.sketch.imports ?? []
     const import_promises = imports.map((x) => x.fetch_wgsl())
@@ -103,6 +112,7 @@ export class ShapeMachine implements Machine {
   ): void {
     this.render_pipeline.render(encoder, context, bind_group, (pass) => {
       this.vertex_buffer.attach(pass)
+      this.index_buffer.attach(pass)
       pass.draw(this.num_vertices)
     })
   }
