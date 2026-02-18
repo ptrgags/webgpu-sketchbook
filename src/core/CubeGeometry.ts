@@ -13,27 +13,27 @@ const CUBE_POSITIONS = [
 
 const FACE_QUADS = [
   {
-    positions: [0, 1, 2, 3],
+    positions: [1, 3, 7, 5],
     normal: [1, 0, 0]
   },
   {
-    positions: [0, 1, 2, 3],
+    positions: [2, 0, 4, 6],
     normal: [-1, 0, 0]
   },
   {
-    positions: [0, 1, 2, 3],
+    positions: [3, 2, 6, 7],
     normal: [0, 1, 0]
   },
   {
-    positions: [0, 1, 2, 3],
+    positions: [0, 1, 4, 5],
     normal: [0, -1, 0]
   },
   {
-    positions: [0, 1, 2, 3],
+    positions: [4, 5, 7, 6],
     normal: [0, 0, 1]
   },
   {
-    positions: [0, 1, 2, 3],
+    positions: [0, 2, 3, 1],
     normal: [0, 0, -1]
   }
 ]

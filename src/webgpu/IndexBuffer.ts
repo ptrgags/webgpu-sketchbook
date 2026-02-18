@@ -10,6 +10,10 @@ export class IndexBuffer {
     this.indices = indices
   }
 
+  get count(): number {
+    return this.indices.length
+  }
+
   create(device: GPUDevice) {
     if (this.buffer) {
       throw new Error('index buffer already exists!')

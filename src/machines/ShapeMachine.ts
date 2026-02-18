@@ -113,7 +113,7 @@ export class ShapeMachine implements Machine {
     this.render_pipeline.render(encoder, context, bind_group, (pass) => {
       this.vertex_buffer.attach(pass)
       this.index_buffer.attach(pass)
-      pass.draw(this.num_vertices)
+      pass.drawIndexed(this.index_buffer.count)
     })
   }
 }
