@@ -89,8 +89,8 @@ export class QuadMachine implements Machine {
 
     const uv_values = this.sketch.uv_mode == QuadUVMode.Basic ? UVS_BASIC : UVS_CENTERED
 
-    const positions = new VertexAttribute(NUM_VERTICES, 2, QUAD_POSITIONS)
-    const uvs = new VertexAttribute(NUM_VERTICES, 2, uv_values)
+    const positions = new VertexAttribute(2, QUAD_POSITIONS)
+    const uvs = new VertexAttribute(2, uv_values)
     this.vertex_buffer = new VertexBuffer('quad_vertices', [positions, uvs])
   }
 

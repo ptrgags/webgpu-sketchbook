@@ -34,9 +34,9 @@ export class SphereTracerMachine implements Machine {
     this.sketch = sketch
     this.render_pipeline = new RenderPipeline()
 
-    const positions = new VertexAttribute(NUM_VERTICES, 2, QUAD_POSITIONS)
+    const positions = new VertexAttribute(2, QUAD_POSITIONS)
     // For sphere tracing, centered UVs are easiest for orienting the camera
-    const uvs = new VertexAttribute(NUM_VERTICES, 2, UVS_CENTERED)
+    const uvs = new VertexAttribute(2, UVS_CENTERED)
     this.vertex_buffer = new VertexBuffer('quad_vertices', [positions, uvs])
   }
 
