@@ -116,11 +116,11 @@ fn vertex_main(input: VertexInput) -> Interpolated {
     let projection = make_ortho_matrix(frustum);
 
     // Fill all of clip space
-    //let position = vec3f(-1, -1, 0) + input.position * vec3f(2.0, 2.0, 1.0);
+    let position = vec3f(0, 0, 0.5) + input.position * vec3f(1, 1, 0.5);
 
-
-    output.position = projection * view * model * vec4f(input.position, 1.0);
-    output.color = input.position;
+    //output.position = projection * view * model * vec4f(input.position, 1.0);
+    output.position = vec4(position, 1.0);
+    output.color = 0.5 + 0.5 * input.position;
     return output;
 }
 
