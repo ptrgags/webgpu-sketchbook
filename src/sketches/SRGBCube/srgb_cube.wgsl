@@ -41,6 +41,10 @@ struct Camera {
     back: vec3f
 }
 
+
+// Compute a camera from the eye point, the target point, and the assumption
+// that +Z is up
+// Checked an example by hand, see https://www.desmos.com/3d/gfntcqc476
 fn look_at(eye: vec3f, at: vec3f) -> Camera {
     let back = normalize(eye - at);
     const Z_UP = vec3f(0, 0, 1);
@@ -66,60 +70,99 @@ fn make_view(camera: Camera) -> mat4x4f {
     let up = camera.up;
     let back = camera.back;
 
-    // my world space is (x, y, z) with z up  
-    // camera space is (back, right, up)
-    // rotating from world -> camera would be the matrix [back, right, up]
-    // but we want the inverse. For a rotation, this is [back, right, up]^T
-    // but we write it column major, so we get the following:
+    // after we find the coordinates relative to the eye center in world space,
+    // we want to measure this along the right, up, and back vectors.
+    // this would be the matrix [right, up, back]^T. But since WebGPU is
+    // column-major, you write it like [right, up, back]
     let orient_frame = mat4x4f(
-        back.x, right.x, up.x, 0,
-        back.y, right.y, up.y, 0,
-        back.z, right.z, up.z, 0,
+        right.x, up.x, back.x, 0,
+        right.y, up.y, back.y, 0,
+        right.z, up.z, back.z, 0,
         0, 0, 0, 1,
     );
 
     return orient_frame * to_origin;
 }
 
+// This assumes a frustum symmetric about the camera's origin, i.e.
+// left = -right
 struct OrthoFrustum {
-    corner1: vec3f,
-    corner2: vec3f,
+    right: f32,
+    top: f32,
+    // near and far are stored as z values, so these are negative
+    near: f32,
+    far: f32,
 }
 
 const ASPECT_RATIO = 5.0 / 7.0;
+
+/*
+ * Make an orthographic frustum. This assumes the usual 5/7 aspect ratio of
+ * of my trading card shaped canvas
+ * depths are given as positive values from the camera's eye, they will be
+ * converted to other units as needed.
+ */
 fn make_ortho_frustum(half_height: f32, near_depth: f32, far_depth: f32) -> OrthoFrustum {
     let half_width = ASPECT_RATIO * half_height;
     
     return OrthoFrustum(
-        vec3f(half_width, -half_height, -near_depth),
-        vec3f(half_height, half_height, -far_depth),
+        half_width,
+        half_height,
+        // Convert from depths to z value in view space
+        -near_depth,
+        -far_depth,
     );
 }
 
 fn make_ortho_matrix(frustum: OrthoFrustum) -> mat4x4f {
-    //let near_to_origin = 
+    // move the frustum so the near plane is at the origin, this moves
+    // the z value from [n, f] -> [0, f - n];
+    // note that f - n is negative
+    let to_origin = translate(vec3f(0, 0, -frustum.near));
 
-    let dimensions = frustum.corner2 - frustum.corner1;
-    let scale_factor = vec3f(2.0 / dimensions);
-    return scale(scale_factor);
+    // squash the box [-r, r] x [-t, t] x [0, f - n] to
+    // NDC, [-1, 1] x [-1, 1] x [0, 1]
+    let scale_factor = vec3f(
+        // since we're assuming a symmetrical frustum, we just divide by 
+        // the right and top values
+        1.0 / frustum.right, 
+        1.0 / frustum.top, 
+        // since near and far are negative z values, far - near is a negative
+        // number representing the thickness of the volume.
+        // we want negative z values to map to positive depths, so 
+        // we 
+        1.0 / (frustum.far - frustum.near)
+    );
+
+    return scale(scale_factor) * to_origin;
 }
 
 @vertex 
 fn vertex_main(input: VertexInput) -> Interpolated {
     var output: Interpolated;
 
-    let camera = look_at(vec3f(2.0, 2.0, 2.0), vec3f(0.0));
+    let frequency = 0.1;
+    let angle = u_frame.time * 2.0 * PI * frequency;
+
+    let eye = vec3f(2.0);
+    //let eye = vec3f(2 * cos(angle), 2 * sin(angle), 2.0);
+
+    //let camera = look_at(eye, vec3f(0.0));
+
+    let camera = look_at(vec3f(3, 0, 0), vec3f(0.0));
+
     let frustum = make_ortho_frustum(4, 0.1, 10.0);
 
-    let model = rotate_z(u_frame.time * PI / 2.0);
+    let model = rotate_z(angle);
     let view = make_view(camera);
     let projection = make_ortho_matrix(frustum);
 
     // Fill all of clip space
-    let position = vec3f(0, 0, 0.5) + input.position * vec3f(1, 1, 0.5);
+    let rotated = (model * vec4f(input.position, 1.0)).xyz;
+    let position = vec3f(0, 0, 0.5) + rotated * vec3f(1, 1, 0.5);
 
-    //output.position = projection * view * model * vec4f(input.position, 1.0);
-    output.position = vec4(position, 1.0);
+    output.position = projection * view * vec4f(input.position, 1.0);
+    //output.position = vec4(position, 1.0);
     output.color = 0.5 + 0.5 * input.position;
     return output;
 }
