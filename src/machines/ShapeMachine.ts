@@ -29,14 +29,11 @@ export class ShapeMachine implements Machine {
   private vertex_buffer: VertexBuffer
   private index_buffer: IndexBuffer
   private render_pipeline: RenderPipeline
-  private num_vertices: number
 
   constructor(sketch: ShapeMachineSketch) {
     this.sketch = sketch
 
     this.render_pipeline = new RenderPipeline()
-
-    this.num_vertices = 1
 
     const geometry = sketch.geometry
     this.vertex_buffer = new VertexBuffer('shape_vertices', [
