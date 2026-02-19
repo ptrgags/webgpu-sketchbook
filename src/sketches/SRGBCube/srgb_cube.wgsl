@@ -127,10 +127,9 @@ fn make_ortho_matrix(frustum: OrthoFrustum) -> mat4x4f {
         // the right and top values
         1.0 / frustum.right, 
         1.0 / frustum.top, 
-        // since near and far are negative z values, far - near is a negative
-        // number representing the thickness of the volume.
-        // we want negative z values to map to positive depths, so 
-        // we 
+        // since near and far are stored as negative z values, far - near is a
+        // negative value. This handles flipping negative z values into
+        // positive depths.
         1.0 / (frustum.far - frustum.near)
     );
 
@@ -145,12 +144,8 @@ fn vertex_main(input: VertexInput) -> Interpolated {
     let angle = u_frame.time * 2.0 * PI * frequency;
 
     let eye = vec3f(2.0);
-    //let eye = vec3f(2 * cos(angle), 2 * sin(angle), 2.0);
 
-    //let camera = look_at(eye, vec3f(0.0));
-
-    let camera = look_at(vec3f(3, 0, 0), vec3f(0.0));
-
+    let camera = look_at(eye, vec3f(0.0));
     let frustum = make_ortho_frustum(4, 0.1, 10.0);
 
     let model = rotate_z(angle);
@@ -158,8 +153,8 @@ fn vertex_main(input: VertexInput) -> Interpolated {
     let projection = make_ortho_matrix(frustum);
 
     // Fill all of clip space
-    let rotated = (model * vec4f(input.position, 1.0)).xyz;
-    let position = vec3f(0, 0, 0.5) + rotated * vec3f(1, 1, 0.5);
+    //let rotated = (model * vec4f(input.position, 1.0)).xyz;
+    //let position = vec3f(0, 0, 0.5) + rotated * vec3f(1, 1, 0.5);
 
     output.position = projection * view * vec4f(input.position, 1.0);
     //output.position = vec4(position, 1.0);
