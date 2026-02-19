@@ -185,13 +185,13 @@ export class UniformStruct {
       offset += member.size_components
     }
 
-    device.queue.writeBuffer(this.buffer, 0, this.values)
+    device.queue.writeBuffer(this.buffer, 0, this.values.buffer)
   }
 
   get layout_entry(): GPUBindGroupLayoutEntry {
     return {
       binding: this.binding,
-      visibility: GPUShaderStage.FRAGMENT,
+      visibility: GPUShaderStage.FRAGMENT | GPUShaderStage.VERTEX,
       buffer: {
         type: 'uniform'
       }
