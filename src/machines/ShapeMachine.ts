@@ -7,18 +7,12 @@ import type { Machine } from '@/webgpu/Engine.js'
 import { IndexBuffer } from '@/webgpu/IndexBuffer.js'
 import { RenderPipeline } from '@/webgpu/RenderPipeline.js'
 import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer.js'
-
-export interface ShapeGeometry {
-  positions: VertexAttribute
-  normals: VertexAttribute
-  uvs: VertexAttribute
-  indices: number[]
-}
+import type { Mesh } from '@/meshes/Mesh.js'
 
 export interface ShapeMachineSketch {
   shader_url: string
   imports?: LazyShader[]
-  geometry: ShapeGeometry
+  geometry: Mesh
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void
