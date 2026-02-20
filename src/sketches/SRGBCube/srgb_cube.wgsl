@@ -145,27 +145,18 @@ fn make_ortho_matrix(frustum: OrthoFrustum) -> mat4x4f {
 fn vertex_main(input: VertexInput) -> Interpolated {
     var output: Interpolated;
 
-    let frequency = 0.1;
+    let frequency = 0.2;
     let angle = u_frame.time * 2.0 * PI * frequency;
-
-    let eye = vec3f(2.0);
-
-    let camera = look_at(eye, vec3f(0.0));
-    let frustum = make_ortho_frustum(4, 0.1, 10.0);
-
     let model = rotate_z(angle);
-    //let view = make_view(camera);
-    //let projection = make_ortho_matrix(frustum);
 
-    // Fill all of clip space
-    //let rotated = (model * vec4f(input.position, 1.0)).xyz;
-    //let position = vec3f(0, 0, 0.5) + rotated * vec3f(1, 1, 0.5);
+    let eye = vec3f(3.0);
+    let camera = look_at(eye, vec3f(0.0));
+    let view = make_view(camera); 
 
-    //let view = translate(vec3f(0, 0, -4));
-    let view = translate(vec3f(0, 0, -4));
-    let projection = make_ortho_matrix(make_ortho_frustum(2, 1, 7));
+    let frustum = make_ortho_frustum(4, 0, 8);
+    let projection = make_ortho_matrix(frustum);
 
-    output.position = projection * view * vec4(input.position, 1.0);
+    output.position = projection * view * model * vec4(input.position, 1.0);
     output.color = 0.5 + 0.5 * input.position;
     return output;
 }
