@@ -10,6 +10,9 @@ import RECT_MASK_SHADER from '@/shaders/libraries/rect_mask.wgsl?url'
 import SPHERE_TRACER_MACHINE_SHADER from '@/shaders/machines/sphere_tracer_machine.wgsl?url'
 import BITWISE_COLOR_SHADER from '@/shaders/libraries/bitwise_color.wgsl?url'
 import COLORS_SRGB_SHADER from '@/shaders/libraries/colors_srgb.wgsl?url'
+import XFORM_SHADER from '@/shaders/libraries/transformations.wgsl?url'
+import CAMERA_SHADER from '@/shaders/libraries/camera.wgsl?url'
+import ORTHO_SHADER from '@/shaders/libraries/ortho.wgsl?url'
 import { fetch_text } from './fetch_text'
 
 export class LazyShader {
@@ -52,5 +55,8 @@ export const SHADER_LIBRARY = {
   constants: new LazyShader(CONST_SHADER),
   rect_mask: new LazyShader(RECT_MASK_SHADER),
   bitwise_color: new LazyShader(BITWISE_COLOR_SHADER),
-  colors_srgb: new LazyShader(COLORS_SRGB_SHADER)
+  colors_srgb: new LazyShader(COLORS_SRGB_SHADER),
+  camera: new LazyShader(CAMERA_SHADER),
+  ortho: new LazyShader(ORTHO_SHADER),
+  xforms: new LazyShader(XFORM_SHADER)
 }
