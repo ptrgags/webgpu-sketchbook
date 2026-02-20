@@ -33,7 +33,13 @@ export const SKETCHES: SketchMetadata[] = [
     years: '2026-01',
     type: 'shape',
     make_machine: () => new ShapeMachine(new SRGBCubeSketch()),
-    description: ``
+    description: `
+    <p>
+      For this sketch, I bit the bullet and set up a vertex shader
+      with a camera and (ortho) projection matrix. This is just an initial
+      test of that. I will likely replace this with a nicer sketch in the future.
+    </p>
+    `
   },
   {
     is_lab: true,
