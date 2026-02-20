@@ -63,6 +63,7 @@ export class ShapeMachine implements Machine {
     const imports = this.sketch.imports ?? []
     const import_promises = imports.map((x) => x.fetch_wgsl())
     const shader_module = await compile_shader(device, [
+      MACHINE_LIBRARY.input_uniforms.fetch_wgsl(),
       MACHINE_LIBRARY.shape.fetch_wgsl(),
       ...import_promises,
       fetch_text(this.sketch.shader_url)

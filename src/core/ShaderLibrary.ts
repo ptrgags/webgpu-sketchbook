@@ -13,6 +13,7 @@ import COLORS_SRGB_SHADER from '@/shaders/libraries/colors_srgb.wgsl?url'
 import XFORM_SHADER from '@/shaders/libraries/transformations.wgsl?url'
 import CAMERA_SHADER from '@/shaders/libraries/camera.wgsl?url'
 import ORTHO_SHADER from '@/shaders/libraries/ortho.wgsl?url'
+import INPUT_UNIFORMS_SHADER from '@/shaders/machines/input_uniforms.wgsl?url'
 import { fetch_text } from './fetch_text'
 
 export class LazyShader {
@@ -40,6 +41,8 @@ export class LazyShader {
 
 // Machines will use these shaders internally
 export const MACHINE_LIBRARY = {
+  // common code for defining input signals
+  input_uniforms: new LazyShader(INPUT_UNIFORMS_SHADER),
   quad: new LazyShader(QUAD_MACHINE_SHADER),
   sphere_tracer: new LazyShader(SPHERE_TRACER_MACHINE_SHADER),
   shape: new LazyShader(SHAPE_MACHINE_SHADER)
