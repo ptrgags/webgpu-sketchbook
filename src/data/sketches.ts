@@ -9,8 +9,10 @@ import type { Machine } from '@/webgpu/Engine'
 import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
 import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
 import { ThinFilmInterferenceSketch } from '@/sketches/ThinFilmInterference/ThinFilmInterferenceSketch.js'
+import { ShapeMachine } from '@/machines/ShapeMachine.js'
+import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 
-export type SketchType = 'quad' | 'sphere-tracer'
+export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
 export interface SketchMetadata {
   id: string
@@ -33,6 +35,21 @@ export const SKETCHES: SketchMetadata[] = [
     type: 'quad',
     make_machine: () => new QuadMachine(new ThinFilmInterferenceSketch()),
     description: '<p>TODO: Description</p>'
+  },
+  {
+    is_lab: true,
+    id: 'srgb-cube',
+    title: 'sRGB Cube',
+    years: '2026-01',
+    type: 'shape',
+    make_machine: () => new ShapeMachine(new SRGBCubeSketch()),
+    description: `
+    <p>
+      For this sketch, I bit the bullet and set up a vertex shader
+      with a camera and (ortho) projection matrix. This is just an initial
+      test of that. I will likely replace this with a nicer sketch in the future.
+    </p>
+    `
   },
   {
     is_lab: true,

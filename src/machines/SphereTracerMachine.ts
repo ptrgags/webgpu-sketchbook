@@ -34,9 +34,9 @@ export class SphereTracerMachine implements Machine {
     this.sketch = sketch
     this.render_pipeline = new RenderPipeline()
 
-    const positions = new VertexAttribute(NUM_VERTICES, 2, QUAD_POSITIONS)
+    const positions = new VertexAttribute(2, QUAD_POSITIONS)
     // For sphere tracing, centered UVs are easiest for orienting the camera
-    const uvs = new VertexAttribute(NUM_VERTICES, 2, UVS_CENTERED)
+    const uvs = new VertexAttribute(2, UVS_CENTERED)
     this.vertex_buffer = new VertexBuffer('quad_vertices', [positions, uvs])
   }
 
@@ -60,6 +60,7 @@ export class SphereTracerMachine implements Machine {
     const imports = this.sketch.imports ?? []
     const import_promises = imports.map((x) => x.fetch_wgsl())
     const shader_module = await compile_shader(device, [
+      MACHINE_LIBRARY.input_uniforms.fetch_wgsl(),
       MACHINE_LIBRARY.quad.fetch_wgsl(),
       MACHINE_LIBRARY.sphere_tracer.fetch_wgsl(),
       ...import_promises,
