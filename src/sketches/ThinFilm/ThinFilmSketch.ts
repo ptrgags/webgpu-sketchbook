@@ -9,7 +9,8 @@ export class ThinFilmSketch implements ShapeMachineSketch {
     SHADER_LIBRARY.constants,
     SHADER_LIBRARY.camera,
     SHADER_LIBRARY.ortho,
-    SHADER_LIBRARY.xforms
+    SHADER_LIBRARY.xforms,
+    SHADER_LIBRARY.thin_film
   ]
   geometry = CUBE_GEOMETRY
 }
