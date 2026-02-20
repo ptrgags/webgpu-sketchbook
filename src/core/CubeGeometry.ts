@@ -1,23 +1,24 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
 
-// labels by corresponding sRGB colors
-// to help check that I have the correct faces.
+// labels by corresponding sRGB colors. The index
+// written in binary shows the connection if you interpret
+// as a vec3f
 const CUBE_POSITIONS = [
-  // black
+  // black = 0b000
   [-1, -1, -1],
-  // blue
+  // blue = 0b001
   [-1, -1, 1],
-  // green
+  // green = 0b010
   [-1, 1, -1],
-  // cyan
+  // cyan = 0b011
   [-1, 1, 1],
-  // red
+  // red = 0b100
   [1, -1, -1],
-  // magenta
+  // magenta = 0b101
   [1, -1, 1],
-  // yellow
+  // yellow = 0b110
   [1, 1, -1],
-  // white
+  // white = 0b111
   [1, 1, 1]
 ]
 
