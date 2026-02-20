@@ -4,12 +4,19 @@ struct Interpolated {
     @location(0) color: vec3f,
 }
 
+const IDENTITY = mat4x4f(
+    1, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1,
+);
+
 fn translate(offset: vec3f) -> mat4x4f {
     return mat4x4f(
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
-        offset.x, offset.y, offset.z, 0
+        offset.x, offset.y, offset.z, 1
     );
 }
 
@@ -89,9 +96,9 @@ fn make_view(camera: Camera) -> mat4x4f {
 struct OrthoFrustum {
     right: f32,
     top: f32,
-    // near and far are stored as z values, so these are negative
-    near: f32,
-    far: f32,
+    // Near and far are stored as positive depth values relative to the camera's eye
+    near_depth: f32,
+    far_depth: f32,
 }
 
 const ASPECT_RATIO = 5.0 / 7.0;
@@ -99,8 +106,7 @@ const ASPECT_RATIO = 5.0 / 7.0;
 /*
  * Make an orthographic frustum. This assumes the usual 5/7 aspect ratio of
  * of my trading card shaped canvas
- * depths are given as positive values from the camera's eye, they will be
- * converted to other units as needed.
+ * depths are given as positive values from the camera's eye
  */
 fn make_ortho_frustum(half_height: f32, near_depth: f32, far_depth: f32) -> OrthoFrustum {
     let half_width = ASPECT_RATIO * half_height;
@@ -108,29 +114,28 @@ fn make_ortho_frustum(half_height: f32, near_depth: f32, far_depth: f32) -> Orth
     return OrthoFrustum(
         half_width,
         half_height,
-        // Convert from depths to z value in view space
-        -near_depth,
-        -far_depth,
+        near_depth,
+        far_depth,
     );
 }
 
 fn make_ortho_matrix(frustum: OrthoFrustum) -> mat4x4f {
-    // move the frustum so the near plane is at the origin, this moves
-    // the z value from [n, f] -> [0, f - n];
-    // note that f - n is negative
-    let to_origin = translate(vec3f(0, 0, -frustum.near));
+    // Translate the frustum so the near plane is at the origin.
+    // this is a translation from z = -near_depth to z =0
+    let to_origin = translate(vec3f(0, 0, frustum.near_depth));
 
-    // squash the box [-r, r] x [-t, t] x [0, f - n] to
-    // NDC, [-1, 1] x [-1, 1] x [0, 1]
+    // Squash the view frustum into the normalized range.
+    // x: [-right, right] -> [-1, 1] so scale factor is 1/right
+    // y: [-top, top] -> [-1, 1] so scale factor is 1/top
+    // z: [0, far - near] -> [0, 1] so scale factor is 1/(far - near),
+    //    however, NDC is a left-handed coordinate system so multiply by -1
     let scale_factor = vec3f(
         // since we're assuming a symmetrical frustum, we just divide by 
         // the right and top values
         1.0 / frustum.right, 
-        1.0 / frustum.top, 
-        // since near and far are stored as negative z values, far - near is a
-        // negative value. This handles flipping negative z values into
-        // positive depths.
-        1.0 / (frustum.far - frustum.near)
+        1.0 / frustum.top,
+        // the -1 is to flip to left-handed coordinates
+        -1.0 / (frustum.far_depth - frustum.near_depth)
     );
 
     return scale(scale_factor) * to_origin;
@@ -149,15 +154,18 @@ fn vertex_main(input: VertexInput) -> Interpolated {
     let frustum = make_ortho_frustum(4, 0.1, 10.0);
 
     let model = rotate_z(angle);
-    let view = make_view(camera);
-    let projection = make_ortho_matrix(frustum);
+    //let view = make_view(camera);
+    //let projection = make_ortho_matrix(frustum);
 
     // Fill all of clip space
     //let rotated = (model * vec4f(input.position, 1.0)).xyz;
     //let position = vec3f(0, 0, 0.5) + rotated * vec3f(1, 1, 0.5);
 
-    output.position = projection * view * vec4f(input.position, 1.0);
-    //output.position = vec4(position, 1.0);
+    //let view = translate(vec3f(0, 0, -4));
+    let view = translate(vec3f(0, 0, -4));
+    let projection = make_ortho_matrix(make_ortho_frustum(2, 1, 7));
+
+    output.position = projection * view * vec4(input.position, 1.0);
     output.color = 0.5 + 0.5 * input.position;
     return output;
 }
