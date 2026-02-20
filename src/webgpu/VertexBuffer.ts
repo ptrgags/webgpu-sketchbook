@@ -22,11 +22,8 @@ export class VertexAttribute {
   readonly components: number
   readonly values: number[]
 
-  constructor(count: number, components: number, values: number[]) {
-    if (count * components !== values.length) {
-      throw new Error('incorrect number of values for vertex attribute')
-    }
-    this.count = count
+  constructor(components: number, values: number[]) {
+    this.count = values.length / components
     this.components = components
     this.values = values
   }
