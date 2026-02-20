@@ -1,5 +1,5 @@
 import type { ShapeMachineSketch } from '@/machines/ShapeMachine.js'
-import { CUBE_GEOMETRY } from '@/core/CubeGeometry.js'
+import { CUBE_GEOMETRY } from '@/meshes/CubeGeometry.js'
 import SHADER from './srgb_cube.wgsl?url'
 import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
 
