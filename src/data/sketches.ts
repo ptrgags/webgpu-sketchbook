@@ -8,9 +8,10 @@ import { SunAndMoonSketch } from '@/sketches/SunAndMoon/SunAndMoonSketch'
 import type { Machine } from '@/webgpu/Engine'
 import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.js'
 import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
-import { ThinFilmInterferenceSketch } from '@/sketches/ThinFilmInterference/ThinFilmInterferenceSketch.js'
+import { ThinFilmChartSketch } from '@/sketches/ThinFilmChart/ThinFilmChartSketch.js'
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
+import { ThinFilmSketch } from '@/sketches/ThinFilm/ThinFilmSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -32,15 +33,24 @@ export const SKETCHES: SketchMetadata[] = [
     id: 'thin-film',
     title: 'Thin Film Interference',
     years: '2026-02',
+    type: 'shape',
+    make_machine: () => new ShapeMachine(new ThinFilmSketch()),
+    description: ``
+  },
+  {
+    is_lab: true,
+    id: 'thin-film-chart',
+    title: 'Thin Film Interference Chart',
+    years: '2026-02',
     type: 'quad',
-    make_machine: () => new QuadMachine(new ThinFilmInterferenceSketch()),
+    make_machine: () => new QuadMachine(new ThinFilmChartSketch()),
     description: '<p>TODO: Description</p>'
   },
   {
     is_lab: true,
     id: 'srgb-cube',
     title: 'sRGB Cube',
-    years: '2026-01',
+    years: '2026-02',
     type: 'shape',
     make_machine: () => new ShapeMachine(new SRGBCubeSketch()),
     description: `
