@@ -149,7 +149,7 @@ fn vertex_main(input: VertexInput) -> Interpolated {
     let angle = u_frame.time * 2.0 * PI * frequency;
     let model = rotate_z(angle);
 
-    let eye = vec3f(3.0);
+    let eye = vec3f(3.0, 3.0, 3.0);
     let camera = look_at(eye, vec3f(0.0));
     let view = make_view(camera); 
 
