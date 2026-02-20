@@ -20,11 +20,5 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
         thin_film_interference(WAVELENGTH_BLUE, ior, thickness, cos_angle2, phase_diff),
     );
 
-    let wavelengths = vec3f(
-        WAVELENGTH_RED,
-        WAVELENGTH_GREEN,
-        WAVELENGTH_BLUE
-    );
-
     return vec4f(color, 1.0);
 }

@@ -64,3 +64,34 @@ fn thin_film_interference(
 
     return intensity;
 }
+
+fn thin_film_rainbow(
+    ior_film: f32, 
+    thickness_nm: f32,
+    cos_refract_angle: f32,
+    use_phase_difference: bool
+) -> vec3f {
+    return vec3f(
+        thin_film_interference(
+            WAVELENGTH_RED, 
+            ior_film, 
+            thickness_nm, 
+            cos_refract_angle, 
+            use_phase_difference
+        ),
+        thin_film_interference(
+            WAVELENGTH_GREEN, 
+            ior_film, 
+            thickness_nm, 
+            cos_refract_angle, 
+            use_phase_difference
+        ),
+        thin_film_interference(
+            WAVELENGTH_BLUE, 
+            ior_film, 
+            thickness_nm, 
+            cos_refract_angle, 
+            use_phase_difference
+        ),
+    );
+}
