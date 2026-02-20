@@ -41,6 +41,7 @@ fn refracted_angle(
  *
  * See http://hyperphysics.phy-astr.gsu.edu/hbase/phyopt/interf.html#c1
  * and https://physics.stackexchange.com/questions/611891/why-does-rm-tio-2-require-less-thickness-for-thin-film-interference-than-ligh
+ * and https://physics.stackexchange.com/a/391647
  *
  * wavelength_nm: wavelength of incomming light in nm. For rainbow effects, call this function for red, green and blue wavelengths
  * ior_film: index of refraction for the film
