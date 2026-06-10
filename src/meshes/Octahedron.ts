@@ -8,7 +8,7 @@ const OCTAHEDRON_POSITIONS: Vec3[] = [
   [1, 0, 0],
   [0, 1, 0],
   [-1, 0, 0],
-  [0, 1, 0],
+  [0, -1, 0],
   // south pole
   [0, 0, -1]
 ]
