@@ -10,6 +10,7 @@ import { BooleanColorSketch } from '@/sketches/BooleanColor/BooleanColorSketch.j
 import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShapesSketch.js'
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
+import { PlatonicSolidsSketch } from '@/sketches/PlatonicSolids/PlatonicSolidsSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -26,6 +27,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'platonic-solids',
+    title: 'Platonic Solids',
+    years: '2026-06',
+    type: 'shape',
+    make_machine: () => new ShapeMachine(new PlatonicSolidsSketch()),
+    description: `<p>TODO</p>`
+  },
   {
     is_lab: true,
     id: 'srgb-cube',
