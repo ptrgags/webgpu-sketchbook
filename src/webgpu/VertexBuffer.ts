@@ -63,6 +63,14 @@ export class VertexAttribute {
     throw new Error('unsupported number of components')
   }
 
+  get_element(index: number): number[] {
+    const result = new Array(this.components)
+    for (let i = 0; i < this.components; i++) {
+      result[i] = this.values[this.components * index + i]
+    }
+    return result
+  }
+
   fill_values(data_view: DataView, offset: number, stride: number) {
     const LITTLE_ENDIAN = true
     for (let i = 0; i < this.count; i++) {
