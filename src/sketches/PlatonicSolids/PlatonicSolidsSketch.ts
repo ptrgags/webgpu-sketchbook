@@ -4,6 +4,7 @@ import SHADER from './platonic_solids.wgsl?url'
 import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
 import { OCTAHEDRON_GEOMETRY } from '@/meshes/Octahedron.js'
 import { DODECAHEDRON_GEOMETRY } from '@/meshes/Dodecahedron.js'
+import { ICOSAHEDRON_GEOMETRY } from '@/meshes/Icosahedron.js'
 
 export class PlatonicSolidsSketch implements ShapeMachineSketch {
   shader_url: string = SHADER
@@ -14,5 +15,5 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
     SHADER_LIBRARY.xforms
   ]
   // TODO: How to switch geometry on the fly?
-  geometry = DODECAHEDRON_GEOMETRY
+  geometry = ICOSAHEDRON_GEOMETRY
 }

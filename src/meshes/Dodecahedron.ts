@@ -56,7 +56,7 @@ const FACE_PENTAGONS = [
     positions: [0, 12, 8, 15, 3]
   },
   {
-    positions: [3, 19, 15, 16, 0]
+    positions: [3, 19, 11, 16, 0]
   },
   // 2 faces around -x
   {
