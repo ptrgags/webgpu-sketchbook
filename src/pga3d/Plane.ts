@@ -25,4 +25,8 @@ export class Plane {
   meet(other: Plane): MeetLine {
     throw new Error('not implented')
   }
+
+  static readonly XY_PLANE = new Plane(0, 0, 1, 0)
+  static readonly XZ_PLANE = new Plane(0, -1, 0, 0)
+  static readonly YZ_PLANE = new Plane(1, 0, 0, 0)
 }
