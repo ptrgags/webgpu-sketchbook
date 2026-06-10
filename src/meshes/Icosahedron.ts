@@ -112,6 +112,7 @@ const POSITIONS = FACE_TRIANGLES.flatMap((face) => {
 
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
 
+// these seem incorrect...
 const NORMALS = FACE_TRIANGLES.flatMap((tri) => {
   const [ia, ib, ic] = tri.positions
   const a = ICOSAHEDRON_POSITIONS[ia]
