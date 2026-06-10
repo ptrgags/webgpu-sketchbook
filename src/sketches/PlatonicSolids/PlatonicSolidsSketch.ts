@@ -5,6 +5,9 @@ import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
 import { OCTAHEDRON_GEOMETRY } from '@/meshes/Octahedron.js'
 import { DODECAHEDRON_GEOMETRY } from '@/meshes/Dodecahedron.js'
 import { ICOSAHEDRON_GEOMETRY } from '@/meshes/Icosahedron.js'
+import { encode_stl, encode_stl_file, mesh_to_triangle_soup } from '@/stl/encode_stl.js'
+import { CUBE_GEOMETRY } from '@/meshes/CubeGeometry.js'
+import { download_file } from '@/core/download_file.js'
 
 export class PlatonicSolidsSketch implements ShapeMachineSketch {
   shader_url: string = SHADER
@@ -16,4 +19,18 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
   ]
   // TODO: How to switch geometry on the fly?
   geometry = ICOSAHEDRON_GEOMETRY
+}
+
+window.download_models = () => {
+  const tetra = encode_stl_file(mesh_to_triangle_soup(TETRAHEDRON_GEOMETRY), 'tetrahedron.stl')
+  const hexa = encode_stl_file(mesh_to_triangle_soup(CUBE_GEOMETRY), 'cube.stl')
+  const octa = encode_stl_file(mesh_to_triangle_soup(OCTAHEDRON_GEOMETRY), 'octahedron.stl')
+  const dodeca = encode_stl_file(mesh_to_triangle_soup(DODECAHEDRON_GEOMETRY), 'dodecahedron.stl')
+  const icosa = encode_stl_file(mesh_to_triangle_soup(ICOSAHEDRON_GEOMETRY), 'icosahedron.stl')
+
+  download_file(tetra)
+  download_file(hexa)
+  download_file(octa)
+  download_file(dodeca)
+  download_file(icosa)
 }

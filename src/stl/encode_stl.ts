@@ -96,7 +96,7 @@ export function encode_stl(triangles: STLTriangle[]): ArrayBuffer {
     offset += SIZE_VEC3F
 
     // no other attributes, so leave the next two bytes at the default (0)
-    offset += SIZE_U32
+    offset += SIZE_U16
   }
 
   return buffer
