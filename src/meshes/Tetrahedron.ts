@@ -1,11 +1,10 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
+import { compute_normal, type Vec3 } from './geometry.js'
 
 // horizontal distance from the origin to the edges with pairs of points
 const a = Math.sqrt(1 / 3)
 // half the edge length
 const b = Math.sqrt(2 / 3)
-
-type Vec3 = [number, number, number]
 
 // looking down from the +z axis, we see a triangle pointing down
 //  __
@@ -49,29 +48,6 @@ const FACE_UVS = [
   [1, 0],
   [0, 1]
 ].flat()
-
-// temporary until I have a working PGA 3D implementation
-// this computes normal = (b - a) x (c - a)
-function compute_normal(
-  a: [number, number, number],
-  b: [number, number, number],
-  c: [number, number, number]
-): [number, number, number] {
-  const [ax, ay, az] = a
-  const [bx, by, bz] = b
-  const [cx, cy, cz] = c
-  const abx = bx - ax
-  const aby = by - ay
-  const abz = bz - az
-  const acx = cx - ax
-  const acy = cy - ay
-  const acz = cz - az
-
-  const nx = aby * acz - abz * acy
-  const ny = abz * acx - abx * acz
-  const nz = abx * acy - aby - acx
-  return [nx, ny, nz]
-}
 
 const NORMALS = FACE_TRIANGLES.flatMap((tri) => {
   const [ia, ib, ic] = tri.positions
