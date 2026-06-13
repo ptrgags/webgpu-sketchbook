@@ -75,7 +75,7 @@ describe('Odd', () => {
     const a = new Odd(0, 0, 0, 1)
     const b = new Even(1, 2, 3, 4)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     expect(result).toBeEven(Even.ZERO)
   })
@@ -84,7 +84,7 @@ describe('Odd', () => {
     const a = new Odd(0, 0, 0, 1)
     const b = new Odd(1, 2, 3, 4)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     expect(result).toBeOdd(Odd.ZERO)
   })

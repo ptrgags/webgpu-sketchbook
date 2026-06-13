@@ -67,7 +67,7 @@ describe('Even', () => {
     const a = new Even(0, 0, 1, 0)
     const b = new Even(1, 2, 3, 4)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     expect(result).toBeEven(Even.ZERO)
   })
@@ -76,7 +76,7 @@ describe('Even', () => {
     const a = new Even(0, 0, 1, 0)
     const b = new Odd(1, 2, 3, 4)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     expect(result).toBeOdd(Odd.ZERO)
   })
@@ -85,7 +85,7 @@ describe('Even', () => {
     const a = new Even(1, 2, 3, 4)
     const b = new Even(-3, 1, -2, 2)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     const expected = new Even(-3, 1, 3.6, 4.8)
     expect(result).toBeEven(expected)
@@ -95,7 +95,7 @@ describe('Even', () => {
     const a = new Even(1, 2, 3, 4)
     const b = new Odd(-3, 1, -2, 2)
 
-    const result = a.sandwich(b)
+    const result = a.unit_sandwich(b)
 
     const expected = new Odd(2.6, 1.8, -12, 2)
     expect(result).toBeOdd(expected)
