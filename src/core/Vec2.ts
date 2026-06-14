@@ -1,3 +1,6 @@
+/**
+ * Vector of 2 numbers for passing to the GPU
+ */
 export class Vec2 {
   x: number
   y: number
