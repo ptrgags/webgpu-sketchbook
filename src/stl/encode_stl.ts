@@ -1,19 +1,19 @@
-import type { Vec3 } from '@/meshes/geometry.js'
+import { SIZE_F32, SIZE_U16, SIZE_U32, SIZE_VEC3F } from '@/core/sizes.js'
 import type { Mesh } from '@/meshes/Mesh.js'
+import { write_ascii } from './write_ascii.js'
+import { Vec3 } from '@/core/Vec3.js'
 
-function write_ascii(data_view: DataView, str: string, offset: number): number {
-  for (let i = 0; i < str.length; i++) {
-    data_view.setUint8(offset + 1, str.charCodeAt(i))
-  }
+export const HEADER_SIZE = 80
+export const TRIANGLE_SIZE = 4 * SIZE_VEC3F + SIZE_U16
 
-  return offset + str.length
-}
+// The STL header can be _anything_... so you know what I have to do...
+export const RICKROLL = 'Never gonna give you up / Never gonna let you down'
 
 export interface STLTriangle {
-  normal: [number, number, number]
-  a: [number, number, number]
-  b: [number, number, number]
-  c: [number, number, number]
+  normal: Vec3
+  a: Vec3
+  b: Vec3
+  c: Vec3
 }
 
 export function mesh_to_triangle_soup(geometry: Mesh): STLTriangle[] {
@@ -27,38 +27,29 @@ export function mesh_to_triangle_soup(geometry: Mesh): STLTriangle[] {
 
     // I'm using face normals, so the value will be the same for all
     // 3 vertices
-    const normal = geometry.normals.get_element(ia)
+    const [nx, ny, nz] = geometry.normals.get_element(ia)
 
-    const a = geometry.positions.get_element(ia)
-    const b = geometry.positions.get_element(ib)
-    const c = geometry.positions.get_element(ic)
+    const [ax, ay, az] = geometry.positions.get_element(ia)
+    const [bx, by, bz] = geometry.positions.get_element(ib)
+    const [cx, cy, cz] = geometry.positions.get_element(ic)
 
     result[i] = {
-      normal: normal as Vec3,
-      a: a as Vec3,
-      b: b as Vec3,
-      c: c as Vec3
+      normal: new Vec3(nx, ny, nz),
+      a: new Vec3(ax, ay, az),
+      b: new Vec3(bx, by, bz),
+      c: new Vec3(cx, cy, cz)
     }
   }
 
   return result
 }
 
-const SIZE_F32 = 4
-const SIZE_VEC3F = 3 * SIZE_F32
-const SIZE_U16 = 2
-const SIZE_U32 = 4
-
 export function encode_stl(triangles: STLTriangle[]): ArrayBuffer {
-  const HEADER_SIZE = 80
-  const TRIANGLE_SIZE = 4 * SIZE_VEC3F + SIZE_U16
-  const DATA_SIZE = SIZE_U32 + triangles.length * TRIANGLE_SIZE
+  const data_size = SIZE_U32 + triangles.length * TRIANGLE_SIZE
 
-  const buffer = new ArrayBuffer(HEADER_SIZE + DATA_SIZE)
+  const buffer = new ArrayBuffer(HEADER_SIZE + data_size)
   const data_view = new DataView(buffer)
 
-  // The header can be _anything_... so you know what I have to do...
-  const RICKROLL = 'Never gonna give you up / Never gonna let you down'
   write_ascii(data_view, RICKROLL, 0)
 
   // number of triangles
@@ -68,31 +59,28 @@ export function encode_stl(triangles: STLTriangle[]): ArrayBuffer {
   let offset = HEADER_SIZE + SIZE_U32
   for (const tri of triangles) {
     // normal
-    const [nx, ny, nz] = tri.normal
-    data_view.setFloat32(offset, nx, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + SIZE_F32, ny, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + 2 * SIZE_F32, nz, LITTLE_ENDIAN)
+    const { normal, a, b, c } = tri
+    data_view.setFloat32(offset, normal.x, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + SIZE_F32, normal.y, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + 2 * SIZE_F32, normal.z, LITTLE_ENDIAN)
     offset += SIZE_VEC3F
 
     // vertex a
-    const [ax, ay, az] = tri.a
-    data_view.setFloat32(offset, ax, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + SIZE_F32, ay, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + 2 * SIZE_F32, az, LITTLE_ENDIAN)
+    data_view.setFloat32(offset, a.x, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + SIZE_F32, a.y, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + 2 * SIZE_F32, a.z, LITTLE_ENDIAN)
     offset += SIZE_VEC3F
 
     // vertex b
-    const [bx, by, bz] = tri.b
-    data_view.setFloat32(offset, bx, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + SIZE_F32, by, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + 2 * SIZE_F32, bz, LITTLE_ENDIAN)
+    data_view.setFloat32(offset, b.x, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + SIZE_F32, b.y, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + 2 * SIZE_F32, b.z, LITTLE_ENDIAN)
     offset += SIZE_VEC3F
 
     // vertex c
-    const [cx, cy, cz] = tri.c
-    data_view.setFloat32(offset, cx, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + SIZE_F32, cy, LITTLE_ENDIAN)
-    data_view.setFloat32(offset + 2 * SIZE_F32, cz, LITTLE_ENDIAN)
+    data_view.setFloat32(offset, c.x, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + SIZE_F32, c.y, LITTLE_ENDIAN)
+    data_view.setFloat32(offset + 2 * SIZE_F32, c.z, LITTLE_ENDIAN)
     offset += SIZE_VEC3F
 
     // no other attributes, so leave the next two bytes at the default (0)
