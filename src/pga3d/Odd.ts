@@ -92,7 +92,7 @@ const _ = (Ao*Bz - Az*Bo) 𝐞₀₃
 const _ = (Ax*By - Ay*Bx) 𝐞₁₂ 
 const _ = (Ax*Bz - Az*Bx) 𝐞₁₃ 
 const _ = (Ay*Bz - Az*By) 𝐞₂₃
-const _ = (Ao*Bxyz + Aoxy*Bz - Aoxz*By + Aoyz*Bx - Ax*Boyz - Axyz*Bo + Ay*Boxz - Az*Boxy) 𝐞₀₁₂₃
+const _ = (Ao*Bxyz + Aoxy*Bz - Aoxz*By + Aoyz*Bx - Ax*Boyz - Axyz*Bo + Ay*Boxz - Az*Boxy) -xyzo
   }
 
   wedge_even(other: Even): Odd {
@@ -112,6 +112,38 @@ const _ = (Ax*Byz + Axyz*Bs - Ay*Bxz + Az*Bxy) 𝐞₁₂₃
     throw new Error('not implemented')
   }
 
+  gp_even(other: Even): Even {
+const _ = (Ao*Bs - Aoxy*Bxy - Aoxz*Bxz - Aoyz*Byz - Ax*Box + Axyz*Boxyz - Ay*Boy - Az*Boz) 𝐞₀ 
+const _ = (Ax*Bs - Axyz*Byz - Ay*Bxy - Az*Bxz) 𝐞₁ 
+const _ = (Ax*Bxy + Axyz*Bxz + Ay*Bs - Az*Byz) 𝐞₂ 
+const _ = (Ax*Bxz - Axyz*Bxy + Ay*Byz + Az*Bs) 𝐞₃
+const _ = (Ao*Bxy + Aoxy*Bs - Aoxz*Byz + Aoyz*Bxz - Ax*Boy - Axyz*Boz + Ay*Box - Az*Boxyz) 𝐞₀₁₂ 
+const _ = (Ao*Bxz + Aoxy*Byz + Aoxz*Bs - Aoyz*Bxy - Ax*Boz + Axyz*Boy + Ay*Boxyz + Az*Box) 𝐞₀₁₃ 
+const _ = (Ao*Byz - Aoxy*Bxz + Aoxz*Bxy + Aoyz*Bs - Ax*Boxyz - Axyz*Box - Ay*Boz + Az*Boy) 𝐞₀₂₃ 
+const _ = (Ax*Byz + Axyz*Bs - Ay*Bxz + Az*Bxy) 𝐞₁₂₃
+  }
+
+  gp_odd(other: Odd): Odd {
+const _ = (Ax*Bx - Axyz*Bxyz + Ay*By + Az*Bz)
+const _ = (Ao*Bx + Aoxy*By + Aoxz*Bz - Aoyz*Bxyz - Ax*Bo + Axyz*Boyz + Ay*Boxy + Az*Boxz) 𝐞₀₁ 
+const _ = (Ao*By - Aoxy*Bx + Aoxz*Bxyz + Aoyz*Bz - Ax*Boxy - Axyz*Boxz - Ay*Bo + Az*Boyz) 𝐞₀₂ 
+const _ = (Ao*Bz - Aoxy*Bxyz - Aoxz*Bx - Aoyz*By - Ax*Boxz + Axyz*Boxy - Ay*Boyz - Az*Bo) 𝐞₀₃ 
+const _ = (Ax*By + Axyz*Bz - Ay*Bx + Az*Bxyz) 𝐞₁₂ 
+const _ = (Ax*Bz - Axyz*By - Ay*Bxyz - Az*Bx) 𝐞₁₃ 
+const _ = (Ax*Bxyz + Axyz*Bx + Ay*Bz - Az*By) 𝐞₂₃
+const _ = (Ao*Bxyz + Aoxy*Bz - Aoxz*By + Aoyz*Bx - Ax*Boyz - Axyz*Bo + Ay*Boxz - Az*Boxy) 𝐞₀₁₂₃
+  }
+
+  gp(other: Odd): Even
+  gp(other: Even): Odd
+  gp(other: Odd | Even): Odd | Even {
+    if (other instanceof Even) {
+        return this.gp_even(other)
+    }
+
+    return this.gp_odd(other)
+  }
+
   unit_sandwich_even(other: Even): Even {
 const _ =     (Bs*(Ax**2 + Axyz**2 + Ay**2 + Az**2))
 const _ = (2*Ao*Axyz*Byz + 2*Ao*Ay*Bxy + 2*Ao*Az*Bxz - 2*Aoxy*Ax*Bxy - 2*Aoxy*Axyz*Bxz + 2*Aoxy*Az*Byz - 2*Aoxz*Ax*Bxz + 2*Aoxz*Axyz*Bxy - 2*Aoxz*Ay*Byz - 2*Aoyz*Ax*Byz + 2*Aoyz*Ay*Bxz - 2*Aoyz*Az*Bxy - Ax**2*Box - 2*Ax*Ay*Boy - 2*Ax*Az*Boz - Axyz**2*Box - 2*Axyz*Ay*Boz + 2*Axyz*Az*Boy + Ay**2*Box + Az**2*Box) 𝐞₀₁ 
@@ -120,7 +152,7 @@ const _ = (-2*Ao*Ax*Bxz + 2*Ao*Axyz*Bxy - 2*Ao*Ay*Byz - 2*Aoxy*Ax*Byz + 2*Aoxy*A
 const _ = (-Ax**2*Bxy - 2*Ax*Axyz*Bxz + 2*Ax*Az*Byz + Axyz**2*Bxy - 2*Axyz*Ay*Byz - Ay**2*Bxy - 2*Ay*Az*Bxz + Az**2*Bxy) 𝐞₁₂ 
 const _ = (-Ax**2*Bxz + 2*Ax*Axyz*Bxy - 2*Ax*Ay*Byz + Axyz**2*Bxz - 2*Axyz*Az*Byz + Ay**2*Bxz - 2*Ay*Az*Bxy - Az**2*Bxz) 𝐞₁₃ 
 const _ = (Ax**2*Byz - 2*Ax*Ay*Bxz + 2*Ax*Az*Bxy + Axyz**2*Byz + 2*Axyz*Ay*Bxy + 2*Axyz*Az*Bxz - Ay**2*Byz - Az**2*Byz) 𝐞₂₃
-const _ = (-2*Ao*Axyz*Bs + 2*Aoxy*Az*Bs - 2*Aoxz*Ay*Bs + 2*Aoyz*Ax*Bs - Ax**2*Boxyz - Axyz**2*Boxyz - Ay**2*Boxyz - Az**2*Boxyz) 𝐞₀₁₂₃
+const _ = (-2*Ao*Axyz*Bs + 2*Aoxy*Az*Bs - 2*Aoxz*Ay*Bs + 2*Aoyz*Ax*Bs - Ax**2*Boxyz - Axyz**2*Boxyz - Ay**2*Boxyz - Az**2*Boxyz) -xyzo
   }
 
   unit_sandwich_odd(other: Odd): Odd {
