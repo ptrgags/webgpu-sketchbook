@@ -9,4 +9,8 @@ export class Vec2 {
     this.x = x
     this.y = y
   }
+
+  to_array(): [number, number] {
+    return [this.x, this.y]
+  }
 }

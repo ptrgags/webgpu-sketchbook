@@ -11,4 +11,8 @@ export class Vec3 {
     this.y = y
     this.z = z
   }
+
+  to_array(): [number, number, number] {
+    return [this.x, this.y, this.z]
+  }
 }

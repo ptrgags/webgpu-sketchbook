@@ -1,5 +1,6 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_normal, type Vec3 } from './geometry.js'
+import { compute_face_normal } from './compute_face_normal.js'
+import { Vec3 } from '@/core/Vec3.js'
 
 const PHI = 0.5 * (1 + Math.sqrt(5))
 const d = 1.0 / Math.sqrt(2 + PHI)
@@ -23,77 +24,44 @@ const ICOSAHEDRON_POSITIONS: Vec3[] = [
   [-short, 0, long],
   [-short, 0, -long],
   [short, 0, -long]
-]
+].map(([x, y, z]) => new Vec3(x, y, z))
 
-const FACE_TRIANGLES = [
+const FACE_TRIANGLES: [number, number, number][] = [
   // 2 faces around +z
-  {
-    positions: [8, 4, 9]
-  },
-  {
-    positions: [9, 5, 8]
-  },
+  [8, 4, 9],
+  [9, 5, 8],
+
   // 2 faces around -z
-  {
-    positions: [11, 6, 10]
-  },
-  {
-    positions: [10, 7, 11]
-  },
+  [11, 6, 10],
+  [10, 7, 11],
+
   // 2 faces around +x
-  {
-    positions: [0, 8, 3]
-  },
-  {
-    positions: [3, 11, 0]
-  },
+  [0, 8, 3],
+  [3, 11, 0],
+
   // 2 faces around -x
-  {
-    positions: [2, 9, 1]
-  },
-  {
-    positions: [1, 10, 2]
-  },
+  [2, 9, 1],
+  [1, 10, 2],
+
   // 2 faces around +y
-  {
-    positions: [4, 0, 7]
-  },
-  {
-    positions: [7, 1, 4]
-  },
+  [4, 0, 7],
+  [7, 1, 4],
+
   // 2 faces around -y
-  {
-    positions: [6, 3, 5]
-  },
-  {
-    positions: [5, 2, 6]
-  },
+  [6, 3, 5],
+  [5, 2, 6],
+
   // 4 faces at the corners of the top
-  {
-    positions: [0, 4, 8]
-  },
-  {
-    positions: [1, 9, 4]
-  },
-  {
-    positions: [2, 5, 9]
-  },
-  {
-    positions: [3, 8, 5]
-  },
+  [0, 4, 8],
+  [1, 9, 4],
+  [2, 5, 9],
+  [3, 8, 5],
+
   // 4 faces at the corners of the bottom
-  {
-    positions: [0, 11, 7]
-  },
-  {
-    positions: [1, 7, 10]
-  },
-  {
-    positions: [2, 10, 6]
-  },
-  {
-    positions: [3, 6, 11]
-  }
+  [0, 11, 7],
+  [1, 7, 10],
+  [2, 10, 6],
+  [3, 6, 11]
 ]
 
 const FACE_UVS = [
@@ -107,20 +75,11 @@ const TRIANGLE_INDICES = [0, 1, 2]
 const INDICES = FACE_TRIANGLES.flatMap((_, i) => TRIANGLE_INDICES.map((x) => 3 * i + x))
 
 const POSITIONS = FACE_TRIANGLES.flatMap((face) => {
-  return face.positions.flatMap((idx) => ICOSAHEDRON_POSITIONS[idx])
+  return face.flatMap((idx) => ICOSAHEDRON_POSITIONS[idx].to_array())
 })
 
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
-
-// these seem incorrect...
-const NORMALS = FACE_TRIANGLES.flatMap((tri) => {
-  const [ia, ib, ic] = tri.positions
-  const a = ICOSAHEDRON_POSITIONS[ia]
-  const b = ICOSAHEDRON_POSITIONS[ib]
-  const c = ICOSAHEDRON_POSITIONS[ic]
-  const normal = compute_normal(a, b, c)
-  return [...normal, ...normal, ...normal]
-})
+const NORMALS = FACE_TRIANGLES.flatMap((tri) => compute_face_normal(tri, ICOSAHEDRON_POSITIONS))
 
 export const ICOSAHEDRON_GEOMETRY = {
   positions: new VertexAttribute(3, POSITIONS),
