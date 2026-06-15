@@ -8,6 +8,16 @@ import { ICOSAHEDRON_GEOMETRY } from '@/meshes/Icosahedron.js'
 import { encode_stl, encode_stl_file, mesh_to_triangle_soup } from '@/stl/encode_stl.js'
 import { CUBE_GEOMETRY } from '@/meshes/CubeGeometry.js'
 import { download_file } from '@/core/download_file.js'
+import type { Mesh } from '@/meshes/Mesh.js'
+import type { InputSystem } from '@/input/InputSystem.js'
+
+const PLATONIC_SOLIDS = [
+  TETRAHEDRON_GEOMETRY,
+  CUBE_GEOMETRY,
+  OCTAHEDRON_GEOMETRY,
+  DODECAHEDRON_GEOMETRY,
+  ICOSAHEDRON_GEOMETRY
+]
 
 export class PlatonicSolidsSketch implements ShapeMachineSketch {
   shader_url: string = SHADER
@@ -17,8 +27,9 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
     SHADER_LIBRARY.ortho,
     SHADER_LIBRARY.xforms
   ]
-  // TODO: How to switch geometry on the fly?
-  geometry = ICOSAHEDRON_GEOMETRY
+  meshes = PLATONIC_SOLIDS
+
+  configure_input(input: InputSystem) {}
 }
 
 window.download_models = () => {
