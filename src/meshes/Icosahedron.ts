@@ -24,7 +24,7 @@ const ICOSAHEDRON_POSITIONS: Vec3[] = [
   [-short, 0, long],
   [-short, 0, -long],
   [short, 0, -long]
-].map(([x, y, z]) => new Vec3(x, y, z))
+].map(Vec3.from_array)
 
 const FACE_TRIANGLES: [number, number, number][] = [
   // 2 faces around +z
