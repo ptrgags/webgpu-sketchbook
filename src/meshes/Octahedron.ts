@@ -1,6 +1,8 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_face_normal } from './compute_face_normal.js'
+import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
+import { tesselate_fan, TRIANGLES } from './tessellate_fan.js'
+import { gather_positions } from './gather_positions.js'
 
 const OCTAHEDRON_POSITIONS: Vec3[] = [
   // north pole
@@ -32,20 +34,11 @@ const FACE_UVS = [
   [1, 0],
   [0, 1]
 ].flat()
-
-const NORMALS = FACE_TRIANGLES.flatMap((tri) => compute_face_normal(tri, OCTAHEDRON_POSITIONS))
-
-const TRIANGLE_INDICES = [0, 1, 2]
-const INDICES = FACE_TRIANGLES.flatMap((_, i) => TRIANGLE_INDICES.map((x) => 3 * i + x))
-
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
-const POSITIONS = FACE_TRIANGLES.flatMap((tri) => {
-  return tri.flatMap((idx) => OCTAHEDRON_POSITIONS[idx].to_array())
-})
 
 export const OCTAHEDRON_GEOMETRY = {
-  positions: new VertexAttribute(3, POSITIONS),
+  positions: gather_positions(FACE_TRIANGLES, OCTAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
-  normals: new VertexAttribute(3, NORMALS),
-  indices: INDICES
+  normals: gather_face_normals(FACE_TRIANGLES, OCTAHEDRON_POSITIONS),
+  indices: tesselate_fan(FACE_TRIANGLES.length, TRIANGLES)
 }

@@ -14,6 +14,7 @@ export interface ShapeMachineSketch {
   shader_url: string
   imports?: LazyShader[]
   meshes: Mesh[]
+  current_mesh: number
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void

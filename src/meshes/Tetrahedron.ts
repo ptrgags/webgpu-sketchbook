@@ -1,6 +1,8 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_face_normal } from './compute_face_normal.js'
+import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
+import { gather_positions } from './gather_positions.js'
+import { tesselate_fan } from './tessellate_fan.js'
 
 // horizontal distance from the origin to the edges with pairs of points
 const a = Math.sqrt(1 / 3)
@@ -39,21 +41,11 @@ const FACE_UVS = [
   [1, 0],
   [0, 1]
 ].flat()
-
-const NORMALS = FACE_TRIANGLES.flatMap((tri) => compute_face_normal(tri, TETRAHEDRON_POSITIONS))
-
-const TRIANGLE_INDICES = [0, 1, 2]
-const INDICES = FACE_TRIANGLES.flatMap((_, i) => TRIANGLE_INDICES.map((x) => 3 * i + x))
-
-const POSITIONS = FACE_TRIANGLES.flatMap((tri) => {
-  return tri.flatMap((idx) => TETRAHEDRON_POSITIONS[idx].to_array())
-})
-
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
 
 export const TETRAHEDRON_GEOMETRY = {
-  positions: new VertexAttribute(3, POSITIONS),
+  positions: gather_positions(FACE_TRIANGLES, TETRAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
-  normals: new VertexAttribute(3, NORMALS),
-  indices: INDICES
+  normals: gather_face_normals(FACE_TRIANGLES, TETRAHEDRON_POSITIONS),
+  indices: tesselate_fan(FACE_TRIANGLES.length, 3)
 }

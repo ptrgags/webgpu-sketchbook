@@ -1,6 +1,8 @@
 import { Vec3 } from '@/core/Vec3.js'
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_face_normal } from './compute_face_normal.js'
+import { compute_face_normal, gather_face_normals } from './compute_face_normal.js'
+import { QUADS, tesselate_fan } from './tessellate_fan.js'
+import { gather_positions } from './gather_positions.js'
 
 // labels by corresponding sRGB colors. The index
 // written in binary shows the connection if you interpret
@@ -46,25 +48,11 @@ const FACE_UVS = [
   [1, 1],
   [0, 1]
 ].flat()
-
-// Indices are always marking pairs of triangles
-// (0, 1, 2), (2, 3, 0),
-// (4, 5, 6), (6, 7, 4),
-// ...
-// 4 * i + (0, 1, 2), 4 * i + (2, 3, 0)
-const QUAD_INDICES = [0, 1, 2, 2, 3, 0]
-const INDICES = FACE_QUADS.flatMap((_, i) => QUAD_INDICES.map((x) => 4 * i + x))
-
-const POSITIONS = FACE_QUADS.flatMap((face) => {
-  return face.flatMap((idx) => CUBE_POSITIONS[idx].to_array())
-})
-
 const UVS = FACE_QUADS.flatMap(() => FACE_UVS)
-const NORMALS = FACE_QUADS.flatMap((quad) => compute_face_normal(quad, CUBE_POSITIONS))
 
 export const CUBE_GEOMETRY = {
-  positions: new VertexAttribute(3, POSITIONS),
+  positions: gather_positions(FACE_QUADS, CUBE_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
-  normals: new VertexAttribute(3, NORMALS),
-  indices: INDICES
+  normals: gather_face_normals(FACE_QUADS, CUBE_POSITIONS),
+  indices: tesselate_fan(FACE_QUADS.length, QUADS)
 }

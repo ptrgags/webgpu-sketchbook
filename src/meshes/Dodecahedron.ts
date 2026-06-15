@@ -1,6 +1,8 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_face_normal } from './compute_face_normal.js'
+import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
+import { gather_positions } from './gather_positions.js'
+import { PENTAGONS, tesselate_fan } from './tessellate_fan.js'
 
 const PHI = 0.5 * (1 + Math.sqrt(5))
 const l = 1.0 / Math.sqrt(3 * (PHI + 1))
@@ -66,21 +68,11 @@ const FACE_UVS = [
   [1 / 2, 3 / 4],
   [0, 1 / 2]
 ].flat()
-
-// Triangulate each pentagon into a triangle fan
-const PENT_INDICES = [0, 1, 2, 0, 2, 3, 0, 3, 4]
-const INDICES = FACE_PENTAGONS.flatMap((_, i) => PENT_INDICES.map((x) => 5 * i + x))
-
-const POSITIONS = FACE_PENTAGONS.flatMap((face) => {
-  return face.flatMap((idx) => DODECAHEDRON_POSITIONS[idx].to_array())
-})
-
 const UVS = FACE_PENTAGONS.flatMap(() => FACE_UVS)
-const NORMALS = FACE_PENTAGONS.flatMap((pent) => compute_face_normal(pent, DODECAHEDRON_POSITIONS))
 
 export const DODECAHEDRON_GEOMETRY = {
-  positions: new VertexAttribute(3, POSITIONS),
+  positions: gather_positions(FACE_PENTAGONS, DODECAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
-  normals: new VertexAttribute(3, NORMALS),
-  indices: INDICES
+  normals: gather_face_normals(FACE_PENTAGONS, DODECAHEDRON_POSITIONS),
+  indices: tesselate_fan(FACE_PENTAGONS.length, PENTAGONS)
 }

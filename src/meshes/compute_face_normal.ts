@@ -1,5 +1,6 @@
 import type { Vec3 } from '@/core/Vec3.js'
 import { compute_normal } from './geometry.js'
+import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
 
 export function compute_face_normal(face_indices: number[], positions: Vec3[]): number[] {
   // check how many vertices per face. e.g. 3 for triangle or 4 for quad
@@ -21,4 +22,9 @@ export function compute_face_normal(face_indices: number[], positions: Vec3[]): 
     result[3 * i + 2] = normal.z
   }
   return result
+}
+
+export function gather_face_normals(faces: number[][], positions: Vec3[]): VertexAttribute {
+  const coords = faces.flatMap((face) => compute_face_normal(face, positions))
+  return new VertexAttribute(3, coords)
 }
