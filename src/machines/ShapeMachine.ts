@@ -6,22 +6,29 @@ import { compile_shader } from '@/webgpu/compile_shader.js'
 import type { Machine } from '@/webgpu/Engine.js'
 import { IndexBuffer } from '@/webgpu/IndexBuffer.js'
 import { RenderPipeline } from '@/webgpu/RenderPipeline.js'
-import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer.js'
+import { VertexBuffer } from '@/webgpu/VertexBuffer.js'
 import type { Mesh } from '@/meshes/Mesh.js'
+import { mod } from '@/core/mod.js'
 
 export interface ShapeMachineSketch {
   shader_url: string
   imports?: LazyShader[]
-  geometry: Mesh
+  meshes: Mesh[]
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void
 }
 
+interface Model {
+  label: string
+  vertex_buffer: VertexBuffer
+  index_buffer: IndexBuffer
+}
+
 export class ShapeMachine implements Machine {
   private sketch: ShapeMachineSketch
-  private vertex_buffer: VertexBuffer
-  private index_buffer: IndexBuffer
+  private models: Model[]
+  private current_model: number = 0
   private render_pipeline: RenderPipeline
 
   constructor(sketch: ShapeMachineSketch) {
@@ -29,13 +36,39 @@ export class ShapeMachine implements Machine {
 
     this.render_pipeline = new RenderPipeline()
 
-    const geometry = sketch.geometry
-    this.vertex_buffer = new VertexBuffer('shape_vertices', [
-      geometry.positions,
-      geometry.normals,
-      geometry.uvs
-    ])
-    this.index_buffer = new IndexBuffer('shape_indices', geometry.indices)
+    if (sketch.meshes.length === 0) {
+      throw new Error('there must be at least one mesh')
+    }
+
+    this.models = sketch.meshes.map((mesh) => {
+      const vertex_buffer = new VertexBuffer(`${mesh.label}_vertices`, [
+        mesh.positions,
+        mesh.normals,
+        mesh.uvs
+      ])
+      const index_buffer = new IndexBuffer(`${mesh.label}_indices`, mesh.indices)
+      return {
+        label: mesh.label,
+        vertex_buffer,
+        index_buffer
+      }
+    })
+  }
+
+  /**
+   * Advance to a new models
+   * @param places Number of places to advance the cyclical list of models
+   */
+  cycle_model(places: number) {
+    this.current_model = mod(this.current_model + places, this.models.length)
+  }
+
+  /**
+   * Select a specific model from the list
+   * @param index Index in the models list
+   */
+  select_model(index: number) {
+    this.current_model = mod(index, this.models.length)
   }
 
   async create_resources(
@@ -51,8 +84,10 @@ export class ShapeMachine implements Machine {
       usage: GPUTextureUsage.RENDER_ATTACHMENT
     })
 
-    this.vertex_buffer.create(device)
-    this.index_buffer.create(device)
+    this.models.forEach((m) => {
+      m.vertex_buffer.create(device)
+      m.index_buffer.create(device)
+    })
 
     const imports = this.sketch.imports ?? []
     const import_promises = imports.map((x) => x.fetch_wgsl())
@@ -66,7 +101,7 @@ export class ShapeMachine implements Machine {
     const vertex_state: GPUVertexState = {
       module: shader_module,
       entryPoint: 'vertex_main',
-      buffers: [this.vertex_buffer.buffer_layout]
+      buffers: this.models.map((m) => m.vertex_buffer.buffer_layout)
     }
 
     const fragment_state: GPUFragmentState = {
@@ -102,10 +137,12 @@ export class ShapeMachine implements Machine {
     context: GPUCanvasContext,
     bind_group: BindGroup
   ): void {
+    const model = this.models[this.current_model]
+
     this.render_pipeline.render(encoder, context, bind_group, (pass) => {
-      this.vertex_buffer.attach(pass)
-      this.index_buffer.attach(pass)
-      pass.drawIndexed(this.index_buffer.count)
+      model.vertex_buffer.attach(pass)
+      model.index_buffer.attach(pass)
+      pass.drawIndexed(model.index_buffer.count)
     })
   }
 }
