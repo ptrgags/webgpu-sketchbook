@@ -1,5 +1,6 @@
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_normal, type Vec3 } from './geometry.js'
+import { compute_face_normal } from './compute_face_normal.js'
+import { Vec3 } from '@/core/Vec3.js'
 
 const OCTAHEDRON_POSITIONS: Vec3[] = [
   // north pole
@@ -11,35 +12,19 @@ const OCTAHEDRON_POSITIONS: Vec3[] = [
   [0, -1, 0],
   // south pole
   [0, 0, -1]
-]
+].map(Vec3.from_array)
 
 const FACE_TRIANGLES = [
   // north hemisphere
-  {
-    positions: [0, 1, 2]
-  },
-  {
-    positions: [0, 2, 3]
-  },
-  {
-    positions: [0, 3, 4]
-  },
-  {
-    positions: [0, 4, 1]
-  },
+  [0, 1, 2],
+  [0, 2, 3],
+  [0, 3, 4],
+  [0, 4, 1],
   // south hemisphere
-  {
-    positions: [5, 1, 4]
-  },
-  {
-    positions: [5, 4, 3]
-  },
-  {
-    positions: [5, 3, 2]
-  },
-  {
-    positions: [5, 2, 1]
-  }
+  [5, 1, 4],
+  [5, 4, 3],
+  [5, 3, 2],
+  [5, 2, 1]
 ]
 
 const FACE_UVS = [
@@ -48,23 +33,15 @@ const FACE_UVS = [
   [0, 1]
 ].flat()
 
-const NORMALS = FACE_TRIANGLES.flatMap((tri) => {
-  const [ia, ib, ic] = tri.positions
-  const a = OCTAHEDRON_POSITIONS[ia]
-  const b = OCTAHEDRON_POSITIONS[ib]
-  const c = OCTAHEDRON_POSITIONS[ic]
-  const normal = compute_normal(a, b, c)
-  return [...normal, ...normal, ...normal]
-})
+const NORMALS = FACE_TRIANGLES.flatMap((tri) => compute_face_normal(tri, OCTAHEDRON_POSITIONS))
 
 const TRIANGLE_INDICES = [0, 1, 2]
 const INDICES = FACE_TRIANGLES.flatMap((_, i) => TRIANGLE_INDICES.map((x) => 3 * i + x))
 
-const POSITIONS = FACE_TRIANGLES.flatMap((tri) => {
-  return tri.positions.flatMap((idx) => OCTAHEDRON_POSITIONS[idx])
-})
-
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
+const POSITIONS = FACE_TRIANGLES.flatMap((tri) => {
+  return tri.flatMap((idx) => OCTAHEDRON_POSITIONS[idx].to_array())
+})
 
 export const OCTAHEDRON_GEOMETRY = {
   positions: new VertexAttribute(3, POSITIONS),
