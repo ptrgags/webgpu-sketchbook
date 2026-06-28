@@ -58,7 +58,7 @@ type Modifier = 'a_button' | 'b_button' | 'x_button' | 'y_button'
 
 /**
  * Make a signal that's +1 when a counter should increment, -1 when a counter
- * should decrement, and
+ * should decrement, and 0 otherwise. This version also allows a modifier key
  * @param modifier_id Which button to use as the modifier for gamepad/keyboard
  * @param gamepad Gamepad buttons
  * @param keyboard Keyboard buttons

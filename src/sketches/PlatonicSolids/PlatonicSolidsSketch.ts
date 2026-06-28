@@ -10,6 +10,10 @@ import { CUBE_GEOMETRY } from '@/meshes/Cube.js'
 import { download_file } from '@/core/download_file.js'
 import type { InputSystem } from '@/input/InputSystem.js'
 import { CyclicCounter } from '@/core/CyclicCounter.js'
+import { ReleaseSignal } from '@/input/ReleaseSignal.js'
+import { TwoButtonAxis } from '@/input/TwoButtonAxis.js'
+import type { AnalogSignal } from '@/input/Signal.js'
+import { AnalogConst } from '@/input/const_signal.js'
 
 const PLATONIC_SOLIDS = [
   TETRAHEDRON_GEOMETRY,
@@ -30,7 +34,20 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
   meshes = PLATONIC_SOLIDS
   current_mesh = new CyclicCounter(0, PLATONIC_SOLIDS.length)
 
-  configure_input(input: InputSystem) {}
+  cycle_mesh: AnalogSignal = new AnalogConst(0.0)
+
+  configure_input(input: InputSystem) {
+    const decrement = new ReleaseSignal(input.keyboard.digital_key('ArrowLeft'))
+    const increment = new ReleaseSignal(input.keyboard.digital_key('ArrowRight'))
+    this.cycle_mesh = new TwoButtonAxis(decrement, increment)
+  }
+
+  update(time: number) {
+    this.cycle_mesh.update(time)
+
+    const places = this.cycle_mesh.value
+    this.current_mesh.cycle(places)
+  }
 }
 
 // @ts-ignore
