@@ -3,6 +3,7 @@ import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
 import { gather_positions } from './gather_positions.js'
 import { tesselate_fan } from './tessellate_fan.js'
+import type { Mesh } from './Mesh.js'
 
 // horizontal distance from the origin to the edges with pairs of points
 const a = Math.sqrt(1 / 3)
@@ -43,7 +44,8 @@ const FACE_UVS = [
 ].flat()
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
 
-export const TETRAHEDRON_GEOMETRY = {
+export const TETRAHEDRON_GEOMETRY: Mesh = {
+  label: 'tetrahedron',
   positions: gather_positions(FACE_TRIANGLES, TETRAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
   normals: gather_face_normals(FACE_TRIANGLES, TETRAHEDRON_POSITIONS),

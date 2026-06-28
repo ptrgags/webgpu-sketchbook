@@ -3,6 +3,7 @@ import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
 import { gather_positions } from './gather_positions.js'
 import { PENTAGONS, tesselate_fan } from './tessellate_fan.js'
+import type { Mesh } from './Mesh.js'
 
 const PHI = 0.5 * (1 + Math.sqrt(5))
 const l = 1.0 / Math.sqrt(3 * (PHI + 1))
@@ -70,7 +71,8 @@ const FACE_UVS = [
 ].flat()
 const UVS = FACE_PENTAGONS.flatMap(() => FACE_UVS)
 
-export const DODECAHEDRON_GEOMETRY = {
+export const DODECAHEDRON_GEOMETRY: Mesh = {
+  label: 'dodecahedron',
   positions: gather_positions(FACE_PENTAGONS, DODECAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
   normals: gather_face_normals(FACE_PENTAGONS, DODECAHEDRON_POSITIONS),

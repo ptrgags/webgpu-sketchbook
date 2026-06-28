@@ -8,13 +8,13 @@ import { IndexBuffer } from '@/webgpu/IndexBuffer.js'
 import { RenderPipeline } from '@/webgpu/RenderPipeline.js'
 import { VertexBuffer } from '@/webgpu/VertexBuffer.js'
 import type { Mesh } from '@/meshes/Mesh.js'
-import { mod } from '@/core/mod.js'
+import { CyclicCounter } from '@/core/CyclicCounter.js'
 
 export interface ShapeMachineSketch {
   shader_url: string
   imports?: LazyShader[]
   meshes: Mesh[]
-  current_mesh: number
+  current_mesh: CyclicCounter
 
   configure_input?: (input: InputSystem) => void
   update?: (time: number) => void
@@ -29,7 +29,6 @@ interface Model {
 export class ShapeMachine implements Machine {
   private sketch: ShapeMachineSketch
   private models: Model[]
-  private current_model: number = 0
   private render_pipeline: RenderPipeline
 
   constructor(sketch: ShapeMachineSketch) {
@@ -54,22 +53,6 @@ export class ShapeMachine implements Machine {
         index_buffer
       }
     })
-  }
-
-  /**
-   * Advance to a new models
-   * @param places Number of places to advance the cyclical list of models
-   */
-  cycle_model(places: number) {
-    this.current_model = mod(this.current_model + places, this.models.length)
-  }
-
-  /**
-   * Select a specific model from the list
-   * @param index Index in the models list
-   */
-  select_model(index: number) {
-    this.current_model = mod(index, this.models.length)
   }
 
   async create_resources(
@@ -102,7 +85,8 @@ export class ShapeMachine implements Machine {
     const vertex_state: GPUVertexState = {
       module: shader_module,
       entryPoint: 'vertex_main',
-      buffers: this.models.map((m) => m.vertex_buffer.buffer_layout)
+      // all the vertex buffers share the same layout
+      buffers: [this.models[0].vertex_buffer.buffer_layout]
     }
 
     const fragment_state: GPUFragmentState = {
@@ -138,7 +122,8 @@ export class ShapeMachine implements Machine {
     context: GPUCanvasContext,
     bind_group: BindGroup
   ): void {
-    const model = this.models[this.current_model]
+    const model_index = this.sketch.current_mesh.value
+    const model = this.models[model_index]
 
     this.render_pipeline.render(encoder, context, bind_group, (pass) => {
       model.vertex_buffer.attach(pass)

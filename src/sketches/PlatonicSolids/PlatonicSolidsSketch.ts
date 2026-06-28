@@ -5,11 +5,11 @@ import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
 import { OCTAHEDRON_GEOMETRY } from '@/meshes/Octahedron.js'
 import { DODECAHEDRON_GEOMETRY } from '@/meshes/Dodecahedron.js'
 import { ICOSAHEDRON_GEOMETRY } from '@/meshes/Icosahedron.js'
-import { encode_stl, encode_stl_file, mesh_to_triangle_soup } from '@/stl/encode_stl.js'
+import { encode_stl_file, mesh_to_triangle_soup } from '@/stl/encode_stl.js'
 import { CUBE_GEOMETRY } from '@/meshes/Cube.js'
 import { download_file } from '@/core/download_file.js'
-import type { Mesh } from '@/meshes/Mesh.js'
 import type { InputSystem } from '@/input/InputSystem.js'
+import { CyclicCounter } from '@/core/CyclicCounter.js'
 
 const PLATONIC_SOLIDS = [
   TETRAHEDRON_GEOMETRY,
@@ -28,10 +28,12 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
     SHADER_LIBRARY.xforms
   ]
   meshes = PLATONIC_SOLIDS
+  current_mesh = new CyclicCounter(0, PLATONIC_SOLIDS.length)
 
   configure_input(input: InputSystem) {}
 }
 
+// @ts-ignore
 window.download_models = () => {
   const tetra = encode_stl_file(mesh_to_triangle_soup(TETRAHEDRON_GEOMETRY), 'tetrahedron.stl')
   const hexa = encode_stl_file(mesh_to_triangle_soup(CUBE_GEOMETRY), 'cube.stl')

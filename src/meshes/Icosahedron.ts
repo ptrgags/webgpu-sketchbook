@@ -3,6 +3,7 @@ import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
 import { tesselate_fan, TRIANGLES } from './tessellate_fan.js'
 import { gather_positions } from './gather_positions.js'
+import type { Mesh } from './Mesh.js'
 
 const PHI = 0.5 * (1 + Math.sqrt(5))
 const d = 1.0 / Math.sqrt(2 + PHI)
@@ -66,7 +67,8 @@ const FACE_UVS = [
 ].flat()
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
 
-export const ICOSAHEDRON_GEOMETRY = {
+export const ICOSAHEDRON_GEOMETRY: Mesh = {
+  label: 'icosahedron',
   positions: gather_positions(FACE_TRIANGLES, ICOSAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
   normals: gather_face_normals(FACE_TRIANGLES, ICOSAHEDRON_POSITIONS),

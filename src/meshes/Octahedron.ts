@@ -3,6 +3,7 @@ import { gather_face_normals } from './compute_face_normal.js'
 import { Vec3 } from '@/core/Vec3.js'
 import { tesselate_fan, TRIANGLES } from './tessellate_fan.js'
 import { gather_positions } from './gather_positions.js'
+import type { Mesh } from './Mesh.js'
 
 const OCTAHEDRON_POSITIONS: Vec3[] = [
   // north pole
@@ -36,7 +37,8 @@ const FACE_UVS = [
 ].flat()
 const UVS = FACE_TRIANGLES.flatMap(() => FACE_UVS)
 
-export const OCTAHEDRON_GEOMETRY = {
+export const OCTAHEDRON_GEOMETRY: Mesh = {
+  label: 'octahedron',
   positions: gather_positions(FACE_TRIANGLES, OCTAHEDRON_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
   normals: gather_face_normals(FACE_TRIANGLES, OCTAHEDRON_POSITIONS),

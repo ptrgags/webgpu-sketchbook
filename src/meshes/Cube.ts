@@ -3,6 +3,7 @@ import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
 import { compute_face_normal, gather_face_normals } from './compute_face_normal.js'
 import { QUADS, tesselate_fan } from './tessellate_fan.js'
 import { gather_positions } from './gather_positions.js'
+import type { Mesh } from './Mesh.js'
 
 // labels by corresponding sRGB colors. The index
 // written in binary shows the connection if you interpret
@@ -50,7 +51,8 @@ const FACE_UVS = [
 ].flat()
 const UVS = FACE_QUADS.flatMap(() => FACE_UVS)
 
-export const CUBE_GEOMETRY = {
+export const CUBE_GEOMETRY: Mesh = {
+  label: 'cube',
   positions: gather_positions(FACE_QUADS, CUBE_POSITIONS),
   uvs: new VertexAttribute(2, UVS),
   normals: gather_face_normals(FACE_QUADS, CUBE_POSITIONS),
