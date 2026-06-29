@@ -1,5 +1,8 @@
 import { mod } from './mod.js'
 
+/**
+ * A counter that can be incremented or decremented but eventually loops.
+ */
 export class CyclicCounter {
   #value: number
   readonly length: number
