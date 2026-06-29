@@ -71,22 +71,19 @@ function make_delta_signal(
   keyboard: ButtonLayout,
   virtual_counter: VirtualCounter
 ): TwoButtonAxis {
-  const decrement = new ReleaseSignal(
-    new DigitalCascade([
-      modify(gamepad[modifier_id], gamepad.down_button),
-      modify(keyboard[modifier_id], keyboard.down_button),
-      virtual_counter.decrement
-    ])
-  )
+  const decrement = new DigitalCascade([
+    modify(gamepad[modifier_id], gamepad.down_button),
+    modify(keyboard[modifier_id], keyboard.down_button),
+    virtual_counter.decrement
+  ])
 
-  const increment = new ReleaseSignal(
-    new DigitalCascade([
-      modify(gamepad[modifier_id], gamepad.up_button),
-      modify(keyboard[modifier_id], keyboard.up_button),
-      virtual_counter.increment
-    ])
-  )
-  return new TwoButtonAxis(decrement, increment)
+  const increment = new DigitalCascade([
+    modify(gamepad[modifier_id], gamepad.up_button),
+    modify(keyboard[modifier_id], keyboard.up_button),
+    virtual_counter.increment
+  ])
+
+  return TwoButtonAxis.make_counter(decrement, increment)
 }
 
 export class BooleanColorSketch implements QuadMachineSketch {
