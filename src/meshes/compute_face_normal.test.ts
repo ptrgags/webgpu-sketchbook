@@ -50,7 +50,7 @@ describe('gather_face_normals', () => {
     const expected = [
       // +z for top quad
       0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-      // -z for bottom quad
+      // -z for bottom triangle
       0, 0, -1, 0, 0, -1, 0, 0, -1
     ]
     expect(result).toEqual(expected)

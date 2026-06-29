@@ -16,6 +16,11 @@ export interface STLTriangle {
   c: Vec3
 }
 
+/**
+ * Dissolve a triangle mesh into a soup of triangles for exporting as STL
+ * @param geometry A mesh to turn to STL
+ * @returns Triangle soup (list of individual triangles)
+ */
 export function mesh_to_triangle_soup(geometry: Mesh): STLTriangle[] {
   const triangle_count = geometry.indices.length / 3
   const result: STLTriangle[] = new Array(triangle_count)
@@ -44,6 +49,12 @@ export function mesh_to_triangle_soup(geometry: Mesh): STLTriangle[] {
   return result
 }
 
+/**
+ * Encode a mesh as an STL file for downloading. Only the positions and normals
+ * are included.
+ * @param triangles The triangles to include
+ * @returns An ArrayBuffer containing the binary data
+ */
 export function encode_stl(triangles: STLTriangle[]): ArrayBuffer {
   const data_size = SIZE_U32 + triangles.length * TRIANGLE_SIZE
 
