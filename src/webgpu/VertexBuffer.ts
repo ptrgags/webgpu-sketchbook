@@ -1,4 +1,4 @@
-const SIZE_F32 = 4
+import { SIZE_F32 } from '@/core/sizes.js'
 
 /**
  * Round up a value as described in the WGSL spec, see
@@ -61,6 +61,19 @@ export class VertexAttribute {
     }
 
     throw new Error('unsupported number of components')
+  }
+
+  /**
+   * Get a single element of the vertex buffer (which may have multiple components if it is a vector)
+   * @param index Index of the element
+   * @returns an array of components
+   */
+  get_element(index: number): number[] {
+    const result = new Array(this.components)
+    for (let i = 0; i < this.components; i++) {
+      result[i] = this.values[this.components * index + i]
+    }
+    return result
   }
 
   fill_values(data_view: DataView, offset: number, stride: number) {

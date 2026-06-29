@@ -58,7 +58,7 @@ type Modifier = 'a_button' | 'b_button' | 'x_button' | 'y_button'
 
 /**
  * Make a signal that's +1 when a counter should increment, -1 when a counter
- * should decrement, and
+ * should decrement, and 0 otherwise. This version also allows a modifier key
  * @param modifier_id Which button to use as the modifier for gamepad/keyboard
  * @param gamepad Gamepad buttons
  * @param keyboard Keyboard buttons
@@ -71,22 +71,19 @@ function make_delta_signal(
   keyboard: ButtonLayout,
   virtual_counter: VirtualCounter
 ): TwoButtonAxis {
-  const decrement = new ReleaseSignal(
-    new DigitalCascade([
-      modify(gamepad[modifier_id], gamepad.down_button),
-      modify(keyboard[modifier_id], keyboard.down_button),
-      virtual_counter.decrement
-    ])
-  )
+  const decrement = new DigitalCascade([
+    modify(gamepad[modifier_id], gamepad.down_button),
+    modify(keyboard[modifier_id], keyboard.down_button),
+    virtual_counter.decrement
+  ])
 
-  const increment = new ReleaseSignal(
-    new DigitalCascade([
-      modify(gamepad[modifier_id], gamepad.up_button),
-      modify(keyboard[modifier_id], keyboard.up_button),
-      virtual_counter.increment
-    ])
-  )
-  return new TwoButtonAxis(decrement, increment)
+  const increment = new DigitalCascade([
+    modify(gamepad[modifier_id], gamepad.up_button),
+    modify(keyboard[modifier_id], keyboard.up_button),
+    virtual_counter.increment
+  ])
+
+  return TwoButtonAxis.make_counter(decrement, increment)
 }
 
 export class BooleanColorSketch implements QuadMachineSketch {
