@@ -15,7 +15,7 @@ export function compute_normal(a: Vec3, b: Vec3, c: Vec3): Vec3 {
 
   const nx = aby * acz - abz * acy
   const ny = abz * acx - abx * acz
-  const nz = abx * acy - aby - acx
+  const nz = abx * acy - aby * acx
 
   const length = Math.sqrt(nx * nx + ny * ny + nz * nz)
   return new Vec3(nx / length, ny / length, nz / length)
