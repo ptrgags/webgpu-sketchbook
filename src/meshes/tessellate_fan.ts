@@ -18,12 +18,19 @@ function get_indices(n: number): number[] {
   throw new Error('not implemented')
 }
 
+/**
+ * Tesselate a regular n-gon into a list of triangles
+ * @param face_count Number of faces to generate
+ * @param n The number of sides per face (e.g. 3 for triangle, 4 for quad)
+ * @returns Indices to add to a Mesh
+ */
 export function tesselate_fan(face_count: number, n: number): number[] {
   const face_indices = get_indices(n)
-  const result = new Array(face_count * face_indices.length)
+  const vertices_per_face = face_indices.length
+  const result = new Array(face_count * vertices_per_face)
   for (let i = 0; i < face_count; i++) {
-    for (let j = 0; j < face_indices.length; j++) {
-      result[i * n + j] = n * i + face_indices[j]
+    for (let j = 0; j < vertices_per_face; j++) {
+      result[i * vertices_per_face + j] = i * n + face_indices[j]
     }
   }
   return result
