@@ -13,6 +13,9 @@ import { CyclicCounter } from '@/core/CyclicCounter.js'
 import { TwoButtonAxis } from '@/input/TwoButtonAxis.js'
 import type { AnalogSignal } from '@/input/Signal.js'
 import { AnalogConst } from '@/input/const_signal.js'
+import { GamepadButtons } from '@/input/GamepadInput.js'
+import { Vec2 } from '@/core/Vec2.js'
+import { DigitalCascade } from '@/input/CascadeSignal.js'
 
 const PLATONIC_SOLIDS = [
   TETRAHEDRON_GEOMETRY,
@@ -36,8 +39,19 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
   cycle_mesh: AnalogSignal = new AnalogConst(0.0)
 
   configure_input(input: InputSystem) {
-    const decrement_key = input.keyboard.digital_key('ArrowLeft')
-    const increment_key = input.keyboard.digital_key('ArrowRight')
+    const left_button = input.gamepad.digital_button(GamepadButtons.Left)
+    const right_button = input.gamepad.digital_button(GamepadButtons.Right)
+
+    const left_key = input.keyboard.digital_key('ArrowLeft')
+    const right_key = input.keyboard.digital_key('ArrowRight')
+
+    const VB_DIMENSIONS = new Vec2(0.3, 1.0)
+    const left_vb = input.pointer.virtual_button(new Vec2(0, 0), VB_DIMENSIONS)
+    const right_vb = input.pointer.virtual_button(new Vec2(1.0 - VB_DIMENSIONS.x, 0), VB_DIMENSIONS)
+
+    const decrement_key = new DigitalCascade([left_button, left_key, left_vb])
+    const increment_key = new DigitalCascade([right_button, right_key, right_vb])
+
     this.cycle_mesh = TwoButtonAxis.make_counter(decrement_key, increment_key)
   }
 
