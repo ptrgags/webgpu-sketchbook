@@ -1,6 +1,6 @@
 import { Vec3 } from '@/core/Vec3.js'
 import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { compute_face_normal, gather_face_normals } from './compute_face_normal.js'
+import { gather_face_normals } from './compute_face_normal.js'
 import { QUADS, tesselate_fan } from './tessellate_fan.js'
 import { gather_positions } from './gather_positions.js'
 import type { Mesh } from './Mesh.js'
@@ -8,6 +8,9 @@ import type { Mesh } from './Mesh.js'
 // labels by corresponding sRGB colors. The index
 // written in binary shows the connection if you interpret
 // as a vec3f
+//
+// Note: Unlike the other platonic solids which have a radius of 1, this
+// cube has a half-width of 1. This tends to me more commonly useful
 const CUBE_POSITIONS: Vec3[] = [
   // black = 0b000
   [-1, -1, -1],
