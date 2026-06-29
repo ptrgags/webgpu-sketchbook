@@ -37,9 +37,9 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
   cycle_mesh: AnalogSignal = new AnalogConst(0.0)
 
   configure_input(input: InputSystem) {
-    const decrement = new ReleaseSignal(input.keyboard.digital_key('ArrowLeft'))
-    const increment = new ReleaseSignal(input.keyboard.digital_key('ArrowRight'))
-    this.cycle_mesh = new TwoButtonAxis(decrement, increment)
+    const decrement_key = input.keyboard.digital_key('ArrowLeft')
+    const increment_key = input.keyboard.digital_key('ArrowRight')
+    this.cycle_mesh = TwoButtonAxis.make_counter(decrement_key, increment_key)
   }
 
   update(time: number) {
