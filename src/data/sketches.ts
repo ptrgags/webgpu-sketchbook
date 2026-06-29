@@ -34,7 +34,15 @@ export const SKETCHES: SketchMetadata[] = [
     years: '2026-06',
     type: 'shape',
     make_machine: () => new ShapeMachine(new PlatonicSolidsSketch()),
-    description: `<p>TODO</p>`
+    description: `
+    <h3>Controls</h3>
+    <p>
+        <b>SelectModel</b>: D-pad left/right (Gamepad), left/right arrow (Keyboard), Click the left/right edge of canvas (Touchscreen/Mouse)<br/>
+    </p>
+    <p>
+        I wanted to add more shapes to the project, so I added the 5 platonic solids. You have the tetrahedron (4 sides), the cube (6 sides), the octahedron (8 sides), the dodecahedron (12 sides), and the icosahedron (12 sides).
+    </p>
+    `
   },
   {
     is_lab: true,
