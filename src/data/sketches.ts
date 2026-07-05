@@ -11,6 +11,7 @@ import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShape
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 import { PlatonicSolidsSketch } from '@/sketches/PlatonicSolids/PlatonicSolidsSketch.js'
+import { BooleanWatchSketch } from '@/sketches/BooleanWatch/BooleanWatchSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -27,6 +28,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'boolean-watch',
+    title: 'Boolean Color Watch',
+    years: '2026-07',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new BooleanWatchSketch()),
+    description: 'TODO',
+    is_lab: true
+  },
   {
     is_lab: true,
     id: 'platonic-solids',
