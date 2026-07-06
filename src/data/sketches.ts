@@ -11,6 +11,7 @@ import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShape
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 import { PlatonicSolidsSketch } from '@/sketches/PlatonicSolids/PlatonicSolidsSketch.js'
+import { SpiralSDFSketch } from '@/sketches/SpiralSDF/SpiralSDFSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -27,6 +28,15 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    is_lab: true,
+    id: 'spiral-sdf',
+    title: 'Spiral SDF',
+    years: '2026-07',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new SpiralSDFSketch()),
+    description: 'TODO'
+  },
   {
     is_lab: true,
     id: 'platonic-solids',
