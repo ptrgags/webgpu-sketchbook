@@ -8,7 +8,10 @@ fn rotation(angle: f32) -> mat2x2f {
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
-    let uv = input.uv;
+    let t = u_frame.time;
+    let freq = 0.5;
+
+    let uv = rotation(-2.0 * PI * freq * t) * input.uv;
     let angle = atan2(uv.y, uv.x) + PI;
     
 
