@@ -42,13 +42,18 @@ fn log_spiral(theta: f32, k: f32) -> f32 {
     return pow(k, t);
 }
 
+fn modulo(x: f32, modulus: f32) -> f32 {
+    return ((x % modulus) + modulus) % modulus;
+}
+
 /**
  * convert spiral coordinates to polar coordinates
  * 
  * spiral - (t, theta) where t blends between revolutions of the spiral (in 
- *     logarithmic units for base k) and theta is an angle in [0, 2pi) 
+ *     logarithmic units for base k) and theta is the corresponding angle. Both
+ *     values are in (-inf, inf)
  *    
- * returns (r, theta), the polar coordinates for the point. theta does not change.
+ * returns (r, theta), the polar coordinates for the point. Theta is reduced to be [0, 2pi)
  */
 fn spiral_to_polar(spiral: vec2f, k: f32) -> vec2f {
     let t = spiral.x;
@@ -60,21 +65,25 @@ fn spiral_to_polar(spiral: vec2f, k: f32) -> vec2f {
     // t is a log unit that determines how many revolutions away from the first
     // one the point is at
     let r = pow(k, t) * log_spiral(theta, k);
-    return vec2f(r, theta);
+    let theta_reduced = modulo(theta, 2.0 * PI);
+    return vec2f(r, theta_reduced);
 }
 
 /**
  * Inverse of spiral_to_polar()
  *
- * polar - (r, theta) coordinates of a point in the plane
+ * polar - (r, theta_reduced) coordinates of a point in the plane where
+ *    theta_reduced is the angle in [0, 2pi)
  * 
- * returns (t, theta) where t is in (-inf, inf) and theta is unchanged
+ * returns (t, theta) where t is in (-inf, inf) and theta is the angle
+ *    adjusted to the appropirate branch for the t value (i.e. theta_reduced + 2pi l for some l value)
  */
 fn polar_to_spiral(polar: vec2f, k: f32) -> vec2f {
     let r = polar.x;
-    let theta = polar.y;
-    let spiral_r = log_spiral(theta, k);
+    let theta_reduced = polar.y;
+    let spiral_r = log_spiral(theta_reduced, k);
     let t = (log(r) - log(spiral_r)) / log(k);
+    let theta = theta_reduced + 2.0 * PI * floor(t);
     return vec2f(t, theta);
 }
 
@@ -91,22 +100,31 @@ fn sdf_spiral(p: vec2f, k: f32) -> f32 {
 
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
-    let angle = -u_frame.time * 2.0 * PI * 0.1;
+    let angle = u_frame.time * 2.0 * PI * 0.1;
     let rot = mat2x2f(
         cos(angle), sin(angle),
         -sin(angle), cos(angle)
     );
-    let p = rot * input.uv;
+    let p = 2.0 * rot * input.uv;
 
 
-    let dist_r = sdf_spiral(p, 4.0);
-    let mask = 1.0 - step(0.4, dist_r);
-
+    let k = 2.0;
     let polar = rect_to_polar(p);
-    let n = 12.0;
-    let theta = polar.y / (2.0 * PI) + floor(polar.x);
-    let theta_cell = fract(n * theta);
+    let spiral = polar_to_spiral(polar, k);
 
-    let color = mask * vec3f(theta_cell, dist_r, 1.0);
+    let n = 12.0;
+    let grid = spiral * vec2f(1.0, n / (2.0 * PI));
+    let cell_id = floor(grid);
+    let cell_uv = fract(grid);
+
+    let dist_center = 2.0 * abs(cell_uv - 0.5);
+    let dist = max(dist_center.x, dist_center.y);
+
+    let border = step(0.8, dist);
+
+    let gradient_scale = 40.0;
+    let gradient_along = spiral.y / gradient_scale + 0.5;
+
+    let color = gradient_along * mix(vec3f(0.25, 0.75, 1.0), vec3f(1.0, 0.5, 0.0), border);
     return vec4f(color, 1.0);
 }
