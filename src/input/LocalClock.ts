@@ -28,7 +28,7 @@ export class LocalClock {
    * Get an analog signal for the hour hand.
    * @returns A signal for the (clockwise) hour hand position, normalized to [0, 1]
    */
-  hour_hand(): AnalogSignal {
+  get hour_hand(): AnalogSignal {
     return new ObserverSignal(() => {
       return this.continuous_hour / HOURS_PER_HALF_DAY
     })
@@ -38,7 +38,7 @@ export class LocalClock {
    * Get an an analog signal for the minute hand
    * @returns A signal for the (clockwise) minute hand position, normalized to [0, 1]
    */
-  minute_hand(): AnalogSignal {
+  get minute_hand(): AnalogSignal {
     return new ObserverSignal(() => {
       return this.continuous_minute / MIN_PER_HOUR
     })
@@ -48,7 +48,7 @@ export class LocalClock {
    * Get an an analog signal for the second hand
    * @returns A signal for the (clockwise) second hand position, normalized to [0, 1]
    */
-  second_hand(): AnalogSignal {
+  get second_hand(): AnalogSignal {
     return new ObserverSignal(() => {
       return this.continuous_sec / SEC_PER_MIN
     })
