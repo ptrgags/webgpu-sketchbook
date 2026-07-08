@@ -11,7 +11,7 @@ import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShape
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 import { PlatonicSolidsSketch } from '@/sketches/PlatonicSolids/PlatonicSolidsSketch.js'
-import { BooleanWatchSketch } from '@/sketches/BooleanWatch/BooleanWatchSketch.js'
+import { BooleanColorClockSketch as BooleanColorClockSketch } from '@/sketches/BooleanColorClock/BooleanColorClockSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -29,11 +29,11 @@ const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
   {
-    id: 'boolean-watch',
-    title: 'Boolean Color Watch',
+    id: 'boolean-color-clock',
+    title: 'Boolean Color Clock',
     years: '2026-07',
     type: 'quad',
-    make_machine: () => new QuadMachine(new BooleanWatchSketch()),
+    make_machine: () => new QuadMachine(new BooleanColorClockSketch()),
     description: `
     <p>
         This artistic clock is colored using Boolean Color
