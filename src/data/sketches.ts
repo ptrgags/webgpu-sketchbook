@@ -34,7 +34,19 @@ export const SKETCHES: SketchMetadata[] = [
     years: '2026-07',
     type: 'quad',
     make_machine: () => new QuadMachine(new BooleanWatchSketch()),
-    description: 'TODO',
+    description: `
+    <p>
+        This artistic clock is colored using Boolean Color
+        operations. Each hand of the clock, along with the dial itself gets a
+        gradient. The colors are combined with bitwise exclusive or (XOR). 
+        Loosely speaking, this highlights differences between the color values.
+    </p>
+    <p>
+        This clock was inspired by <a href="https://www.amazon.com/dp/B0DS91C6MV">this watch</a>
+        I found on Amazon. It uses 2 translucent discs (one in red, one in 
+        blue), plus a colored dial (yellow) that are overlaid to produce various
+        color gradients.
+    </p>`,
     is_lab: true
   },
   {
