@@ -13,6 +13,15 @@ fn conical_gradient(uv: vec2f, rotation_angle: f32) -> f32 {
     return 0.5 + 0.5 * signed;
 }
 
+fn sdf_tick_marks(p: vec2f, inner_radius: f32, outer_radius: f32, n: f32) -> f32 {
+    let normalized_theta = conical_gradient(p, PI + -PI / n);
+    let sector_id = floor(n * normalized_theta);
+    let angle = sector_id * TAU / n;
+    let folded = rotation(-angle) * p;
+
+    return sdf_segment(folded, vec2f(inner_radius, 0.0), vec2f(outer_radius, 0.0));
+}
+
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     let angle_hour = MIDNIGHT + get_analog(0) * TAU;
@@ -39,6 +48,11 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let dial_bg_mask = 1.0 - step(0.0, sdf_circle(uv, BEZEL_INNER_RADIUS));
 
+    const TICK_RADIUS_INNER = 0.78;
+    const TICK_RADIUS_OUTER = 0.87;
+    const TICK_MARK_THICKNESS = 0.015;
+    let tick_mark_mask = 1.0 - step(TICK_MARK_THICKNESS, sdf_tick_marks(uv, TICK_RADIUS_INNER, TICK_RADIUS_OUTER, 12.0));
+
     const RADIUS_HOUR = 0.3;
     const HOUR_HAND_THICKNESS = 0.02;
     const CENTER = vec2f(0.0);
@@ -62,21 +76,21 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
     let hour_disc = bitwise_color(CYAN * hour_gradient, dial_gradient, OP_XOR);
     let min_disc = bitwise_color(YELLOW * min_gradient, hour_disc, OP_XOR);
-    let sec_disc = bitwise_color(MAGENTA * sec_gradient, min_disc, OP_XOR);
-
+    let sec_disc = bitwise_color(MAGENTA * sec_gradient, min_disc, OP_XOR);    
 
     const COLOR_DROP_SHADOW = vec3f(0.1);
     const COLOR_BEZEL = vec3f(0.4);
+    const COLOR_TICKS = vec3f(0.8);
     const COLOR_DIAL = vec3f(0.8);
     const COLOR_HANDS = vec3f(1.0);
     var color = background;
     color = mix(color, COLOR_DROP_SHADOW, drop_shadow_mask);
     color = mix(color, COLOR_BEZEL, bezel_bg_mask);
+    color = mix(color, COLOR_TICKS, tick_mark_mask);
     color = mix(color, sec_disc, dial_bg_mask);
     color = mix(color, COLOR_HANDS, hour_hand_mask);
     color = mix(color, COLOR_HANDS, min_hand_mask);
     color = mix(color, COLOR_HANDS, sec_hand_mask);
-
 
     return vec4f(color, 1.0);
 }
