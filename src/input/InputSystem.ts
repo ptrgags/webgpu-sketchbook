@@ -37,7 +37,7 @@ export class InputSystem {
     this.gamepad = new GamepadInput()
     this.keyboard = new KeyboardInput()
     this.pointer = new PointerInput(canvas)
-    this.clock = new LocalClock(new Date(2026, 7, 8, 10, 10, 30))
+    this.clock = new LocalClock()
 
     const digital = new UniformArray(
       UniformType.VEC4U,
