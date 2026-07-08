@@ -47,7 +47,7 @@ export const SKETCHES: SketchMetadata[] = [
         blue), plus a colored dial (yellow) that are overlaid to produce various
         color gradients.
     </p>`,
-    is_lab: true
+    is_lab: false
   },
   {
     is_lab: true,

@@ -5,12 +5,17 @@ const MIN_PER_HOUR = 60
 const SEC_PER_MIN = 60
 
 export class LocalClock {
+  fixed_date?: Date
   continuous_hour: number = 0
   continuous_minute: number = 0
   continuous_sec: number = 0
 
+  constructor(fixed_date?: Date) {
+    this.fixed_date = fixed_date
+  }
+
   update() {
-    const date = new Date()
+    const date = this.fixed_date ?? new Date()
     const hour = date.getHours()
     const min = date.getMinutes()
     const sec = date.getSeconds()
