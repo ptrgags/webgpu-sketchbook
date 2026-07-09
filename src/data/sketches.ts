@@ -11,6 +11,7 @@ import { ScrambledShapesSketch } from '@/sketches/ScrambledShapes/ScrambledShape
 import { ShapeMachine } from '@/machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '@/sketches/SRGBCube/SRGBCubeSketch.js'
 import { PlatonicSolidsSketch } from '@/sketches/PlatonicSolids/PlatonicSolidsSketch.js'
+import { BooleanColorClockSketch as BooleanColorClockSketch } from '@/sketches/BooleanColorClock/BooleanColorClockSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -27,6 +28,28 @@ export interface SketchMetadata {
 const base_url = import.meta.env.BASE_URL
 
 export const SKETCHES: SketchMetadata[] = [
+  {
+    id: 'boolean-color-clock',
+    title: 'Boolean Color Clock',
+    years: '2026-07',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new BooleanColorClockSketch()),
+    description: `
+    <p>
+        This artistic clock is colored using Boolean Color
+        operations. The dial and the hands each get a gradient in different hues.
+        The colors are combined with bitwise exclusive or (XOR). 
+        Loosely speaking, this highlights differences between the color values
+        in binary.
+    </p>
+    <p>
+        This clock was inspired by <a href="https://www.amazon.com/dp/B0DS91C6MV">this watch</a>
+        I found on Amazon. It uses 2 translucent discs (one in red, one in 
+        blue), plus a colored dial (yellow) that are overlaid to produce various
+        color gradients.
+    </p>`,
+    is_lab: false
+  },
   {
     is_lab: true,
     id: 'platonic-solids',

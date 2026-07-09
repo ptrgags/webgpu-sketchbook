@@ -1,0 +1,150 @@
+// Midnight is at 90 degrees in the CCW +x convention
+const MIDNIGHT: f32 = 0.5 * PI;
+
+fn rotation(angle: f32) -> mat2x2f {
+    return mat2x2f(
+        cos(angle), sin(angle),
+        -sin(angle), cos(angle)
+    );
+}
+
+fn to_unsigned(signed: f32) -> f32 {
+    return 0.5 + 0.5 * signed;
+}
+
+fn to_signed(unsigned: f32) -> f32 {
+    return 2.0 * unsigned - 1.0;
+}
+
+fn conical_gradient(uv: vec2f, rotation_angle: f32) -> f32 {
+    // atan2 puts the discontinuity at pi. To change it, we need to
+    // rotate the domain with an _inverse_ rotation matrix (hence the negative 
+    // angle)
+    //
+    // Results are returned normalized to [0, 1]
+    let rotated = rotation(-rotation_angle) * uv;
+    let signed = atan2(rotated.y, rotated.x) / PI;
+    return 0.5 + 0.5 * signed;
+}
+
+fn sdf_tick_marks(p: vec2f, inner_radius: f32, outer_radius: f32, n: f32) -> f32 {
+    // we want to divide the circle into n sectors, then fold them so they all
+    // use the coordinate system of the sector centered on angle 0
+    // 
+    // note: the sectors are centered at roots of unity, which is why we
+    // have to rotate the sectors by 2pi/(2n) = pi/n
+    let normalized_theta = conical_gradient(p, PI + -PI / n);
+    let sector_id = floor(n * normalized_theta);
+    // to fold the coordinates, we rotate space proportional to the sector id.
+    let angle = sector_id * TAU / n;
+    let folded = rotation(-angle) * p;
+
+    // Since we centered the sectors, the tick mark will be a simple
+    // line segment on the +x axis!
+    return sdf_segment(
+        folded, vec2f(inner_radius, 0.0), vec2f(outer_radius, 0.0)
+    );
+}
+
+fn sdf_extrude(dist: f32, amount: f32) -> f32 {
+    return dist - amount;
+}
+
+fn mask_sharp(dist: f32) -> f32 {
+    return 1.0 - step(0.0, dist);
+}
+
+const THICKNESS_PIXEL = 1.0 / 500.0;
+fn mask_feather(dist: f32, thickness: f32) -> f32 {
+    return smoothstep(0.5 * thickness, -0.5 * thickness, dist);
+}
+
+fn mask_smooth(dist: f32) -> f32 {
+    return mask_feather(dist, 2.0 * THICKNESS_PIXEL);
+}
+
+fn polar_to_rect(r: f32, theta: f32) -> vec2f {
+    return r * vec2f(cos(theta), sin(theta));
+}
+
+const DIAL_CENTER = vec2f(0.0);
+fn clock_hand(uv: vec2f, angle: f32, length: f32, thickness: f32) -> f32 {
+    let tip = polar_to_rect(length, angle);
+    let hand = sdf_extrude(sdf_segment(uv, DIAL_CENTER, tip), thickness);
+
+    return mask_smooth(hand);
+}
+
+@fragment
+fn fragment_main(input: Interpolated) -> @location(0) vec4f {
+    // The signal values are clockwise angles, but this shader uses
+    // the usual CCW from +x convention, hence the minus sign
+    let angle_hour = MIDNIGHT - get_analog(0) * TAU;
+    let angle_min = MIDNIGHT - get_analog(1) * TAU;
+    let angle_sec = MIDNIGHT - get_analog(2) * TAU;
+    let uv = input.uv;
+
+    let hour_gradient = vec3f(conical_gradient(uv, angle_hour));
+    let min_gradient = vec3f(conical_gradient(uv, angle_min));
+    let sec_gradient = vec3f(conical_gradient(uv, angle_sec));
+
+    let bg_uv = fract(uv);
+    let background = bitwise_color(
+        bg_uv.x * vec3f(1.0), 
+        bg_uv.y * vec3f(1.0), 
+        OP_NAND);
+
+    const BEZEL_OUTER_RADIUS = 0.9;
+    const BEZEL_INNER_RADIUS = 0.75;
+    const DROP_SHADOW_OFFSET = vec2f(0.075, -0.1);
+    let bezel_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_OUTER_RADIUS));
+    let drop_shadow_mask = mask_feather(
+        sdf_circle(uv - DROP_SHADOW_OFFSET, BEZEL_OUTER_RADIUS), 
+        50 * THICKNESS_PIXEL
+    );
+
+    let dial_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_INNER_RADIUS));
+
+    const TICK_RADIUS_INNER = 0.78;
+    const TICK_RADIUS_OUTER = 0.87;
+    const TICK_MARK_THICKNESS = 0.015;
+    let ticks = sdf_extrude(
+        sdf_tick_marks(uv, TICK_RADIUS_INNER, TICK_RADIUS_OUTER, 12.0), 
+        TICK_MARK_THICKNESS
+    );
+    let tick_mark_mask = mask_smooth(ticks);
+
+    const RADIUS_HOUR = 0.3;
+    const RADIUS_MIN = 0.5;
+    const RADIUS_SEC = 0.7;
+    
+    const HOUR_HAND_THICKNESS = 0.02;
+    const MIN_HAND_THICKNESS = 0.015;
+    const SEC_HAND_THICKNESS = 0.01;
+
+    let hour_hand_mask = clock_hand(uv, angle_hour, RADIUS_HOUR, HOUR_HAND_THICKNESS);
+    let min_hand_mask = clock_hand(uv, angle_min, RADIUS_MIN, MIN_HAND_THICKNESS);
+    let sec_hand_mask = clock_hand(uv, angle_sec, RADIUS_SEC, SEC_HAND_THICKNESS);
+
+    let dial_gradient = vec3f(sdf_point(uv));
+
+    let hour_disc = bitwise_color(CYAN * hour_gradient, dial_gradient, OP_XOR);
+    let min_disc = bitwise_color(YELLOW * min_gradient, hour_disc, OP_XOR);
+    let sec_disc = bitwise_color(MAGENTA * sec_gradient, min_disc, OP_XOR);    
+
+    const COLOR_DROP_SHADOW = vec3f(0.1);
+    const COLOR_BEZEL = vec3f(0.4);
+    const COLOR_TICKS = vec3f(0.8);
+    const COLOR_DIAL = vec3f(0.8);
+    const COLOR_HANDS = vec3f(1.0);
+    var color = background;
+    color = mix(color, COLOR_DROP_SHADOW, drop_shadow_mask);
+    color = mix(color, COLOR_BEZEL, bezel_bg_mask);
+    color = mix(color, COLOR_TICKS, tick_mark_mask);
+    color = mix(color, sec_disc, dial_bg_mask);
+    color = mix(color, COLOR_HANDS, hour_hand_mask);
+    color = mix(color, COLOR_HANDS, min_hand_mask);
+    color = mix(color, COLOR_HANDS, sec_hand_mask);
+
+    return vec4f(color, 1.0);
+}

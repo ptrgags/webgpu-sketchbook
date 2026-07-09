@@ -4,6 +4,7 @@ import type { AnalogSignal, DigitalSignal } from './Signal'
 import { KeyboardInput } from './KeyboardInput'
 import { MidiInput } from './MidiInput'
 import { PointerInput } from './PointerInput'
+import { LocalClock } from './LocalClock.js'
 
 const DIGITAL_VECTORS = 2
 const DIGITAL_COMPONENTS = DIGITAL_VECTORS * 4
@@ -25,6 +26,7 @@ export class InputSystem {
   gamepad: GamepadInput
   keyboard: KeyboardInput
   pointer: PointerInput
+  clock: LocalClock
 
   u_input: UniformStruct
   digital_signals: DigitalSignal[] = []
@@ -35,6 +37,7 @@ export class InputSystem {
     this.gamepad = new GamepadInput()
     this.keyboard = new KeyboardInput()
     this.pointer = new PointerInput(canvas)
+    this.clock = new LocalClock()
 
     const digital = new UniformArray(
       UniformType.VEC4U,
@@ -101,6 +104,7 @@ export class InputSystem {
 
     this.update_digital(time)
     this.update_analog(time)
+    this.clock.update()
     this.u_input.update(device)
   }
 
