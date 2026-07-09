@@ -21,8 +21,8 @@ export class LocalClock {
     const sec = date.getSeconds()
 
     this.continuous_hour = hour + min / MIN_PER_HOUR + sec / SEC_PER_MIN / MIN_PER_HOUR
-    this.continuous_minute = hour * MIN_PER_HOUR + min + sec / SEC_PER_MIN
-    this.continuous_sec = hour * MIN_PER_HOUR * SEC_PER_MIN + min * SEC_PER_MIN + sec
+    this.continuous_minute = min + sec / SEC_PER_MIN
+    this.continuous_sec = sec
 
     this.continuous_hour %= HOURS_PER_HALF_DAY
     this.continuous_minute %= MIN_PER_HOUR
