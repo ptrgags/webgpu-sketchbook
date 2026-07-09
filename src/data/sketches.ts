@@ -37,9 +37,10 @@ export const SKETCHES: SketchMetadata[] = [
     description: `
     <p>
         This artistic clock is colored using Boolean Color
-        operations. Each hand of the clock, along with the dial itself gets a
-        gradient. The colors are combined with bitwise exclusive or (XOR). 
-        Loosely speaking, this highlights differences between the color values.
+        operations. The dial and the hands each get a gradient in different hues.
+        The colors are combined with bitwise exclusive or (XOR). 
+        Loosely speaking, this highlights differences between the color values
+        in binary.
     </p>
     <p>
         This clock was inspired by <a href="https://www.amazon.com/dp/B0DS91C6MV">this watch</a>
