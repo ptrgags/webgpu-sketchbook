@@ -56,10 +56,10 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     const BEZEL_OUTER_RADIUS = 0.9;
     const BEZEL_INNER_RADIUS = 0.75;
     const DROP_SHADOW_OFFSET = vec2f(0.075, -0.1);
-    let bezel_bg_mask = mask_sharp(sdf_circle(uv, BEZEL_OUTER_RADIUS));
-    let drop_shadow_mask = mask_sharp(sdf_circle(uv - DROP_SHADOW_OFFSET, BEZEL_OUTER_RADIUS));
+    let bezel_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_OUTER_RADIUS), 2 * THICKNESS_PIXEL);
+    let drop_shadow_mask = mask_smooth(sdf_circle(uv - DROP_SHADOW_OFFSET, BEZEL_OUTER_RADIUS), 50 * THICKNESS_PIXEL);
 
-    let dial_bg_mask = mask_sharp(sdf_circle(uv, BEZEL_INNER_RADIUS));
+    let dial_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_INNER_RADIUS), 2 * THICKNESS_PIXEL);
 
     const TICK_RADIUS_INNER = 0.78;
     const TICK_RADIUS_OUTER = 0.87;
