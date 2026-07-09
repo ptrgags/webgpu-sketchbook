@@ -22,7 +22,7 @@ fn sdf_tick_marks(p: vec2f, inner_radius: f32, outer_radius: f32, n: f32) -> f32
     return sdf_segment(folded, vec2f(inner_radius, 0.0), vec2f(outer_radius, 0.0));
 }
 
-fn sdf_extrude(dist:f32, amount: f32) -> f32 {
+fn sdf_extrude(dist: f32, amount: f32) -> f32 {
     return dist - amount;
 }
 
@@ -33,6 +33,18 @@ fn mask_sharp(dist: f32) -> f32 {
 const THICKNESS_PIXEL = 1.0 / 500.0;
 fn mask_smooth(dist: f32, thickness: f32) -> f32 {
     return smoothstep(0.5 * thickness, -0.5 * thickness, dist);
+}
+
+fn polar_to_rect(r: f32, theta: f32) -> vec2f {
+    return r * vec2f(cos(theta), sin(theta));
+}
+
+const DIAL_CENTER = vec2f(0.0);
+fn clock_hand(uv: vec2f, angle: f32, length: f32, thickness: f32) -> f32 {
+    let tip = polar_to_rect(length, angle);
+    let hand = sdf_extrude(sdf_segment(uv, DIAL_CENTER, tip), thickness);
+
+    return mask_smooth(hand, 2 * THICKNESS_PIXEL);
 }
 
 @fragment
@@ -56,39 +68,40 @@ fn fragment_main(input: Interpolated) -> @location(0) vec4f {
     const BEZEL_OUTER_RADIUS = 0.9;
     const BEZEL_INNER_RADIUS = 0.75;
     const DROP_SHADOW_OFFSET = vec2f(0.075, -0.1);
-    let bezel_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_OUTER_RADIUS), 2 * THICKNESS_PIXEL);
-    let drop_shadow_mask = mask_smooth(sdf_circle(uv - DROP_SHADOW_OFFSET, BEZEL_OUTER_RADIUS), 50 * THICKNESS_PIXEL);
+    let bezel_bg_mask = mask_smooth(
+        sdf_circle(uv, BEZEL_OUTER_RADIUS), 
+        2 * THICKNESS_PIXEL
+    );
+    let drop_shadow_mask = mask_smooth(
+        sdf_circle(uv - DROP_SHADOW_OFFSET, BEZEL_OUTER_RADIUS), 
+        50 * THICKNESS_PIXEL
+    );
 
-    let dial_bg_mask = mask_smooth(sdf_circle(uv, BEZEL_INNER_RADIUS), 2 * THICKNESS_PIXEL);
+    let dial_bg_mask = mask_smooth(
+        sdf_circle(uv, BEZEL_INNER_RADIUS), 
+        2 * THICKNESS_PIXEL
+    );
 
     const TICK_RADIUS_INNER = 0.78;
     const TICK_RADIUS_OUTER = 0.87;
     const TICK_MARK_THICKNESS = 0.015;
-    let tick_mark_mask = mask_sharp(
-        sdf_extrude(
-            sdf_tick_marks(uv, TICK_RADIUS_INNER, TICK_RADIUS_OUTER, 12.0), 
-            TICK_MARK_THICKNESS
-        )
+    let ticks = sdf_extrude(
+        sdf_tick_marks(uv, TICK_RADIUS_INNER, TICK_RADIUS_OUTER, 12.0), 
+        TICK_MARK_THICKNESS
     );
+    let tick_mark_mask = mask_smooth(ticks, 2 * THICKNESS_PIXEL);
 
     const RADIUS_HOUR = 0.3;
-    const HOUR_HAND_THICKNESS = 0.02;
-    const CENTER = vec2f(0.0);
-    let hour_tip = RADIUS_HOUR * vec2f(cos(-angle_hour), sin(-angle_hour));
-    let hour_hand = sdf_segment(uv, CENTER, hour_tip);
-    let hour_hand_mask = 1.0 - step(HOUR_HAND_THICKNESS, hour_hand); 
-
     const RADIUS_MIN = 0.5;
-    const MIN_HAND_THICKNESS = 0.015;
-    let min_tip = RADIUS_MIN * vec2f(cos(-angle_min), sin(-angle_min));
-    let min_hand = sdf_segment(uv, CENTER, min_tip);
-    let min_hand_mask = 1.0 - step(MIN_HAND_THICKNESS, min_hand);
-
     const RADIUS_SEC = 0.7;
+    
+    const HOUR_HAND_THICKNESS = 0.02;
+    const MIN_HAND_THICKNESS = 0.015;
     const SEC_HAND_THICKNESS = 0.01;
-    let sec_tip = RADIUS_SEC * vec2f(cos(-angle_sec), sin(-angle_sec));
-    let sec_hand = sdf_segment(uv, CENTER, sec_tip);
-    let sec_hand_mask = 1.0 - step(SEC_HAND_THICKNESS, sec_hand);
+
+    let hour_hand_mask = clock_hand(uv, -angle_hour, RADIUS_HOUR, HOUR_HAND_THICKNESS);
+    let min_hand_mask = clock_hand(uv, -angle_min, RADIUS_MIN, MIN_HAND_THICKNESS);
+    let sec_hand_mask = clock_hand(uv, -angle_sec, RADIUS_SEC, SEC_HAND_THICKNESS);
 
     let dial_gradient = vec3f(sdf_point(uv));
 
