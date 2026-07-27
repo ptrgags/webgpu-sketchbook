@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import NavbarHeader from './NavbarHeader.vue'
+
 import { useData } from 'vitepress'
 
 // https://vitepress.dev/reference/runtime-api#usedata
@@ -6,7 +8,9 @@ const { site, frontmatter } = useData()
 </script>
 
 <template>
-  <div v-if="frontmatter.home">
+  <NavbarHeader />
+
+  <div v-if="frontmatter.layout === 'home'">
     <h1>{{ site.title }}</h1>
     <p>{{ site.description }}</p>
     <ul>
