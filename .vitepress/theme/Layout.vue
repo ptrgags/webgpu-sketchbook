@@ -19,7 +19,7 @@ const { site, frontmatter } = useData()
     </ul>
   </div>
   <div v-else>
-    <a href="/">Home</a>
+    <a href="/webgpu-sketchbook">Home</a>
     <Content />
   </div>
 </template>
