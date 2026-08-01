@@ -15,5 +15,12 @@ export default defineConfig({
       { property: 'og:image', content: '/webgpu-sketchbook/thumbnails/boolean-color-clock.png' }
     ],
     ['meta', { property: 'og:description', content: 'Math Art Experiments in WebGPU' }]
-  ]
+  ],
+  vite: {
+    server: {
+      watch: {
+        usePolling: true
+      }
+    }
+  }
 })
