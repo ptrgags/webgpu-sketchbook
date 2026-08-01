@@ -16,6 +16,9 @@ export default defineConfig({
     ],
     ['meta', { property: 'og:description', content: 'Math Art Experiments in WebGPU' }]
   ],
+  rewrites: {
+    'sketches/:sketch*': ':sketch*'
+  },
   vite: {
     server: {
       watch: {

@@ -12,7 +12,7 @@ const img_url = computed(() => {
 })
 
 const page_url = computed(() => {
-  return `/webgpu-sketchbook/sketches/${props.sketch.id}/`
+  return `/webgpu-sketchbook/${props.sketch.id}/`
 })
 
 const title = computed(() => {
