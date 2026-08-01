@@ -1,7 +1,7 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './boolean_color_clock.wgsl?url'
-import type { InputSystem } from '@/input/InputSystem.js'
+import type { InputSystem } from '../../input/InputSystem.js'
 
 export class BooleanColorClockSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered

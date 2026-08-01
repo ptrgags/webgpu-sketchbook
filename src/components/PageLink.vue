@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import {computed} from 'vue'
-import {type SketchMetadata} from '@/data/sketches';
+import { computed } from 'vue'
+import { type SketchMetadata } from '../data/sketches'
 const props = defineProps<{
   sketch: SketchMetadata
 }>()
@@ -12,7 +12,7 @@ const img_url = computed(() => {
 })
 
 const page_url = computed(() => {
-  return `/sketch/${props.sketch.id}`
+  return `/webgpu-sketchbook/sketches/${props.sketch.id}/`
 })
 
 const title = computed(() => {
@@ -22,15 +22,14 @@ const title = computed(() => {
 
   return props.sketch.title
 })
-
 </script>
 
 <template>
-    <div class="link">
-      <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
-      <img v-else :src="img_url" alt="" width="250" height="350" />
-      <RouterLink :to="page_url">{{ title }}</RouterLink> ({{ props.sketch.years }})
-    </div>
+  <div class="link">
+    <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
+    <img v-else :src="img_url" alt="" width="250" height="350" />
+    <a :href="page_url">{{ title }}</a> ({{ props.sketch.years }})
+  </div>
 </template>
 
 <style scoped>
