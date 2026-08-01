@@ -99,6 +99,7 @@ details {
 /** For adding a break between text boxes */
 .break {
   width: 100%;
+  height: 0;
 }
 
 @media screen and (max-width: 1000px) {
