@@ -1,4 +1,4 @@
-import { UniformArray, UniformStruct, UniformType } from '@/webgpu/UniformBuffer'
+import { UniformArray, UniformStruct, UniformType } from '../webgpu/UniformBuffer'
 import { GamepadInput } from './GamepadInput'
 import type { AnalogSignal, DigitalSignal } from './Signal'
 import { KeyboardInput } from './KeyboardInput'
