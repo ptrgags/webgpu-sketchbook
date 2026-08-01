@@ -1,5 +1,5 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './sun_and_moon.wgsl?url'
 
 export class SunAndMoonSketch implements QuadMachineSketch {

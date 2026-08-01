@@ -1,5 +1,5 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './stripey_ring.wgsl?url'
 
 export class StripeyRingSketch implements QuadMachineSketch {

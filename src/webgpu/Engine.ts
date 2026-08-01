@@ -1,4 +1,4 @@
-import { InputSystem } from '@/input/InputSystem'
+import { InputSystem } from '../input/InputSystem'
 import { BindGroup } from './BindGroup'
 import { Uniform, UniformStruct, UniformType } from './UniformBuffer'
 import { get_canvas, get_context, get_device } from './setup'

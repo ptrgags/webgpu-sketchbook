@@ -1,5 +1,5 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import type { SphereTracerSketch } from '@/machines/SphereTracerMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import type { SphereTracerSketch } from '../../machines/SphereTracerMachine'
 import SHADER from './meltaway.wgsl?url'
 
 export class MeltawaySketch implements SphereTracerSketch {

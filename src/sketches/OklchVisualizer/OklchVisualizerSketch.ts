@@ -1,5 +1,5 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import type { SphereTracerSketch } from '@/machines/SphereTracerMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import type { SphereTracerSketch } from '../../machines/SphereTracerMachine'
 import OKLCH_VISUALIZER_SHADER from './oklch_visualizer.wgsl?url'
 
 export class OklchVisualizerSketch implements SphereTracerSketch {

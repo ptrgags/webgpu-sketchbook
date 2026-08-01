@@ -1,11 +1,11 @@
-import { fetch_text } from '@/core/fetch_text'
-import type { Machine } from '@/webgpu/Engine'
-import { VertexAttribute, VertexBuffer } from '@/webgpu/VertexBuffer'
-import { compile_shader } from '@/webgpu/compile_shader'
-import { RenderPipeline } from '@/webgpu/RenderPipeline'
-import type { BindGroup } from '@/webgpu/BindGroup'
-import type { InputSystem } from '@/input/InputSystem'
-import { LazyShader, MACHINE_LIBRARY } from '@/core/ShaderLibrary'
+import { fetch_text } from '../core/fetch_text'
+import type { Machine } from '../webgpu/Engine'
+import { VertexAttribute, VertexBuffer } from '../webgpu/VertexBuffer'
+import { compile_shader } from '../webgpu/compile_shader'
+import { RenderPipeline } from '../webgpu/RenderPipeline'
+import type { BindGroup } from '../webgpu/BindGroup'
+import type { InputSystem } from '../input/InputSystem'
+import { LazyShader, MACHINE_LIBRARY } from '../core/ShaderLibrary'
 
 // This should go somewhere more common.
 const WIDTH = 500

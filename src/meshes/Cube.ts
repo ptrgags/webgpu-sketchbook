@@ -1,5 +1,5 @@
-import { Vec3 } from '@/core/Vec3.js'
-import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
+import { Vec3 } from '../core/Vec3.js'
+import { VertexAttribute } from '../webgpu/VertexBuffer.js'
 import { gather_face_normals } from './compute_face_normal.js'
 import { QUADS, tesselate_fan } from './tessellate_fan.js'
 import { gather_positions } from './gather_positions.js'

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { encode_stl, type STLTriangle } from './encode_stl.js'
-import { Vec3 } from '@/core/Vec3.js'
+import { Vec3 } from '../core/Vec3.js'
 
 const ONE_TRIANGLE: STLTriangle = {
   normal: new Vec3(0, 0, 1),

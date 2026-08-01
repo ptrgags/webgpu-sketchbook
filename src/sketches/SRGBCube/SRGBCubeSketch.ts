@@ -1,9 +1,9 @@
-import type { ShapeMachineSketch } from '@/machines/ShapeMachine.js'
-import { CUBE_GEOMETRY } from '@/meshes/Cube.js'
+import type { ShapeMachineSketch } from '../../machines/ShapeMachine.js'
+import { CUBE_GEOMETRY } from '../../meshes/Cube.js'
 import SHADER from './srgb_cube.wgsl?url'
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary.js'
-import { CyclicCounter } from '@/core/CyclicCounter.js'
-import type { InputSystem } from '@/input/InputSystem.js'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary.js'
+import { CyclicCounter } from '../../core/CyclicCounter.js'
+import type { InputSystem } from '../../input/InputSystem.js'
 
 export class SRGBCubeSketch implements ShapeMachineSketch {
   configure_input?: ((input: InputSystem) => void) | undefined

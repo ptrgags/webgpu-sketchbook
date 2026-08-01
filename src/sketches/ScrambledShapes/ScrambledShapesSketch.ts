@@ -1,5 +1,5 @@
-import { SHADER_LIBRARY } from '@/core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
+import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './scrambled_shapes.wgsl?url'
 
 export class ScrambledShapesSketch implements QuadMachineSketch {

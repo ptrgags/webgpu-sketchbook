@@ -1,8 +1,8 @@
-import type { Vec3 } from '@/core/Vec3.js'
+import type { Vec3 } from '../core/Vec3.js'
 import { compute_normal } from './geometry.js'
-import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
-import { repeat_array } from '@/core/repeat_array.js'
-import { COMPONENTS_VEC3 } from '@/core/sizes.js'
+import { VertexAttribute } from '../webgpu/VertexBuffer.js'
+import { repeat_array } from '../core/repeat_array.js'
+import { COMPONENTS_VEC3 } from '../core/sizes.js'
 
 /**
  * Compute the components for face normals for a single face
