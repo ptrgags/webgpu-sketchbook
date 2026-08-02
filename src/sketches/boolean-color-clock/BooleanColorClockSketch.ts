@@ -1,7 +1,8 @@
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
+import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './boolean_color_clock.wgsl?url'
 import type { InputSystem } from '../../input/InputSystem.js'
+import type { Machine } from '@/webgpu/Engine.js'
 
 export class BooleanColorClockSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
@@ -17,5 +18,9 @@ export class BooleanColorClockSketch implements QuadMachineSketch {
     input.configure_uniforms({
       analog: [input.clock.hour_hand, input.clock.minute_hand, input.clock.second_hand]
     })
+  }
+
+  static make_machine(): Machine {
+    return new QuadMachine(new BooleanColorClockSketch())
   }
 }

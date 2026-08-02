@@ -7,19 +7,14 @@ is_lab: false
 ---
 
 <script setup lang="ts">
-import WebGPUSketch from "../../components/WebGPUSketch.vue"
-import {QuadMachine} from "../../machines/QuadMachine"
+import WebGPUCard from "../../components/WebGPUCard.vue"
 import {BooleanColorClockSketch} from "./BooleanColorClockSketch"
-
-const sketch_metadata = {
-    make_machine: () => new QuadMachine(new BooleanColorClockSketch())
-}
 </script>
 
 # Boolean Color Clock (2026-07)
 
 <div class="one-column vertical">
-    <WebGPUSketch :sketch_metadata="sketch_metadata" />
+    <WebGPUCard :machine="BooleanColorClockSketch.make_machine()" />
 </div>
 
 This artistic clock is colored using Boolean Color
