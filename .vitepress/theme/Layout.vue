@@ -10,6 +10,11 @@ const { site, frontmatter } = useData()
 <template>
   <NavbarHeader />
   <div class="one-column vertical">
+    <h1 v-if="frontmatter.layout === 'webgpu-sketch'">
+      <span v-if="frontmatter.is_lab === true">🧪</span>
+      {{ frontmatter.title }} ({{ frontmatter.years }})
+    </h1>
+
     <Content />
   </div>
 </template>
