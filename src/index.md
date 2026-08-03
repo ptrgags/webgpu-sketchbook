@@ -25,10 +25,6 @@ See also [P5 Sketchbook](https://ptrgags.dev/p5-sketchbook/) for more of my math
 
 <div class="break"></div>
 
-<PageLink :sketch="SKETCHES[0]"/>
-
-<!--
-<template v-for="sketch in SKETCHES" :key="sketch.id">
-<PageLink :sketch="sketch"/>
+<template v-for="sketch of SKETCHES">
+    <PageLink :sketch="sketch"/>
 </template>
--->
