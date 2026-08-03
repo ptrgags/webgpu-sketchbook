@@ -1,4 +1,4 @@
-import type { ShapeMachineSketch } from '../../machines/ShapeMachine.js'
+import { ShapeMachine, type ShapeMachineSketch } from '../../machines/ShapeMachine.js'
 import { TETRAHEDRON_GEOMETRY } from '../../meshes/Tetrahedron.js'
 import SHADER from './platonic_solids.wgsl?url'
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary.js'
@@ -16,6 +16,7 @@ import { AnalogConst } from '../../input/const_signal.js'
 import { GamepadButtons } from '../../input/GamepadInput.js'
 import { Vec2 } from '../../core/Vec2.js'
 import { DigitalCascade } from '../../input/CascadeSignal.js'
+import type { Machine } from '@/webgpu/Engine.js'
 
 const PLATONIC_SOLIDS = [
   TETRAHEDRON_GEOMETRY,
@@ -60,6 +61,10 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
 
     const places = this.cycle_mesh.value
     this.current_mesh.cycle(places)
+  }
+
+  static make_machine(): Machine {
+    return new ShapeMachine(new PlatonicSolidsSketch())
   }
 }
 

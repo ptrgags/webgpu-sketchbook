@@ -1,5 +1,6 @@
+import type { Machine } from '../../webgpu/Engine.js'
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
-import type { SphereTracerSketch } from '../../machines/SphereTracerMachine'
+import { SphereTracerMachine, type SphereTracerSketch } from '../../machines/SphereTracerMachine'
 import SHADER from './meltaway.wgsl?url'
 
 export class MeltawaySketch implements SphereTracerSketch {
@@ -10,4 +11,8 @@ export class MeltawaySketch implements SphereTracerSketch {
     SHADER_LIBRARY.csg,
     SHADER_LIBRARY.constants
   ]
+
+  static make_machine(): Machine {
+    return new SphereTracerMachine(new MeltawaySketch())
+  }
 }

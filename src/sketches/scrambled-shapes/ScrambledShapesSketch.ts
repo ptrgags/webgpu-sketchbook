@@ -1,5 +1,6 @@
+import type { Machine } from '../../webgpu/Engine.js'
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
+import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './scrambled_shapes.wgsl?url'
 
 export class ScrambledShapesSketch implements QuadMachineSketch {
@@ -12,4 +13,8 @@ export class ScrambledShapesSketch implements QuadMachineSketch {
     SHADER_LIBRARY.colors_srgb,
     SHADER_LIBRARY.bitwise_color
   ]
+
+  static make_machine(): Machine {
+    return new QuadMachine(new ScrambledShapesSketch())
+  }
 }

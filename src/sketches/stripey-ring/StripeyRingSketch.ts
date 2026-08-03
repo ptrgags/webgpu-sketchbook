@@ -1,9 +1,14 @@
+import type { Machine } from '../../webgpu/Engine.js'
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
-import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
+import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './stripey_ring.wgsl?url'
 
 export class StripeyRingSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Centered
   shader_url: string = SHADER
   imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.csg]
+
+  static make_machine(): Machine {
+    return new QuadMachine(new StripeyRingSketch())
+  }
 }

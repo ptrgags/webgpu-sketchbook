@@ -1,4 +1,4 @@
-import type { Machine } from '@/webgpu/Engine.js'
+import type { Machine } from '../../webgpu/Engine.js'
 import { SHADER_LIBRARY } from '../../core/ShaderLibrary'
 import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './TEMPLATE.wgsl?url'
