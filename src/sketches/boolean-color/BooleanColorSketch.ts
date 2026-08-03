@@ -6,7 +6,7 @@ import { GamepadButtons } from '../../input/GamepadInput.js'
 import type { InputSystem } from '../../input/InputSystem.js'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from '../../input/Signal.js'
 import { TwoButtonAxis } from '../../input/TwoButtonAxis.js'
-import { QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
+import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './boolean_color.wgsl?url'
 
 const BOOLEAN_COUNT = 16
@@ -226,5 +226,9 @@ export class BooleanColorSketch implements QuadMachineSketch {
 
     this.bit_depth += this.bit_depth_delta.value
     this.bit_depth = mod(this.bit_depth, MAX_BITS)
+  }
+
+  static make_machine() {
+    return new QuadMachine(new BooleanColorSketch())
   }
 }
