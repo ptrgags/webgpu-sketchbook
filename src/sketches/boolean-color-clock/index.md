@@ -8,13 +8,12 @@ is_lab: false
 
 <script setup lang="ts">
 import WebGPUCard from "../../components/WebGPUCard.vue"
-import {BooleanColorClockSketch} from "./BooleanColorClockSketch"
+import {BooleanColorClockSketch as Sketch} from "./BooleanColorClockSketch"
+const machine = Sketch.make_machine();
 </script>
 
-# Boolean Color Clock (2026-07)
-
 <div class="one-column vertical">
-    <WebGPUCard :machine="BooleanColorClockSketch.make_machine()" />
+    <WebGPUCard :machine="machine" />
 </div>
 
 This artistic clock is colored using Boolean Color
