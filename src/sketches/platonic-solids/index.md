@@ -16,6 +16,10 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
-DESCRIPTION GOES HERE
+<h3>Controls</h3>
+    <p>
+        <b>SelectModel</b>: D-pad left/right (Gamepad), left/right arrow (Keyboard), Click the left/right edge of canvas (Touchscreen/Mouse)<br/>
+    </p>
+    <p>
+        I wanted to add more shapes to the project, so I added the 5 platonic solids. You have the tetrahedron (4 sides), the cube (6 sides), the octahedron (8 sides), the dodecahedron (12 sides), and the icosahedron (12 sides).
+    </p>

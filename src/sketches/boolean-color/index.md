@@ -16,8 +16,6 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
 ## Controls
 
 **Cycle Palette A**: A + D-pad up/down (Gamepad), Z + up/down arrow (Keyboard), Click the top/bottom of left palette (Touchscreen)<br/>

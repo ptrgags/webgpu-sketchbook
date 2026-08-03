@@ -16,6 +16,9 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
-DESCRIPTION GOES HERE
+<p>
+    TODO: Description
+    </p>
+    <p>
+        <a href="${base_url}/figures/2026-02-10_ScrambledShapesMirrorCurve.pdf">Concept art of circle trajectories</a>
+    </p>

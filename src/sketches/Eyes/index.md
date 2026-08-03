@@ -16,6 +16,14 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
-DESCRIPTION GOES HERE
+<p>
+        Touchscreen: Drag around the canvas to direct the eyes. Touch to blink<br/>
+        Mouse: Move the cursor to direct the eyes. Click to blink. <br />
+        Gamepad: Left joystick or D-pad to move the eyes, A button to blink. <br/>
+        Keyboard: Arrows or WASD to move the eyes, Z key to blink.
+    </p>
+    <p>
+      This was a fun warm-up project when first setting up this repo. I was
+      experimenting with using multiple types of user input (mouse, gamepad, 
+      keyboard) and passing the result as "signals" to the shader.
+    </p>

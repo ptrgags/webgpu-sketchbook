@@ -16,6 +16,8 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
-DESCRIPTION GOES HERE
+<p>
+      For this sketch, I bit the bullet and set up a vertex shader
+      with a camera and (ortho) projection matrix. This is just an initial
+      test of that. I will likely replace this with a nicer sketch in the future.
+    </p>

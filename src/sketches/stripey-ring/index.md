@@ -16,6 +16,9 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<!-- Remember to update index.ts with the sketch ID! -->
-
-DESCRIPTION GOES HERE
+<p>Notes</p>
+    <ul>
+      <li>What color scheme to use? the grey background is bland</li>
+      <li>Do I want to add more shapes?</li>
+      <li>User interaction - should the mouse move the ring? or move the circle? or something else?</li>
+    </ul>
