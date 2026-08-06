@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { SketchMetadata } from '../core/SketchMetadata'
 import { computed } from 'vue'
-import { type SketchMetadata } from '../data/sketches'
 const props = defineProps<{
   sketch: SketchMetadata
 }>()

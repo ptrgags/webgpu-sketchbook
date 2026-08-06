@@ -2,10 +2,33 @@
 layout: index
 ---
 
-<script setup>
+<script setup lang="ts">
 import { useData } from 'vitepress'
-import {SKETCHES} from './data/sketches'
+import { type SketchMetadata } from './core/SketchMetadata'
 import PageLink from "./components/PageLink.vue"
+
+import {data} from './sketches/sketches.data'
+
+const SKETCHES: SketchMetadata[] = data.filter(x => !/TEMPLATE/.test(x.url)).map(x => {
+    const frontmatter = x.frontmatter;
+
+    const metadata: SketchMetadata = {
+        id: frontmatter.id,
+        title: frontmatter.title,
+        years: frontmatter.years,
+        is_lab: frontmatter.is_lab === undefined ? false : frontmatter.is_lab
+    }
+
+    if (
+        metadata.id === "kebab-case-id" || 
+        metadata.title === "Title Case Title" || 
+        metadata.years === "YYYY-MM"
+    ) {
+        console.error(x.url, "is missing metadata", x.frontmatter)
+    }
+
+    return metadata;
+})
 
 const { site, theme, page, frontmatter } = useData()
 </script>

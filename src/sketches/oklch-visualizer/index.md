@@ -1,6 +1,6 @@
 ---
 layout: webgpu-sketch
-id: kebab-case-id
+id: oklch-visualizer
 title: OKLCH Visualizer
 years: 2025
 is_lab: true
