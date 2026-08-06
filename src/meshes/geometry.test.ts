@@ -1,4 +1,4 @@
-import { Vec3 } from '@/core/Vec3.js'
+import { Vec3 } from '../core/Vec3.js'
 import { describe, it, expect } from 'vitest'
 import { compute_normal } from './geometry.js'
 
