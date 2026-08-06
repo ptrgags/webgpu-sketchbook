@@ -1,14 +1,14 @@
 ---
 layout: webgpu-sketch
-id: kebab-case-id
-title: Title Case Title
-years: YYYY-MM
+id: srgb-cube
+title: sRGB Cube
+years: 2026-01
 is_lab: true
 ---
 
 <script setup lang="ts">
 import WebGPUCard from "../../components/WebGPUCard.vue"
-import {TEMPLATESketch as Sketch} from "./TEMPLATESketch"
+import {SRGBCubeSketch as Sketch} from "./SRGBCubeSketch"
 const machine = Sketch.make_machine();
 </script>
 
@@ -16,8 +16,6 @@ const machine = Sketch.make_machine();
     <WebGPUCard :machine="machine" />
 </div>
 
-<p>
-      For this sketch, I bit the bullet and set up a vertex shader
-      with a camera and (ortho) projection matrix. This is just an initial
-      test of that. I will likely replace this with a nicer sketch in the future.
-    </p>
+For this sketch, I bit the bullet and set up a vertex shader
+with a camera and (ortho) projection matrix. This is just an initial
+test of that. I will likely replace this with a nicer sketch in the future.

@@ -3,7 +3,7 @@ layout: webgpu-sketch
 id: boolean-color
 title: Boolean Color
 years: 2026-01
-is_lab: true
+is_lab: false
 ---
 
 <script setup lang="ts">

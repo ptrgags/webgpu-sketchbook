@@ -3,7 +3,7 @@ layout: webgpu-sketch
 id: sun-and-moon
 title: Sun and Moon
 years: 2024-2025
-is_lab: true
+is_lab: false
 ---
 
 <script setup lang="ts">
@@ -20,8 +20,6 @@ const figures_dir = `${site.value.base}/figures`;
 <div class="one-column vertical">
     <WebGPUCard :machine="machine" />
 </div>
-
-{{site.base}}
 
 This was an experiment that generalizes
 <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagrams</a>.

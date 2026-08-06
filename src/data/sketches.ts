@@ -12,6 +12,7 @@ import { ShapeMachine } from '../machines/ShapeMachine.js'
 import { SRGBCubeSketch } from '../sketches/srgb-cube/SRGBCubeSketch.js'
 import { PlatonicSolidsSketch } from '../sketches/platonic-solids/PlatonicSolidsSketch.js'
 import { BooleanColorClockSketch } from '../sketches/boolean-color-clock/BooleanColorClockSketch.js'
+import { ComplexVoronoiSketch } from '../sketches/complex-voronoi/ComplexVoronoiSketch.js'
 
 export type SketchType = 'quad' | 'sphere-tracer' | 'shape'
 
@@ -115,6 +116,15 @@ export const SKETCHES: SketchMetadata[] = [
     make_machine: () => new QuadMachine(new SunAndMoonSketch()),
     description: `
     `
+  },
+  {
+    id: `complex-voronoi`,
+    title: 'Complex Voronoi',
+    years: '2024',
+    type: 'quad',
+    make_machine: () => new QuadMachine(new ComplexVoronoiSketch()),
+    description: '',
+    is_lab: true
   },
   {
     id: 'eyes',

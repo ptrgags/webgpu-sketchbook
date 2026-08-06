@@ -1,24 +1,25 @@
 ---
 layout: webgpu-sketch
-id: kebab-case-id
-title: Title Case Title
-years: YYYY-MM
+id: scrambled-shapes
+title: Scrambled Shapes
+years: 2026-02
 is_lab: true
 ---
 
 <script setup lang="ts">
 import WebGPUCard from "../../components/WebGPUCard.vue"
-import {TEMPLATESketch as Sketch} from "./TEMPLATESketch"
+import {ScrambledShapesSketch as Sketch} from "./ScrambledShapesSketch"
+import {useData} from 'vitepress'
 const machine = Sketch.make_machine();
+
+const {site} = useData();
+const figures_dir = `${site.value.base}/figures`;
 </script>
 
 <div class="one-column vertical">
     <WebGPUCard :machine="machine" />
 </div>
 
-<p>
-    TODO: Description
-    </p>
-    <p>
-        <a href="${base_url}/figures/2026-02-10_ScrambledShapesMirrorCurve.pdf">Concept art of circle trajectories</a>
-    </p>
+TODO: Description
+
+<a :href="`${figures_dir}/2026-02-10_ScrambledShapesMirrorCurve.pdf`">Concept art of circle trajectories</a>
