@@ -18,9 +18,7 @@ const {site} = useData();
 const figures_dir = `${site.value.base}/figures`
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 Touchscreen: Drag towards the left/right halves of the canvas to rotate the camera. <br/>
 Mouse: Hover the mouse towards the left/right halves of the canvas to rotate the camera. <br/>

@@ -13,9 +13,7 @@ import {OklchVisualizerSketch as Sketch} from "./OklchVisualizerSketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 Touchscreen: Drag towards the left/right sides of the canvas to rotate the view. <br/>
 Mouse: Hover the mouse towards the left/right sides of the canvas to rotate the view. <br/>

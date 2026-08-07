@@ -13,9 +13,7 @@ import {BooleanColorClockSketch as Sketch} from "./BooleanColorClockSketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 This artistic clock is colored using Boolean Color
 operations. The dial and the hands each get a gradient in different hues.

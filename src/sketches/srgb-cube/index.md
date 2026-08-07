@@ -13,9 +13,7 @@ import {SRGBCubeSketch as Sketch} from "./SRGBCubeSketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 For this sketch, I bit the bullet and set up a vertex shader
 with a camera and (ortho) projection matrix. This is just an initial

@@ -13,10 +13,6 @@ import {TEMPLATESketch as Sketch} from "./TEMPLATESketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
-
-<!-- Remember to update index.ts with the sketch ID! -->
+<WebGPUCard :machine="machine" />
 
 DESCRIPTION GOES HERE

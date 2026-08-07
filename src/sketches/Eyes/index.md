@@ -13,9 +13,7 @@ import {EyesSketch as Sketch} from "./EyesSketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 **Touchscreen**: Drag around the canvas to direct the eyes. Touch to blink<br/>
 

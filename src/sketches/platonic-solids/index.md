@@ -13,9 +13,7 @@ import {PlatonicSolidsSketch as Sketch} from "./PlatonicSolidsSketch"
 const machine = Sketch.make_machine();
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 Controls:
 

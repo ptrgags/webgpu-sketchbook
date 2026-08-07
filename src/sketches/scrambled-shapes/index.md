@@ -17,9 +17,7 @@ const {site} = useData();
 const figures_dir = `${site.value.base}/figures`;
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 TODO: Description
 
