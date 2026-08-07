@@ -25,7 +25,7 @@ Mouse: Hover the mouse towards the left/right halves of the canvas to rotate the
 Keyboard: Left and right arrows to rotate the camera.
 
 This was a refresher on sphere tracing (also known as
-<a href="https://iquilezles.org/articles/raymarchingdf/">ray marching</a>).
+[ray marching](https://iquilezles.org/articles/raymarchingdf/)).
 Here I have several shapes nested inside each other. Each one has a separate
 clipping arranged in a vertical stack. As they descend, the clipping planes
 peel back one layer at a time.

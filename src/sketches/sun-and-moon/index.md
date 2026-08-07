@@ -21,7 +21,7 @@ const figures_dir = `${site.value.base}figures`;
 <WebGPUCard :machine="machine" />
 
 This was an experiment that generalizes
-<a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagrams</a>.
+[Voronoi diagrams](https://en.wikipedia.org/wiki/Voronoi_diagram)
 Usually, a voronoi diagram is a map of "which point is the nearest
 neighbor?". This gives a cellular pattern with sharp edges halfway
 between the seed points.
@@ -29,7 +29,7 @@ between the seed points.
 <img width="500" class="figure" alt="voronoi diagram that points out the nearest neighbor properties" :src="`${figures_dir}/2025-04-07_VoronoiExplainer.png`" />
     
 In shaders, it's commmon to use 
-<a href="https://iquilezles.org/articles/distfunctions2d/">signed distance fields (SDFs)</a>
+[signed distance fields (SDFs)](https://iquilezles.org/articles/distfunctions2d/)
 to get the minimum distance to a shape. Combining these concepts, the new
 query is "which <em>shape</em> is the nearest neighbor?" This produces some
 unusual shapes. Sometimes you get straight lines, but most of the time
