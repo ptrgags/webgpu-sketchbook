@@ -69,6 +69,7 @@ export class PlatonicSolidsSketch implements ShapeMachineSketch {
 }
 
 // @ts-ignore
+/*
 window.download_models = () => {
   const tetra = encode_stl_file(mesh_to_triangle_soup(TETRAHEDRON_GEOMETRY), 'tetrahedron.stl')
   const hexa = encode_stl_file(mesh_to_triangle_soup(CUBE_GEOMETRY), 'cube.stl')
@@ -82,3 +83,4 @@ window.download_models = () => {
   download_file(dodeca)
   download_file(icosa)
 }
+  */

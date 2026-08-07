@@ -14,7 +14,7 @@ import {useData} from 'vitepress'
 const machine = Sketch.make_machine();
 
 const {site} = useData();
-const figures_dir = `${site.value.base}/figures`;
+const figures_dir = `${site.value.base}figures`;
 </script>
 
 <WebGPUCard :machine="machine" />

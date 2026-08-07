@@ -1,18 +1,22 @@
 <script setup lang="ts">
 import type { SketchMetadata } from '../core/SketchMetadata'
 import { computed } from 'vue'
+import { useData } from 'vitepress'
+
 const props = defineProps<{
   sketch: SketchMetadata
 }>()
 
-const base_url = import.meta.env.BASE_URL
+const { site } = useData()
+
+const base_url = site.value.base
 
 const img_url = computed(() => {
-  return `${base_url}/thumbnails/${props.sketch.id}.png`
+  return `${base_url}thumbnails/${props.sketch.id}.png`
 })
 
 const page_url = computed(() => {
-  return `/webgpu-sketchbook/${props.sketch.id}/`
+  return `${base_url}${props.sketch.id}/`
 })
 
 const title = computed(() => {
