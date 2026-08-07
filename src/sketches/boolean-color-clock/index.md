@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: boolean-color-clock
 title: Boolean Color Clock
 years: 2026-07
+sort_key: 2026-07:00
 is_lab: false
 ---
 

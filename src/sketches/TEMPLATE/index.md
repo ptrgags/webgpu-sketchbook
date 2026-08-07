@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: kebab-case-id
 title: Title Case Title
 years: YYYY-MM
+sort_key: YYYY-MM:NN
 is_lab: true
 ---
 

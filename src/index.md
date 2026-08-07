@@ -16,10 +16,13 @@ const SKETCHES: SketchMetadata[] = data.filter(x => !/TEMPLATE/.test(x.url)).map
         id: frontmatter.id,
         title: frontmatter.title,
         years: frontmatter.years,
-        is_lab: frontmatter.is_lab === undefined ? false : frontmatter.is_lab
+        is_lab: frontmatter.is_lab === undefined ? false : frontmatter.is_lab,
+        sort_key: frontmatter.sort_key,
     }
 
     if (
+        metadata.sort_key === undefined ||
+        metadata.sort_key === "YYYY-MM:NN" ||
         metadata.id === "kebab-case-id" || 
         metadata.title === "Title Case Title" || 
         metadata.years === "YYYY-MM"
@@ -29,6 +32,7 @@ const SKETCHES: SketchMetadata[] = data.filter(x => !/TEMPLATE/.test(x.url)).map
 
     return metadata;
 })
+SKETCHES.sort((a, b) => b.sort_key.localeCompare(a.sort_key))
 
 const { site, theme, page, frontmatter } = useData()
 </script>

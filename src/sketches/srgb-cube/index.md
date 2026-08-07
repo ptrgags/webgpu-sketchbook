@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: srgb-cube
 title: sRGB Cube
 years: 2026-01
+sort_key: 2026-01:01
 is_lab: true
 ---
 

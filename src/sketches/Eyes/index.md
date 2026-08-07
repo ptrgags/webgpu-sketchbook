@@ -3,7 +3,8 @@ layout: webgpu-sketch
 id: eyes
 title: Eyes
 years: 2024
-is_lab: true
+sort_key: 2024-??:00
+is_lab: false
 ---
 
 <script setup lang="ts">

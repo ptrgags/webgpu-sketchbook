@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: boolean-color
 title: Boolean Color
 years: 2026-01
+sort_key: 2026-01:00
 is_lab: false
 ---
 

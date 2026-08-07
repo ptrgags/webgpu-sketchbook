@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: stripey-ring
 title: Stripey Ring
 years: 2025
+sort_key: 2025-??:03
 is_lab: true
 ---
 

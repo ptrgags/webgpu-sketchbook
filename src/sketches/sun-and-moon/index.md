@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: sun-and-moon
 title: Sun and Moon
 years: 2024-2025
+sort_key: 2025-??:00
 is_lab: false
 ---
 

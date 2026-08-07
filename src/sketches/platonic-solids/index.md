@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: platonic-solids
 title: Platonic Solids
 years: 2026-06
+sort_key: 2026-06:00
 is_lab: true
 ---
 

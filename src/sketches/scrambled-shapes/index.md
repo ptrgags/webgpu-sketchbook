@@ -3,6 +3,7 @@ layout: webgpu-sketch
 id: scrambled-shapes
 title: Scrambled Shapes
 years: 2026-02
+sort_key: 2026-02:00
 is_lab: true
 ---
 
