@@ -1,7 +1,7 @@
-import { SIZE_F32, SIZE_U16, SIZE_U32, SIZE_VEC3F } from '@/core/sizes.js'
-import type { Mesh } from '@/meshes/Mesh.js'
+import { SIZE_F32, SIZE_U16, SIZE_U32, SIZE_VEC3F } from '../core/sizes.js'
+import type { Mesh } from '../meshes/Mesh.js'
 import { write_ascii } from './write_ascii.js'
-import { Vec3 } from '@/core/Vec3.js'
+import { Vec3 } from '../core/Vec3.js'
 
 export const HEADER_SIZE = 80
 export const TRIANGLE_SIZE = 4 * SIZE_VEC3F + SIZE_U16

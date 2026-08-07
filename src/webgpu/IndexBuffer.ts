@@ -1,4 +1,4 @@
-import { SIZE_U32 } from '@/core/sizes.js'
+import { SIZE_U32 } from '../core/sizes.js'
 
 export class IndexBuffer {
   readonly label: string

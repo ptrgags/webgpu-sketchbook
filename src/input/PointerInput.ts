@@ -1,4 +1,4 @@
-import { Vec2 } from '@/core/Vec2'
+import { Vec2 } from '../core/Vec2'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from './Signal'
 
 export function prevent_mobile_scroll(canvas: HTMLCanvasElement) {

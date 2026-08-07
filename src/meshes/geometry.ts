@@ -1,4 +1,4 @@
-import { Vec3 } from '@/core/Vec3.js'
+import { Vec3 } from '../core/Vec3.js'
 
 // temporary until I have a working PGA 3D implementation
 // this computes normal = (b - a) x (c - a)

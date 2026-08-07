@@ -1,14 +1,15 @@
-import { Vec2 } from '@/core/Vec2'
-import { ADSR } from '@/input/ADSR'
-import { AnalogCascade, DigitalCascade } from '@/input/CascadeSignal'
-import { GamepadButtons } from '@/input/GamepadInput'
-import type { InputSystem } from '@/input/InputSystem'
-import { PitchClass } from '@/input/MidiInput'
-import { ReleaseSignal } from '@/input/ReleaseSignal'
-import type { AnalogSignal } from '@/input/Signal'
-import { TriggerSignal } from '@/input/TriggerSignal'
-import { AnalogConst } from '@/input/const_signal'
-import { QuadUVMode, type QuadMachineSketch } from '@/machines/QuadMachine'
+import type { Machine } from '../../webgpu/Engine.js'
+import { Vec2 } from '../../core/Vec2'
+import { ADSR } from '../../input/ADSR'
+import { AnalogCascade, DigitalCascade } from '../../input/CascadeSignal'
+import { GamepadButtons } from '../../input/GamepadInput'
+import type { InputSystem } from '../../input/InputSystem'
+import { PitchClass } from '../../input/MidiInput'
+import { ReleaseSignal } from '../../input/ReleaseSignal'
+import type { AnalogSignal } from '../../input/Signal'
+import { TriggerSignal } from '../../input/TriggerSignal'
+import { AnalogConst } from '../../input/const_signal'
+import { QuadMachine, QuadUVMode, type QuadMachineSketch } from '../../machines/QuadMachine'
 import SHADER from './eyes.wgsl?url'
 
 export class EyesSketch implements QuadMachineSketch {
@@ -58,5 +59,9 @@ export class EyesSketch implements QuadMachineSketch {
   update(time: number) {
     this.x_axis.update(time)
     this.y_axis.update(time)
+  }
+
+  static make_machine(): Machine {
+    return new QuadMachine(new EyesSketch())
   }
 }

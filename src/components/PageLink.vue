@@ -1,18 +1,22 @@
 <script setup lang="ts">
-import {computed} from 'vue'
-import {type SketchMetadata} from '@/data/sketches';
+import type { SketchMetadata } from '../core/SketchMetadata'
+import { computed } from 'vue'
+import { useData } from 'vitepress'
+
 const props = defineProps<{
   sketch: SketchMetadata
 }>()
 
-const base_url = import.meta.env.BASE_URL
+const { site } = useData()
+
+const base_url = site.value.base
 
 const img_url = computed(() => {
-  return `${base_url}/thumbnails/${props.sketch.id}.png`
+  return `${base_url}thumbnails/${props.sketch.id}.png`
 })
 
 const page_url = computed(() => {
-  return `/sketch/${props.sketch.id}`
+  return `${base_url}${props.sketch.id}/`
 })
 
 const title = computed(() => {
@@ -22,23 +26,24 @@ const title = computed(() => {
 
   return props.sketch.title
 })
-
 </script>
 
 <template>
-    <div class="link">
-      <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
-      <img v-else :src="img_url" alt="" width="250" height="350" />
-      <RouterLink :to="page_url">{{ title }}</RouterLink> ({{ props.sketch.years }})
-    </div>
+  <div class="link">
+    <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
+    <img v-else :src="img_url" alt="" width="250" height="350" />
+    <span
+      ><a :href="page_url">{{ title }}</a> ({{ props.sketch.years }})</span
+    >
+  </div>
 </template>
 
 <style scoped>
 .link {
   background-color: var(--color-background);
   padding: 10px;
-  margin: 10px 0;
-  width: 60%;
+  margin: 10px auto;
+  width: 75%;
   max-width: 600px;
   display: flex;
   flex-direction: row;
@@ -46,10 +51,6 @@ const title = computed(() => {
   align-items: center;
   border-radius: 10px;
   gap: 10px;
-}
-
-.description {
-  max-width: 50%;
 }
 
 .test-tube {
@@ -60,11 +61,6 @@ const title = computed(() => {
   .link {
     /** Match the size of the image */
     width: 250px;
-  }
-
-  .description {
-    max-width: initial;
-    width: 100%;
   }
 }
 </style>

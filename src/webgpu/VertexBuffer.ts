@@ -1,4 +1,4 @@
-import { SIZE_F32 } from '@/core/sizes.js'
+import { SIZE_F32 } from '../core/sizes.js'
 
 /**
  * Round up a value as described in the WGSL spec, see

@@ -1,6 +1,6 @@
-import { VertexAttribute } from '@/webgpu/VertexBuffer.js'
+import { VertexAttribute } from '../webgpu/VertexBuffer.js'
 import { gather_face_normals } from './compute_face_normal.js'
-import { Vec3 } from '@/core/Vec3.js'
+import { Vec3 } from '../core/Vec3.js'
 import { gather_positions } from './gather_positions.js'
 import { tesselate_fan } from './tessellate_fan.js'
 import type { Mesh } from './Mesh.js'
