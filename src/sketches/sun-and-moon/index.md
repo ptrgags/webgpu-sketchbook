@@ -18,9 +18,7 @@ const {site} = useData();
 const figures_dir = `${site.value.base}/figures`;
 </script>
 
-<div class="one-column vertical">
-    <WebGPUCard :machine="machine" />
-</div>
+<WebGPUCard :machine="machine" />
 
 This was an experiment that generalizes
 <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Voronoi diagrams</a>.

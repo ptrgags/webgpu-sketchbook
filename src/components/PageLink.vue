@@ -28,7 +28,9 @@ const title = computed(() => {
   <div class="link">
     <span class="test-tube" v-if="props.sketch.is_lab">🧪</span>
     <img v-else :src="img_url" alt="" width="250" height="350" />
-    <a :href="page_url">{{ title }}</a> ({{ props.sketch.years }})
+    <span
+      ><a :href="page_url">{{ title }}</a> ({{ props.sketch.years }})</span
+    >
   </div>
 </template>
 
@@ -36,8 +38,8 @@ const title = computed(() => {
 .link {
   background-color: var(--color-background);
   padding: 10px;
-  margin: 10px 0;
-  width: 60%;
+  margin: 10px auto;
+  width: 75%;
   max-width: 600px;
   display: flex;
   flex-direction: row;
@@ -45,10 +47,6 @@ const title = computed(() => {
   align-items: center;
   border-radius: 10px;
   gap: 10px;
-}
-
-.description {
-  max-width: 50%;
 }
 
 .test-tube {
@@ -59,11 +57,6 @@ const title = computed(() => {
   .link {
     /** Match the size of the image */
     width: 250px;
-  }
-
-  .description {
-    max-width: initial;
-    width: 100%;
   }
 }
 </style>

@@ -9,19 +9,21 @@ const { site, frontmatter } = useData()
 
 <template>
   <NavbarHeader />
-  <div class="one-column vertical">
-    <h1 v-if="frontmatter.layout === 'webgpu-sketch'">
-      <span v-if="frontmatter.is_lab === true">🧪</span>
-      {{ frontmatter.title }} ({{ frontmatter.years }})
-    </h1>
-
-    <Content />
+  <div class="main-column">
+    <div>
+      <h1 v-if="frontmatter.layout === 'webgpu-sketch'">
+        <span v-if="frontmatter.is_lab === true">🧪</span>
+        {{ frontmatter.title }} ({{ frontmatter.years }})
+      </h1>
+      <Content />
+    </div>
   </div>
 </template>
 
 <style scoped>
-.one-column {
-  width: 80%;
+.main-column {
+  width: 80vw;
+  max-width: 800px;
   margin: 0 auto;
 }
 </style>

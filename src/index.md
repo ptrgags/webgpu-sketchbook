@@ -50,8 +50,6 @@ See also [P5 Sketchbook](https://ptrgags.dev/p5-sketchbook/) for more of my math
 
 ## Sketches
 
-<div class="break"></div>
-
 <template v-for="sketch of SKETCHES">
     <PageLink :sketch="sketch"/>
 </template>
