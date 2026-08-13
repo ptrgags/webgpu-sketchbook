@@ -5,7 +5,8 @@ import SHADER from './midi_ochre.wgsl?url'
 import type { InputSystem } from '../../input/InputSystem.js'
 import { AnalogConst, DigitalConst } from '../../input/const_signal.js'
 import type { AnalogSignal, DigitalSignal } from '../../input/Signal.js'
-import { PitchClass } from '../../input/MidiInput.js'
+
+const DUMMY_NOTE = new DigitalConst(false)
 
 export class MidiOchreSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Basic
@@ -21,7 +22,8 @@ export class MidiOchreSketch implements QuadMachineSketch {
     this.cc = input.midi.cc_signal(21, 0)
 
     input.configure_uniforms({
-      digital: this.notes,
+      // Dummy note makes it easier to handle gaps in black keys
+      digital: [...this.notes, DUMMY_NOTE],
       analog: [this.cc]
     })
   }
