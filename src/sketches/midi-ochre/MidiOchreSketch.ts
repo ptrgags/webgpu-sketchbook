@@ -11,7 +11,7 @@ const DUMMY_NOTE = new DigitalConst(false)
 export class MidiOchreSketch implements QuadMachineSketch {
   uv_mode: QuadUVMode = QuadUVMode.Basic
   shader_url: string = SHADER
-  imports = [SHADER_LIBRARY.sdf2d]
+  imports = [SHADER_LIBRARY.sdf2d, SHADER_LIBRARY.rect_mask]
 
   notes: DigitalSignal[] = []
 
