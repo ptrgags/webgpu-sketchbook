@@ -4,10 +4,11 @@ import { Engine, type Machine } from '../webgpu/Engine'
 
 const props = defineProps<{
   machine: Machine
+  use_midi?: boolean
 }>()
 
 const renderer = computed(() => {
-  return new Engine(props.machine)
+  return new Engine(props.machine, props.use_midi ?? false)
 })
 
 onMounted(() => {

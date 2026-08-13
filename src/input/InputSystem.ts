@@ -23,6 +23,7 @@ export interface UniformConfigDescriptor {
 
 export class InputSystem {
   midi: MidiInput
+  use_midi: boolean
   gamepad: GamepadInput
   keyboard: KeyboardInput
   pointer: PointerInput
@@ -32,8 +33,9 @@ export class InputSystem {
   digital_signals: DigitalSignal[] = []
   analog_signals: AnalogSignal[] = []
 
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, use_midi: boolean) {
     this.midi = new MidiInput()
+    this.use_midi = use_midi
     this.gamepad = new GamepadInput()
     this.keyboard = new KeyboardInput()
     this.pointer = new PointerInput(canvas)
@@ -62,7 +64,10 @@ export class InputSystem {
   }
 
   init() {
-    this.midi.init()
+    if (this.use_midi) {
+      this.midi.request_midi()
+    }
+
     this.gamepad.init()
     this.keyboard.init()
     this.pointer.init()
