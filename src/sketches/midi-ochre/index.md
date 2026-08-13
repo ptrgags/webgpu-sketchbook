@@ -5,6 +5,22 @@ title: MIDI Ochre
 years: 2026-08
 sort_key: 2026-08:00
 is_lab: false
+head:
+  - - meta
+    - property: og:title
+      content: MIDI Ochre | WebGPU Sketchbook
+  - - meta
+    - property: og:url
+      content: 'https://ptrgags.dev/webgpu-sketchbook/midi-ochre/'
+  - - meta
+    - property: og:image
+      content: '/webgpu-sketchbook/thumbnails/midi-ochre.png'
+  - - meta
+    - property: og:description
+      content: 'A test of using MIDI in a WebGPU shader'
+  - - meta
+    - property: og:type
+      content: 'article'
 ---
 
 <script setup lang="ts">
