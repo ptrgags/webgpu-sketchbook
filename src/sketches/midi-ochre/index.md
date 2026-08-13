@@ -4,7 +4,7 @@ id: midi-ochre
 title: MIDI Ochre
 years: 2026-08
 sort_key: 2026-08:00
-is_lab: true
+is_lab: false
 ---
 
 <script setup lang="ts">
@@ -15,7 +15,8 @@ const machine = Sketch.make_machine();
 
 <WebGPUCard :machine="machine" :use_midi="true"/>
 
-🎹 This sketch requires a MIDI piano keyboard
+🎹 This sketch requires a MIDI piano keyboard or other controller.
 
-This sketch is a simple test of adding MIDI inputs to shaders. Press piano
-keys on your piano keyboard to highlight the corresponding key in the shader.
+This sketch is a simple proof-of-concept for adding MIDI notes to the shader.
+Press keys on your controller to highlight the corresponding pitches in the
+shader.
