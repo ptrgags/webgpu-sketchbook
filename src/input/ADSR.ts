@@ -1,4 +1,6 @@
+import { ReleaseSignal } from './ReleaseSignal.js'
 import type { AnalogSignal, DigitalSignal } from './Signal'
+import { TriggerSignal } from './TriggerSignal.js'
 
 export interface ADSRParams {
   attack: number
@@ -105,5 +107,11 @@ export class ADSR implements AnalogSignal {
     } else {
       this.update_releasing(time, triggered)
     }
+  }
+
+  static from_gate(gate: DigitalSignal, adsr: ADSRParams): ADSR {
+    const trigger = new TriggerSignal(gate)
+    const release = new ReleaseSignal(gate)
+    return new ADSR(trigger, release, adsr)
   }
 }

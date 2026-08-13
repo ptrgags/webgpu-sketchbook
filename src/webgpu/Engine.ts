@@ -29,9 +29,9 @@ export class Engine {
   bind_group: BindGroup
   canvas: HTMLCanvasElement
 
-  constructor(machine: Machine) {
+  constructor(machine: Machine, use_midi: boolean) {
     this.canvas = get_canvas('webgpu-canvas')
-    this.input = new InputSystem(this.canvas)
+    this.input = new InputSystem(this.canvas, use_midi)
     this.machine = machine
 
     const time = new Uniform(UniformType.F32, new Float32Array([0.0]))

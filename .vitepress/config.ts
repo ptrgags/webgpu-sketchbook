@@ -9,6 +9,7 @@ export default defineConfig({
   head: [
     ['link', { rel: 'icon', href: '/webgpu-sketchbook/favicon.ico' }],
     ['meta', { property: 'og:title', content: 'WebGPU Sketchbook' }],
+    ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:url', content: 'https://ptrgags.dev/webgpu-sketchbook/' }],
     [
       'meta',
