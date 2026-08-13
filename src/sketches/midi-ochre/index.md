@@ -15,4 +15,7 @@ const machine = Sketch.make_machine();
 
 <WebGPUCard :machine="machine" :use_midi="true"/>
 
-DESCRIPTION GOES HERE
+🎹 This sketch requires a MIDI piano keyboard
+
+This sketch is a simple test of adding MIDI inputs to shaders. Press piano
+keys on your piano keyboard to highlight the corresponding key in the shader.

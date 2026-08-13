@@ -1,3 +1,4 @@
+import { ADSR, type ADSRParams } from './ADSR.js'
 import { ObserverSignal, type AnalogSignal, type DigitalSignal } from './Signal'
 
 export enum PitchClass {
@@ -28,14 +29,14 @@ export class MidiInput {
 
   request_midi() {
     if (!isSecureContext) {
-      return;
+      return
     }
 
     navigator.requestMIDIAccess().then((access) => {
       const inputs = access.inputs.values()
       for (const input of inputs) {
         input.onmidimessage = (msg) => {
-          this.handle_message(msg);
+          this.handle_message(msg)
         }
       }
     }, console.error)
@@ -102,7 +103,19 @@ export class MidiInput {
   }
 
   /**
-   * Get a MIDI control signal (e.g. a slider/knob/button value) 
+   * Convenience method for configuring all 12 pitch signals at once
+   * @returns An array of 12 pitch class gate signals
+   */
+  all_pitch_signals(): DigitalSignal[] {
+    const result = []
+    for (let i = 0; i < 12; i++) {
+      result.push(this.pitch_signal(i))
+    }
+    return result
+  }
+
+  /**
+   * Get a MIDI control signal (e.g. a slider/knob/button value)
    * This only supports single-byte values at preset.
    * @param controller The controller number in [0, 127]
    * @param start_value The assumed initial value of the signal from [0, 127]
