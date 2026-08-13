@@ -1,12 +1,21 @@
+// 
+fn midi_gate(note: u32) -> bool {
+    let flags = u_input.digital[0][0];
+    return bool((flags >> note) & 1);
+}
+
+const SEMITONES_WHITE_KEYS = array<u32,7>(0, 2, 4, 5, 7, 9, 11);
+
+
 @fragment
 fn fragment_main(input: Interpolated) -> @location(0) vec4f {
 
 
-    let note_c = get_digital(0);
-    let note_d = get_digital(2);
-    let note_e = get_digital(4);
+    let white_key_index = u32(floor(7.0 * input.uv.x));
+    let semitones = SEMITONES_WHITE_KEYS[white_key_index];
+    let gate = midi_gate(semitones);
 
-    let color = vec3f(f32(note_c), f32(note_d), f32(note_e));
+    let color = select(vec3f(0.0), vec3f(1.0, 0.0, 0.0), gate);
 
     return vec4f(color, 1.0);
 }

@@ -23,6 +23,6 @@ struct InputUniforms {
     // vv = vector_index 0-4
     // cc = component index 0-4
     //
-    // total: 4 * 4 = 8 analog signals
+    // total: 4 * 4 = 16 analog signals
     analog: array<vec4f, MAX_ANALOG_VECTORS>,
 }
